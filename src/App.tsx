@@ -17,6 +17,8 @@ import { usePreferences } from "@/features/preferences/hooks/usePreferences";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { useTransactions } from "@/features/transactions/hooks/useTransactions";
 import { useEvents } from "@/features/events/hooks/useEvents";
+import { useDataModeStore } from "@/shared/state/dataMode";
+import { configureDataSource } from "@/shared/data/source";
 import type {
   ModalState,
   TxnDraft,
@@ -104,8 +106,30 @@ const PageFallback = () => (
 // own initial state without re-importing this module.
 
 export default function App() {
+  const auth = useAuth();
+  const mode = useDataModeStore((s) => s.mode);
+  const userId = auth.user?.id ?? null;
+
+  // 데이터 소스를 mode + userId에 맞춰 재구성. 변경 시 cache invalidation.
+  useEffect(() => {
+    configureDataSource({ mode, userId });
+  }, [mode, userId]);
+
+  // 초기 세션 복원 중에는 빈 화면(또는 splash)으로 깜박임 방지
+  if (auth.status === "unknown") {
+    return <PageFallback />;
+  }
+
+  // mode/userId 변경 시 트리 remount → 모든 도메인 hook이 새 store 구독
+  const sourceKey = `${mode}:${userId ?? 'guest'}`;
+  return <AppShell key={sourceKey} />;
+}
+
+function AppShell() {
   const [tweaks, setTweak] = usePreferences();
   const auth = useAuth();
+  const mode = useDataModeStore((s) => s.mode);
+  const setDataMode = useDataModeStore((s) => s.setMode);
   const { upsert: upsertTxn, remove: removeTxn } = useTransactions();
   const { upsert: upsertEvent, remove: removeEvent } = useEvents();
   const [active, setActive] = useState<string>("home");
@@ -162,13 +186,9 @@ export default function App() {
 
   // ─────────────────────────────────────────────
   // 인증 게이트 — 실 세션 기반 (useAuth)
+  // mock 모드에서는 비로그인이어도 대시보드(데모 데이터)를 보여줌
   // ─────────────────────────────────────────────
-  // 초기 세션 복원 중에는 빈 화면(또는 splash)으로 깜박임 방지
-  if (auth.status === "unknown") {
-    return <PageFallback />;
-  }
-
-  if (auth.status === "guest") {
+  if (auth.status === "guest" && mode === "live") {
     const setView = (view: AuthPreviewView) => setTweak("authPreview", view);
     const dark = !!tweaks.dark;
     const lang: "ko" | "en" = "ko";
@@ -360,6 +380,22 @@ export default function App() {
             value={tweaks.forceMobile}
             onChange={(v: boolean) => setTweak("forceMobile", v)}
           />
+        </TweakSection>
+        <TweakSection title="데이터 모드">
+          <TweakRadio
+            label="소스"
+            value={mode}
+            options={[
+              { value: "mock", label: "데모(시드)" },
+              { value: "live", label: "실데이터" },
+            ]}
+            onChange={(v: string) => setDataMode(v as "live" | "mock")}
+          />
+          <div style={{ fontSize: 11, color: "var(--ink-mute)", padding: "4px 0" }}>
+            {mode === "mock"
+              ? "in-memory 시드 — 새로고침 시 리셋"
+              : "Supabase 연결 — 로그인 필요"}
+          </div>
         </TweakSection>
         <TweakSection title="인증">
           <div style={{ fontSize: 12, color: "var(--ink-mute)", padding: "4px 0" }}>
