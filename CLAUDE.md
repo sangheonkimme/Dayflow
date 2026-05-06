@@ -30,23 +30,29 @@ The app is a single-page React 18 + TypeScript dashboard ("Dayflow") that render
 
 A floating `TweaksPanel` is always mounted; its state lives in the `preferences` repository and drives runtime CSS variables (`--yellow` accent, `dark` body class).
 
-### Data layer (`src/data/`)
+### Data layer (`src/shared/data/` + `src/features/<domain>/`)
 
-The data layer is the part that takes time to understand from files alone. It is a **three-tier abstraction designed so the mock → Supabase swap is one line**:
+The data layer follows the Bulletproof React lite layout (Phase 1, 2026-05). Domain-agnostic infrastructure lives in `shared/data/`; per-domain hooks/selectors/seeds live under `features/<domain>/`. It is a **three-tier abstraction designed so the mock → Supabase swap is one line**:
 
 ```
 component → useXxx() hook → Repository → Store (useSyncExternalStore) → DataSource (mock | supabase)
 ```
 
-- `data/store.ts` — generic `createStore<T>` factory. Produces an immutable, frozen-array snapshot store with `subscribe / getSnapshot / setAll / upsert / remove` and a `Status` ('idle' | 'loading' | 'success' | 'error'). Every mutation creates a new array reference so React 18 `useSyncExternalStore` re-renders correctly.
-- `data/source/types.ts` + `data/source/mock.ts` — `DataSource` is a bag of `Repository<T>` instances (transactions, events, memos, stickyNotes, checklist, subscriptions, pinnedInfo, dailyLog). The mock implementation seeds from `data/seeds/*` and persists to localStorage.
-- `data/source/index.ts` — `getDataSource()` singleton. Today it always returns the mock; the Supabase implementation is the explicit `TODO` there. Replacing this returns is intended to be the entire migration on the data side, plus mappers under `data/source/mappers/` (not yet created — see `docs/schema-alignment.md`).
-- `data/hooks/useRepository.ts` — base hook every domain hook wraps. Auto-triggers `repo.init()` when status is `idle`, exposes `{ data, status, error, isLoading, upsert, remove }`.
-- `data/hooks/useXxx.ts` — thin domain wrappers (`useTransactions`, `useEvents`, `useMemos`, `useStickyNotes`, `useChecklist`, `useSubscriptions`, `usePinnedInfo`, `useDailyLog`, `usePreferences`, `useAuth`).
-- `data/selectors/*` — pure derivation (e.g. `inferIcon`, `subscriptionColor`, `formatNextBilling`). Components must call these instead of reading display fields directly off domain rows; this is what lets DB rows omit those fields.
-- `data/seeds/*` — initial mock data + lookup constants (including `TWEAK_DEFAULTS`, owned here so `usePreferences` does not import from `App.tsx`).
+Infrastructure (`src/shared/data/`):
+- `shared/data/store.ts` — generic `createStore<T>` factory. Produces an immutable, frozen-array snapshot store with `subscribe / getSnapshot / setAll / upsert / remove` and a `Status` ('idle' | 'loading' | 'success' | 'error'). Every mutation creates a new array reference so React 18 `useSyncExternalStore` re-renders correctly.
+- `shared/data/source/types.ts` + `shared/data/source/mock.ts` — `DataSource` is a bag of `Repository<T>` instances (transactions, events, memos, stickyNotes, checklist, subscriptions, pinnedInfo, dailyLog). The mock implementation seeds from each feature's `seeds.ts` and is **in-memory only** — `upsert`/`remove` update the store but do not persist; refreshes reset to seeds. (Note: `usePreferences` and `useAuth` use their own localStorage keys; that persistence is hook-local, not in the mock repos.)
+- `shared/data/source/index.ts` — `getDataSource()` singleton. Today it always returns the mock; the Supabase implementation is the explicit `TODO` there. Replacing this return is intended to be the entire migration on the data side, plus mappers under `shared/data/source/mappers/` (not yet created — see `docs/schema-alignment.md`).
+- `shared/data/hooks/useRepository.ts` — base hook every domain hook wraps. Auto-triggers `repo.init()` when status is `idle`, exposes `{ data, status, error, isLoading, upsert, remove }`.
+- `shared/data/seeds/{index,types,lookups}.ts` — cross-domain types (`Mood`, `PinnedInfo`, `DailyLog`), lookup constants (`MOODS`, `TIMER_PRESETS`, `ACCENT_OPTIONS`, `TWEAK_DEFAULTS`), and the seeds barrel that aggregates each feature's `seeds.ts`.
 
-When adding a new domain entity: add seeds → add a `Repository` to mock source + DataSource type → write `useXxx` hook on top of `useRepository` → derive any display fields in `selectors/`.
+Per-domain (`src/features/<domain>/`):
+- `features/<domain>/hooks/useXxx.ts` — thin domain wrappers (`useTransactions`, `useEvents`, `useMemos`, `useStickyNotes`, `useChecklist`, `useSubscriptions`, `usePinnedInfo`, `useDailyLog`, `usePreferences`, `useAuth`). One per feature folder.
+- `features/<domain>/selectors/*` — pure derivation (e.g. `features/transactions/selectors/derived.ts` exports `inferIcon`/`inferPayday`). Components must call these instead of reading display fields directly off domain rows; this is what lets DB rows omit those fields.
+- `features/<domain>/seeds.ts` — initial mock rows for the domain.
+
+Cross-feature import is forbidden by convention — features may import from `shared/` only. Lift shared bits to `shared/data/seeds/` (constants/types) or compose at the page level instead of feature → feature imports.
+
+When adding a new domain entity: create `features/<domain>/seeds.ts` → extend `DataSource` in `shared/data/source/types.ts` → wire a mock repo in `shared/data/source/mock.ts` → register the seed in `shared/data/seeds/index.ts` → write `features/<domain>/hooks/useXxx.ts` on top of `useRepository` → derive any display fields in `features/<domain>/selectors/`.
 
 ### Auth gate
 
