@@ -1,13 +1,13 @@
 // @ts-nocheck
 import { useState, useMemo } from "react";
 import { Icon } from "@/components/icons";
-import { useMemos } from "@/data/hooks/useMemos";
-import { FOLDERS, ALL_TAGS } from "@/data/seeds/memos";
+import { useMemos } from "@/features/memos/hooks/useMemos";
+import { FOLDERS, ALL_TAGS } from "@/features/memos/seeds";
 import {
   memoExcerpt,
   memoWordCount,
   memoUpdatedLabel,
-} from "@/data/selectors/derived";
+} from "@/features/memos/selectors/derived";
 
 // ============================================================
 // MEMO PAGE — 장문 메모 detail page

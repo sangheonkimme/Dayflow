@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { useState } from "react";
-import { useAuth } from "@/data/hooks/useAuth";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 
 // ============================================================
 // AUTH SCREENS — 모바일 위주, 모던 SaaS 톤

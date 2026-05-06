@@ -7,15 +7,15 @@ import {
   EVENT_CATEGORY_COLORS,
   TRANSACTION_CATEGORIES,
 } from "@/lib/categories";
-import { useTransactions } from "@/data/hooks/useTransactions";
-import { inferIcon } from "@/data/selectors/derived";
-import { useEvents } from "@/data/hooks/useEvents";
+import { useTransactions } from "@/features/transactions/hooks/useTransactions";
+import { inferIcon } from "@/features/transactions/selectors/derived";
+import { useEvents } from "@/features/events/hooks/useEvents";
 import {
   monthlyTotals,
   currentMonthSummary,
   categoryShare,
   groupByDay,
-} from "@/data/selectors/transactions";
+} from "@/features/transactions/selectors/transactions";
 
 // ============================================================
 // LEDGER PAGE — 가계부 detail
