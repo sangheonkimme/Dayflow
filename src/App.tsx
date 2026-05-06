@@ -19,6 +19,7 @@ import { useTransactions } from "@/features/transactions/hooks/useTransactions";
 import { useEvents } from "@/features/events/hooks/useEvents";
 import { useDataModeStore } from "@/shared/state/dataMode";
 import { configureDataSource } from "@/shared/data/source";
+import { queryClient } from "@/app/queryClient";
 import type {
   ModalState,
   TxnDraft,
@@ -110,9 +111,10 @@ export default function App() {
   const mode = useDataModeStore((s) => s.mode);
   const userId = auth.user?.id ?? null;
 
-  // 데이터 소스를 mode + userId에 맞춰 재구성. 변경 시 cache invalidation.
+  // 데이터 소스를 mode + userId에 맞춰 재구성. 변경 시 RQ 캐시도 통째 비움.
   useEffect(() => {
-    configureDataSource({ mode, userId });
+    const changed = configureDataSource({ mode, userId });
+    if (changed) queryClient.clear();
   }, [mode, userId]);
 
   // 초기 세션 복원 중에는 빈 화면(또는 splash)으로 깜박임 방지
