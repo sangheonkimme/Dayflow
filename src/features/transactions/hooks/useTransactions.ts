@@ -1,10 +1,15 @@
 // ============================================================
-// useTransactions / useTransactionStats
+// useTransactions / useTransactionStats — RQ-based
+// 낙관적 업데이트 인프라 적용 (수정 케이스 한정 — id가 있는 경우)
 // ============================================================
 
 import { useMemo } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { getDataSource } from '@/shared/data/source';
-import { useRepository, type RepositoryView } from '@/shared/data/hooks/useRepository';
+import {
+  useRepositoryQuery,
+  type RepositoryQueryView,
+} from '@/shared/data/hooks/useRepositoryQuery';
 import {
   monthlyTotals,
   currentMonthSummary,
@@ -13,6 +18,8 @@ import {
 } from '@/features/transactions/selectors/transactions';
 import type { Txn, TxnType } from '@/types';
 
+const QUERY_KEY = ['transactions'] as const;
+
 export interface TransactionsFilter {
   /** "YYYY-MM" prefix */
   month?: string;
@@ -20,16 +27,46 @@ export interface TransactionsFilter {
   cat?: string;
 }
 
-export interface TransactionsView extends Omit<RepositoryView<Txn>, 'data'> {
-  /** Filtered (or full) snapshot. */
+export interface TransactionsView extends Omit<RepositoryQueryView<Txn>, 'data'> {
   data: readonly Txn[];
-  /** Always the unfiltered list — useful for stats/selectors. */
   all: readonly Txn[];
 }
 
 export function useTransactions(filter?: TransactionsFilter): TransactionsView {
+  const qc = useQueryClient();
   const repo = getDataSource().transactions;
-  const view = useRepository(repo);
+  const view = useRepositoryQuery(repo, {
+    queryKey: QUERY_KEY,
+    upsertOptions: {
+      // 수정(id 있음)에 대한 낙관적 패치 — 추가는 mutationFn에서 즉시 반영되므로 그대로 둠
+      onMutate: async (input) => {
+        if (!input.id) return undefined;
+        await qc.cancelQueries({ queryKey: QUERY_KEY });
+        const prev = repo.store.getSnapshot();
+        const existing = prev.find((t) => t.id === input.id);
+        if (existing) repo.store.upsert({ ...existing, ...input } as Txn);
+        return { prev };
+      },
+      onError: (_err, _vars, ctx) => {
+        if (ctx && (ctx as { prev?: readonly Txn[] }).prev) {
+          repo.store.setAll(Array.from((ctx as { prev: readonly Txn[] }).prev));
+        }
+      },
+    },
+    removeOptions: {
+      onMutate: async (id) => {
+        await qc.cancelQueries({ queryKey: QUERY_KEY });
+        const prev = repo.store.getSnapshot();
+        repo.store.remove(id);
+        return { prev };
+      },
+      onError: (_err, _id, ctx) => {
+        if (ctx && (ctx as { prev?: readonly Txn[] }).prev) {
+          repo.store.setAll(Array.from((ctx as { prev: readonly Txn[] }).prev));
+        }
+      },
+    },
+  });
   const { data: all } = view;
 
   const data = useMemo(() => {
