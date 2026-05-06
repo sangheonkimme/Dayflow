@@ -85,6 +85,9 @@ const PCLogin = lazy(() =>
 const PCSignup = lazy(() =>
   import("@/components/auth-pc").then((m) => ({ default: m.PCSignup })),
 );
+const PCForgot = lazy(() =>
+  import("@/components/auth-forgot").then((m) => ({ default: m.PCForgot })),
+);
 const PCOnboarding = lazy(() =>
   import("@/components/auth-pc").then((m) => ({
     default: m.PCOnboarding,
@@ -103,13 +106,6 @@ const PageFallback = () => (
 export default function App() {
   const [tweaks, setTweak] = usePreferences();
   const auth = useAuth();
-  // Bridge: tweaks.authed mirrors auth.status; toggling the dev panel calls
-  // signIn/signOut.
-  const setAuthed = (next: boolean) => {
-    if (next) auth.signIn();
-    else auth.signOut();
-    setTweak("authed", next);
-  };
   const { upsert: upsertTxn, remove: removeTxn } = useTransactions();
   const { upsert: upsertEvent, remove: removeEvent } = useEvents();
   const [active, setActive] = useState<string>("home");
@@ -165,9 +161,14 @@ export default function App() {
   };
 
   // ─────────────────────────────────────────────
-  // 인증 화면 (Supabase 연결 전 mock — `authed` 플래그로 토글)
+  // 인증 게이트 — 실 세션 기반 (useAuth)
   // ─────────────────────────────────────────────
-  if (!tweaks.authed) {
+  // 초기 세션 복원 중에는 빈 화면(또는 splash)으로 깜박임 방지
+  if (auth.status === "unknown") {
+    return <PageFallback />;
+  }
+
+  if (auth.status === "guest") {
     const setView = (view: AuthPreviewView) => setTweak("authPreview", view);
     const dark = !!tweaks.dark;
     const lang: "ko" | "en" = "ko";
@@ -187,6 +188,7 @@ export default function App() {
     let PCScreen: any = PCLogin;
     if (tweaks.authPreview === "signup") PCScreen = PCSignup;
     else if (tweaks.authPreview === "onboarding") PCScreen = PCOnboarding;
+    else if (tweaks.authPreview === "forgot") PCScreen = PCForgot;
     return (
       <Suspense fallback={<PageFallback />}>
         <PCScreen lang={lang} dark={dark} onSwitch={setView} />
@@ -359,25 +361,42 @@ export default function App() {
             onChange={(v: boolean) => setTweak("forceMobile", v)}
           />
         </TweakSection>
-        <TweakSection title="인증 (mock — Supabase 연결 전)">
-          <TweakToggle
-            label="로그인 상태"
-            value={tweaks.authed}
-            onChange={setAuthed}
-          />
-          <TweakRadio
-            label="인증 화면"
-            value={tweaks.authPreview}
-            options={[
-              { value: "login", label: "로그인" },
-              { value: "signup", label: "가입" },
-              { value: "onboarding", label: "온보딩" },
-              { value: "forgot", label: "비밀번호" },
-            ]}
-            onChange={(v: string) =>
-              setTweak("authPreview", v as AuthPreviewView)
-            }
-          />
+        <TweakSection title="인증">
+          <div style={{ fontSize: 12, color: "var(--ink-mute)", padding: "4px 0" }}>
+            {auth.user ? auth.user.email : "비로그인"}
+          </div>
+          {auth.user && (
+            <button
+              type="button"
+              className="tweak-btn"
+              onClick={() => auth.signOut()}
+              style={{
+                background: "transparent",
+                border: "1px solid var(--line)",
+                borderRadius: 8,
+                padding: "6px 10px",
+                fontSize: 12,
+                cursor: "pointer",
+              }}
+            >
+              로그아웃
+            </button>
+          )}
+          {auth.status === "guest" && (
+            <TweakRadio
+              label="인증 화면 프리뷰"
+              value={tweaks.authPreview}
+              options={[
+                { value: "login", label: "로그인" },
+                { value: "signup", label: "가입" },
+                { value: "onboarding", label: "온보딩" },
+                { value: "forgot", label: "비밀번호" },
+              ]}
+              onChange={(v: string) =>
+                setTweak("authPreview", v as AuthPreviewView)
+              }
+            />
+          )}
         </TweakSection>
       </TweaksPanel>
     );

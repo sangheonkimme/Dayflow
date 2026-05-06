@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { useState } from 'react';
+import { useAuth } from '@/data/hooks/useAuth';
 
 // ============================================================
 // AUTH SCREENS — 모바일 위주, 모던 SaaS 톤
@@ -316,12 +317,27 @@ function pwdScore(p) {
 // ============================================================
 function LoginScreen({ variant = "A", lang = "ko", dark = false, onSwitch }) {
   const t = AUTH_TEXT[lang];
+  const { signIn } = useAuth();
   const [email, setEmail] = useState("");
   const [pwd, setPwd] = useState("");
   const [showPwd, setShowPwd] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const ink = dark ? "#fff" : "#1a1814";
   const mute = dark ? "rgba(255,255,255,0.6)" : "rgba(26,24,20,0.6)";
   const subtle = dark ? "rgba(255,255,255,0.45)" : "rgba(26,24,20,0.45)";
+
+  const handleSubmit = async () => {
+    if (submitting) return;
+    setErrorMsg(null);
+    setSubmitting(true);
+    try {
+      const r = await signIn(email, pwd);
+      if (!r.ok) setErrorMsg(r.message || "로그인에 실패했어요.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   // ─────── A · Classic centered ───────
   if (variant === "A") {
@@ -356,18 +372,21 @@ function LoginScreen({ variant = "A", lang = "ko", dark = false, onSwitch }) {
             rightSlot={<div onClick={() => setShowPwd(s => !s)}><EyeIcon on={showPwd} dark={dark} /></div>}
           />
           <div style={{ textAlign: "right", marginTop: -4 }}>
-            <a href="#" style={{ fontSize: 12, fontWeight: 600, color: mute, textDecoration: "none" }}>{t.forgot}</a>
+            <a onClick={() => onSwitch && onSwitch("forgot")} style={{ fontSize: 12, fontWeight: 600, color: mute, textDecoration: "none", cursor: "pointer" }}>{t.forgot}</a>
           </div>
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          <Btn kind="primary" dark={dark}>{t.signin}</Btn>
+          {errorMsg && (
+            <div style={{ fontSize: 12, color: '#dc4c3e', textAlign: 'center', marginBottom: 4 }}>{errorMsg}</div>
+          )}
+          <Btn kind="primary" dark={dark} onClick={handleSubmit} disabled={submitting || !email.includes("@") || pwd.length < 1}>{t.signin}</Btn>
           <div style={{ display: "flex", alignItems: "center", gap: 12, margin: "4px 0" }}>
             <div style={{ flex: 1, height: 1, background: dark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.08)" }} />
             <span style={{ fontSize: 11, color: subtle, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em" }}>{t.or}</span>
             <div style={{ flex: 1, height: 1, background: dark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.08)" }} />
           </div>
-          <Btn kind="google" dark={dark}><GoogleIcon /> {t.google}</Btn>
+          <Btn kind="google" dark={dark} disabled><GoogleIcon /> {t.google}</Btn>
         </div>
 
         <div style={{ marginTop: "auto", textAlign: "center", paddingTop: 24 }}>

@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { useState } from 'react';
 import { AUTH_TEXT, BrandMark, GoogleIcon, EyeIcon, pwdScore } from '@/components/auth-login';
+import { useAuth } from '@/data/hooks/useAuth';
 
 // ============================================================
 // PC / DESKTOP AUTH SCREENS
@@ -158,10 +159,25 @@ function BrandPanel({ dark, lang }) {
 // ============================================================
 function PCLogin({ lang = "ko", dark = false, onSwitch }) {
   const t = AUTH_TEXT[lang];
+  const { signIn } = useAuth();
   const [email, setEmail] = useState("");
   const [pwd, setPwd] = useState("");
   const [showPwd, setShowPwd] = useState(false);
   const [remember, setRemember] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  const handleSubmit = async () => {
+    if (submitting) return;
+    setErrorMsg(null);
+    setSubmitting(true);
+    try {
+      const r = await signIn(email, pwd);
+      if (!r.ok) setErrorMsg(r.message || "로그인에 실패했어요.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
   const ink = dark ? "#fff" : "#1a1814";
   const mute = dark ? "rgba(255,255,255,0.6)" : "rgba(26,24,20,0.6)";
   const subtle = dark ? "rgba(255,255,255,0.4)" : "rgba(26,24,20,0.42)";
@@ -177,7 +193,7 @@ function PCLogin({ lang = "ko", dark = false, onSwitch }) {
             <p style={{ fontSize: 14, color: mute, margin: 0, lineHeight: 1.5 }}>{t.loginSub}</p>
           </div>
 
-          <PCBtn kind="google" dark={dark} size="lg"><GoogleIcon /> {t.google}</PCBtn>
+          <PCBtn kind="google" dark={dark} size="lg" disabled><GoogleIcon /> {t.google}</PCBtn>
 
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <div style={{ flex: 1, height: 1, background: dark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)" }} />
@@ -204,10 +220,13 @@ function PCLogin({ lang = "ko", dark = false, onSwitch }) {
                 style={{ width: 16, height: 16, accentColor: dark ? "#ffd84d" : "#1a1814" }} />
               {lang === "ko" ? "로그인 상태 유지" : "Keep me signed in"}
             </label>
-            <a href="#" style={{ fontSize: 13, fontWeight: 600, color: ink, textDecoration: "none" }}>{t.forgot}</a>
+            <a onClick={() => onSwitch && onSwitch("forgot")} style={{ fontSize: 13, fontWeight: 600, color: ink, textDecoration: "none", cursor: "pointer" }}>{t.forgot}</a>
           </div>
 
-          <PCBtn kind="primary" dark={dark} size="lg">{t.signin} →</PCBtn>
+          {errorMsg && (
+            <div style={{ fontSize: 12, color: '#dc4c3e', textAlign: 'center', marginBottom: 4 }}>{errorMsg}</div>
+          )}
+          <PCBtn kind="primary" dark={dark} size="lg" onClick={handleSubmit} disabled={submitting || !email.includes("@") || pwd.length < 1}>{t.signin} →</PCBtn>
 
           <div style={{ textAlign: "center", paddingTop: 8 }}>
             <span style={{ fontSize: 14, color: mute }}>
@@ -228,12 +247,33 @@ function PCLogin({ lang = "ko", dark = false, onSwitch }) {
 // ============================================================
 function PCSignup({ lang = "ko", dark = false, onSwitch }) {
   const t = AUTH_TEXT[lang];
+  const { signUp } = useAuth();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [pwd, setPwd] = useState("");
   const [agree, setAgree] = useState(false);
   const [marketing, setMarketing] = useState(false);
   const [showPwd, setShowPwd] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [confirmMsg, setConfirmMsg] = useState<string | null>(null);
+
+  const handleSubmit = async () => {
+    if (submitting) return;
+    setErrorMsg(null);
+    setConfirmMsg(null);
+    setSubmitting(true);
+    try {
+      const r = await signUp(email, pwd);
+      if (!r.ok) {
+        setErrorMsg(r.message || "가입에 실패했어요.");
+      } else if (r.needsEmailConfirmation) {
+        setConfirmMsg("이메일 확인하세요. 받은 편지함의 인증 링크를 눌러 가입을 완료해주세요.");
+      }
+    } finally {
+      setSubmitting(false);
+    }
+  };
   const ink = dark ? "#fff" : "#1a1814";
   const mute = dark ? "rgba(255,255,255,0.6)" : "rgba(26,24,20,0.6)";
   const subtle = dark ? "rgba(255,255,255,0.4)" : "rgba(26,24,20,0.42)";
@@ -267,7 +307,7 @@ function PCSignup({ lang = "ko", dark = false, onSwitch }) {
             <p style={{ fontSize: 14, color: mute, margin: 0, lineHeight: 1.5 }}>{t.signupSub}</p>
           </div>
 
-          <PCBtn kind="google" dark={dark} size="lg"><GoogleIcon /> {t.google}</PCBtn>
+          <PCBtn kind="google" dark={dark} size="lg" disabled><GoogleIcon /> {t.google}</PCBtn>
 
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <div style={{ flex: 1, height: 1, background: dark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)" }} />
@@ -306,7 +346,13 @@ function PCSignup({ lang = "ko", dark = false, onSwitch }) {
             <Check on={marketing} onClick={() => setMarketing(!marketing)} label={t.agree2} />
           </div>
 
-          <PCBtn kind="primary" dark={dark} size="lg" disabled={!agree || !email || pwd.length < 8 || !name}>{t.create} →</PCBtn>
+          {errorMsg && (
+            <div style={{ fontSize: 12, color: '#dc4c3e', textAlign: 'center', marginBottom: 4 }}>{errorMsg}</div>
+          )}
+          {confirmMsg && (
+            <div style={{ fontSize: 12, color: '#4a8d5a', textAlign: 'center', marginBottom: 4, lineHeight: 1.5 }}>{confirmMsg}</div>
+          )}
+          <PCBtn kind="primary" dark={dark} size="lg" onClick={handleSubmit} disabled={submitting || !agree || !email || pwd.length < 8 || !name}>{t.create} →</PCBtn>
 
           <div style={{ textAlign: "center" }}>
             <span style={{ fontSize: 14, color: mute }}>

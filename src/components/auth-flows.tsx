@@ -1,12 +1,14 @@
 // @ts-nocheck
 import { useState } from 'react';
 import { AUTH_TEXT, BrandMark, Field, Btn, GoogleIcon, EyeIcon, pwdScore } from '@/components/auth-login';
+import { useAuth } from '@/data/hooks/useAuth';
 
 // ============================================================
 // SIGNUP
 // ============================================================
 function SignupScreen({ variant = "A", lang = "ko", dark = false, onSwitch }) {
   const t = AUTH_TEXT[lang];
+  const { signUp } = useAuth();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [pwd, setPwd] = useState("");
@@ -14,6 +16,26 @@ function SignupScreen({ variant = "A", lang = "ko", dark = false, onSwitch }) {
   const [agree, setAgree] = useState(false);
   const [marketing, setMarketing] = useState(false);
   const [showPwd, setShowPwd] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [confirmMsg, setConfirmMsg] = useState<string | null>(null);
+
+  const handleSubmit = async () => {
+    if (submitting) return;
+    setErrorMsg(null);
+    setConfirmMsg(null);
+    setSubmitting(true);
+    try {
+      const r = await signUp(email, pwd);
+      if (!r.ok) {
+        setErrorMsg(r.message || "가입에 실패했어요.");
+      } else if (r.needsEmailConfirmation) {
+        setConfirmMsg("이메일 확인하세요. 받은 편지함의 인증 링크를 눌러 가입을 완료해주세요.");
+      }
+    } finally {
+      setSubmitting(false);
+    }
+  };
   const ink = dark ? "#fff" : "#1a1814";
   const mute = dark ? "rgba(255,255,255,0.6)" : "rgba(26,24,20,0.6)";
   const score = pwdScore(pwd);
@@ -94,7 +116,13 @@ function SignupScreen({ variant = "A", lang = "ko", dark = false, onSwitch }) {
           <Check on={marketing} onClick={() => setMarketing(!marketing)} label={t.agree2} />
         </div>
 
-        <Btn kind="primary" dark={dark} disabled={!agree || !email || pwd.length < 8 || !name}>{t.create} →</Btn>
+        {errorMsg && (
+          <div style={{ fontSize: 12, color: '#dc4c3e', textAlign: 'center', marginBottom: 4 }}>{errorMsg}</div>
+        )}
+        {confirmMsg && (
+          <div style={{ fontSize: 12, color: '#4a8d5a', textAlign: 'center', marginBottom: 4, lineHeight: 1.5 }}>{confirmMsg}</div>
+        )}
+        <Btn kind="primary" dark={dark} onClick={handleSubmit} disabled={submitting || !agree || !email || pwd.length < 8 || !name}>{t.create} →</Btn>
 
         <div style={{ textAlign: "center", marginTop: "auto", paddingTop: 8 }}>
           <span style={{ fontSize: 13, color: mute }}>

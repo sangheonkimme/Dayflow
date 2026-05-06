@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { useState } from 'react';
 import { AUTH_TEXT, BrandMark, Field, Btn, EyeIcon, pwdScore } from '@/components/auth-login';
+import { useAuth } from '@/data/hooks/useAuth';
 
 // ============================================================
 // FORGOT PASSWORD — mobile (3 steps)
@@ -11,11 +12,27 @@ import { AUTH_TEXT, BrandMark, Field, Btn, EyeIcon, pwdScore } from '@/component
 // ============================================================
 function ForgotScreen({ lang = "ko", dark = false, initialStep = 0, onBackToLogin }) {
   const t = AUTH_TEXT[lang];
+  const { sendPasswordReset } = useAuth();
   const [step, setStep] = useState(initialStep);
-  const [email, setEmail] = useState("nabi@dayflow.app");
+  const [email, setEmail] = useState("");
   const [pwd, setPwd] = useState("");
   const [pwd2, setPwd2] = useState("");
   const [showPwd, setShowPwd] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  const handleSendReset = async () => {
+    if (submitting) return;
+    setErrorMsg(null);
+    setSubmitting(true);
+    try {
+      const r = await sendPasswordReset(email);
+      if (!r.ok) setErrorMsg(r.message || "메일 전송에 실패했어요.");
+      else setStep(1);
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   const ink = dark ? "#fff" : "#1a1814";
   const mute = dark ? "rgba(255,255,255,0.6)" : "rgba(26,24,20,0.6)";
@@ -83,7 +100,10 @@ function ForgotScreen({ lang = "ko", dark = false, initialStep = 0, onBackToLogi
             <p style={{ fontSize: 13, color: mute, margin: 0, lineHeight: 1.5 }}>{t.fpSub}</p>
           </div>
           <Field label={t.email} type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" dark={dark} autoFocus />
-          <Btn kind="primary" dark={dark} disabled={!email.includes("@")} onClick={() => setStep(1)}>{t.fpSend} →</Btn>
+          {errorMsg && (
+            <div style={{ fontSize: 12, color: '#dc4c3e', textAlign: 'center', marginBottom: 4 }}>{errorMsg}</div>
+          )}
+          <Btn kind="primary" dark={dark} disabled={submitting || !email.includes("@")} onClick={handleSendReset}>{t.fpSend} →</Btn>
           <div style={{ textAlign: "center", marginTop: "auto", paddingTop: 8 }}>
             <a onClick={onBackToLogin} style={{ fontSize: 13, color: ink, fontWeight: 700, cursor: "pointer", textDecoration: "none" }}>← {t.fpBackToLogin}</a>
           </div>
@@ -106,10 +126,11 @@ function ForgotScreen({ lang = "ko", dark = false, initialStep = 0, onBackToLogi
 
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             <Btn kind="primary" dark={dark} onClick={() => setStep(2)}>{t.fpOpenMail} 📧</Btn>
-            <button onClick={() => {}} style={{
+            <button onClick={handleSendReset} disabled={submitting} style={{
               padding: "12px", border: "none", background: "transparent",
-              color: mute, fontSize: 13, fontWeight: 600, cursor: "pointer",
+              color: mute, fontSize: 13, fontWeight: 600, cursor: submitting ? "not-allowed" : "pointer",
               fontFamily: "inherit",
+              opacity: submitting ? 0.5 : 1,
             }}>{t.fpResend}</button>
           </div>
 
