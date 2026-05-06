@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Dayflow Dashboard</title>
+<link rel="stylesheet" href="styles.css" />
+<link rel="stylesheet" href="pages.css" />
+<link rel="stylesheet" href="memo.css" />
+<link rel="stylesheet" href="subs.css" />
+<link rel="stylesheet" href="image-tools.css" />
+<link rel="stylesheet" href="txns.css" />
+<link rel="stylesheet" href="salary.css" />
+<link rel="stylesheet" href="loan-search.css" />
+<link rel="stylesheet" href="flows.css" />
+<link rel="stylesheet" href="flows-extra.css" />
+<link rel="stylesheet" href="mobile.css" />
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel" src="icons.jsx"></script>
+<script type="text/babel" src="shell.jsx"></script>
+<script type="text/babel" src="notes.jsx"></script>
+<script type="text/babel" src="timers.jsx"></script>
+<script type="text/babel" src="money.jsx"></script>
+<script type="text/babel" src="pages.jsx"></script>
+<script type="text/babel" src="memo.jsx"></script>
+<script type="text/babel" src="subs.jsx"></script>
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel" src="image-tools.jsx"></script>
+<script type="text/babel" src="txns.jsx"></script>
+<script type="text/babel" src="modals.jsx"></script>
+<script type="text/babel" src="salary.jsx"></script>
+<script type="text/babel" src="loan-search.jsx"></script>
+<script type="text/babel" src="flows.jsx"></script>
+
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "dark": false,
+  "accent": "yellow",
+  "noteStyle": "tilted",
+  "density": "comfy",
+  "showCalendar": true
+}/*EDITMODE-END*/;
+
+function App() {
+  const [tweaks, setTweak] = useTweaks(TWEAK_DEFAULTS);
+  const [active, setActive] = useState("home");
+  const [modal, setModal] = useState(null); // { type, editing? } | null
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [quickMemo, setQuickMemo] = useState("");
+  const [memos, setMemos] = useState([
+    "헬스장 가는 길에 빵집 들르기",
+    "수요일 회의 자료 미리 보기",
+  ]);
+
+  const openTxn = (editing) => setModal({ type: "txn", editing });
+  const openEvent = (editing) => setModal({ type: "event", editing });
+  const closeModal = () => setModal(null);
+
+  useEffect(() => {
+    document.body.classList.toggle("dark", !!tweaks.dark);
+  }, [tweaks.dark]);
+
+  // ⌘K / Ctrl+K to open search
+  useEffect(() => {
+    const handler = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setSearchOpen(true);
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, []);
+
+  useEffect(() => {
+    const accentMap = {
+      yellow: "#ffe27a", coral: "#ffb38a", mint: "#b9e7c9", lilac: "#d4c1f0",
+    };
+    document.documentElement.style.setProperty("--yellow", accentMap[tweaks.accent] || "#ffe27a");
+  }, [tweaks.accent]);
+
+  const addQuickMemo = () => {
+    if (!quickMemo.trim()) return;
+    setMemos([quickMemo, ...memos].slice(0, 3));
+    setQuickMemo("");
+  };
+
+  // Sidebar nav also needs to add a calendar shortcut
+  const renderPage = () => {
+    if (active === "ledger") return <LedgerPage onAdd={() => openTxn()} onEditTxn={openTxn} />;
+    if (active === "calendar") return <CalendarPage onAdd={() => openEvent()} onEditEvent={openEvent} />;
+    if (active === "memo") return <MemoPage />;
+    if (active === "subs") return <SubsPage onAdd={() => openTxn()} />;
+    if (active === "crop") return <CropCanvasPage />;
+    if (active === "pdf") return <PdfCanvasPage />;
+    if (active === "txns") return <TxnsPage onAdd={(prefill) => openTxn(prefill)} onEditTxn={openTxn} />;
+    if (active === "salary") return <SalaryCalcPage />;
+    if (active === "loan") return <LoanCalcPage />;
+    if (active === "cash") return <LoanCalcPage />;
+    if (active === "settings") return <SettingsPage tweaks={tweaks} setTweak={setTweak} />;
+    // default: home
+    return (
+      <>
+        <Topbar dark={tweaks.dark} onToggleDark={() => setTweak("dark", !tweaks.dark)} onSearch={() => setSearchOpen(true)} />
+
+        <div className="grid">
+          <StickyNotes />
+          <Checklist />
+        </div>
+
+        <div className="section-h" style={{ marginTop: 26 }}>
+          <h2>도구 모음</h2>
+          <span className="more">전체 보기 →</span>
+        </div>
+        <div className="grid">
+          <ToolCard icon="coin" title="연봉 계산기" desc="실수령액을 간편하게 계산해보세요"
+            items={["2026년 기준 세율 적용", "4대 보험 · 소득세 자동 계산"]}
+            onClick={() => setActive("salary")} />
+          <ToolCard icon="crop" title="이미지 자르기" desc="업로드한 이미지를 빠르게 자르고 내보내세요"
+            items={["원하는 크기와 포맷 설정", "전체 화면 도구에서 사용 가능"]} />
+          <ToolCard icon="pdf" title="이미지 → PDF" desc="여러 이미지를 하나의 PDF로 깔끔하게 합쳐요"
+            items={["품질 유지와 순서 편집", "전체 화면 도구에서 진행"]} />
+        </div>
+
+        <div className="section-h" style={{ marginTop: 26 }}>
+          <h2>타이머</h2>
+          <span className="more" onClick={() => setActive("settings")}>설정 →</span>
+        </div>
+        <div className="grid">
+          <GeneralTimer />
+          <Pomodoro />
+          <Stopwatch />
+        </div>
+
+        <div className="section-h" style={{ marginTop: 26 }}>
+          <h2>한눈에 보기</h2>
+          <span className="more" onClick={() => setActive("ledger")}>자세히 →</span>
+        </div>
+        <div className="grid">
+          <MoneyFlow onAdd={() => openTxn()} onOpenLedger={() => setActive("ledger")} onEditTxn={openTxn} />
+          {tweaks.showCalendar && <MiniCalendar onOpen={() => setActive("calendar")} memos={memos} quickMemo={quickMemo} setQuickMemo={setQuickMemo} addQuickMemo={addQuickMemo} onEditEvent={openEvent} />}
+        </div>
+
+        <div style={{ marginTop: 32, paddingTop: 18, borderTop: "1px dashed var(--line)", fontSize: 12, color: "var(--ink-mute)", display: "flex", justifyContent: "space-between" }}>
+          <span>© 2026 Dayflow Dashboard · Made with ☕ in Seoul</span>
+          <span>v2.0 · 패치노트</span>
+        </div>
+      </>
+    );
+  };
+
+  return (
+    <>
+      <div className="app">
+        <Sidebar active={active} onSelect={setActive} />
+        <main className="main" data-screen-label={active}>
+          {renderPage()}
+        </main>
+      </div>
+
+      {modal?.type === "txn" && <TxnModal onClose={closeModal} editing={modal.editing} onDelete={(t) => console.log("delete txn", t)} onSave={(t) => console.log("save txn", t)} />}
+      {modal?.type === "event" && <EventModal onClose={closeModal} editing={modal.editing} onDelete={(e) => console.log("delete event", e)} onSave={(e) => console.log("save event", e)} />}
+
+      <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} onNavigate={setActive} />
+
+      <TweaksPanel title="Tweaks">
+        <TweakSection title="모양">
+          <TweakToggle label="다크 모드" value={tweaks.dark} onChange={(v) => setTweak("dark", v)} />
+          <TweakRadio label="포인트 컬러" value={tweaks.accent}
+            options={[
+              { value: "yellow", label: "노랑" },
+              { value: "coral",  label: "코랄" },
+              { value: "mint",   label: "민트" },
+              { value: "lilac",  label: "라일락" },
+            ]}
+            onChange={(v) => setTweak("accent", v)}
+          />
+        </TweakSection>
+        <TweakSection title="레이아웃">
+          <TweakToggle label="달력 표시" value={tweaks.showCalendar} onChange={(v) => setTweak("showCalendar", v)} />
+        </TweakSection>
+      </TweaksPanel>
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>

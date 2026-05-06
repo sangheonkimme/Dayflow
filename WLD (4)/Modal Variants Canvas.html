@@ -1,0 +1,856 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>모달 UX 비교 — A / B / C</title>
+<link rel="stylesheet" href="styles.css" />
+<link rel="stylesheet" href="pages.css" />
+<style>
+  body { background: #ece4d2; }
+  .variant-pad { padding: 28px; background: #f6efdd; border-radius: 16px; }
+  .variant-pad .modal-static {
+    background: var(--card);
+    border-radius: 18px;
+    width: 460px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+    overflow: hidden;
+    margin: 0 auto;
+  }
+  .v-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; border-radius: 99px;
+    background: var(--ink); color: var(--yellow);
+    font-size: 11px; font-weight: 700; letter-spacing: 0.05em;
+    font-family: var(--mono);
+  }
+  .v-pros, .v-cons { font-size: 12.5px; line-height: 1.6; }
+  .v-pros li::marker { color: #2d7a3a; }
+  .v-cons li::marker { color: var(--red); }
+  .ux-note {
+    background: #fffaec;
+    border: 1px dashed var(--line-strong);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 12px;
+    color: var(--ink-soft);
+    line-height: 1.6;
+  }
+  .ux-note b { color: var(--ink); }
+
+  /* B variant — quick input */
+  .quick-input-card {
+    padding: 24px 22px;
+    display: flex; flex-direction: column; gap: 18px;
+  }
+  .quick-input-card .big-input {
+    width: 100%;
+    height: 64px;
+    padding: 0 18px;
+    border: 2px solid var(--ink);
+    border-radius: 12px;
+    background: #fffdf5;
+    font-family: var(--sans);
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--ink);
+    outline: none;
+  }
+  .quick-input-card .big-input::placeholder { color: var(--ink-mute); font-weight: 500; }
+  .parsed-preview {
+    background: var(--bg-paper);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 12px 14px;
+    display: flex; align-items: center; gap: 12px;
+    font-size: 13px;
+  }
+  .parsed-preview .pp-amount { font-family: var(--mono); font-weight: 800; font-size: 18px; color: var(--red); }
+  .parsed-chip {
+    display: inline-block;
+    padding: 3px 10px;
+    background: var(--ink); color: var(--yellow);
+    border-radius: 99px;
+    font-size: 11px; font-weight: 700;
+  }
+  .quick-suggest {
+    display: flex; flex-wrap: wrap; gap: 6px;
+  }
+  .quick-suggest .qs {
+    padding: 6px 12px;
+    border-radius: 99px;
+    background: #fff; border: 1px solid var(--line);
+    font-size: 12px; font-weight: 500;
+    cursor: pointer; color: var(--ink-soft);
+  }
+  .quick-suggest .qs:hover { border-color: var(--ink); }
+  .quick-tip {
+    font-family: var(--hand);
+    color: var(--ink-mute);
+    font-size: 15px;
+    text-align: center;
+    line-height: 1.4;
+  }
+  .quick-tip code {
+    background: #fff;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink);
+    border: 1px solid var(--line);
+  }
+
+  /* C variant — stepwise / numpad */
+  .step-card { padding: 0; }
+  .step-progress {
+    display: flex; gap: 6px;
+    padding: 16px 22px 0;
+  }
+  .step-pill {
+    flex: 1; height: 4px;
+    background: var(--line);
+    border-radius: 99px;
+  }
+  .step-pill.active { background: var(--ink); }
+  .step-pill.done { background: #2d7a3a; }
+  .step-content { padding: 18px 22px 0; }
+  .step-num-display {
+    text-align: center;
+    padding: 18px 0 8px;
+  }
+  .step-num-display .label {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
+    color: var(--ink-mute); margin-bottom: 6px;
+  }
+  .step-num-display .num {
+    font-family: var(--mono);
+    font-size: 44px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--red);
+  }
+  .step-num-display .num.empty { color: var(--ink-mute); opacity: 0.4; }
+  .seg.big { height: 44px; }
+  .seg.big button { font-size: 14px; }
+  .numpad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    padding: 8px 22px 4px;
+  }
+  .numpad button {
+    height: 52px;
+    border: 1px solid var(--line);
+    background: var(--card-elev);
+    border-radius: 12px;
+    font-family: var(--mono);
+    font-size: 22px; font-weight: 700;
+    color: var(--ink);
+    cursor: pointer;
+    transition: all 0.1s;
+  }
+  .numpad button:hover { border-color: var(--ink); transform: translateY(-1px); }
+  .numpad button.util {
+    background: var(--bg-paper); font-size: 14px;
+    color: var(--ink-soft);
+  }
+  .numpad button.bs { font-size: 16px; }
+  .step-foot {
+    display: flex; gap: 10px;
+    padding: 14px 22px 18px;
+    border-top: 1px solid var(--line);
+    margin-top: 12px;
+  }
+  .step-foot .timer-btn { flex: 1; height: 44px; font-size: 14px; }
+
+  /* C variant — event time chips */
+  .time-chips {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .time-chip {
+    padding: 12px 8px;
+    border: 1px solid var(--line);
+    background: #fffdf5;
+    border-radius: 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.1s;
+  }
+  .time-chip:hover { border-color: var(--ink); }
+  .time-chip.on { background: var(--ink); color: var(--yellow); border-color: var(--ink); }
+  .time-chip .tc-day { font-size: 11px; font-weight: 600; opacity: 0.7; margin-bottom: 2px; }
+  .time-chip .tc-date { font-family: var(--mono); font-size: 16px; font-weight: 800; }
+
+  .duration-row {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;
+    margin-top: 10px;
+  }
+  .duration-row button {
+    height: 36px;
+    border: 1px solid var(--line);
+    background: #fff;
+    border-radius: 8px;
+    font-size: 12px; font-weight: 600;
+    cursor: pointer; color: var(--ink-soft);
+  }
+  .duration-row button.on { background: var(--ink); color: var(--yellow); border-color: var(--ink); }
+
+  /* B variant for event */
+  .nl-examples {
+    display: flex; flex-direction: column; gap: 6px;
+    margin-top: 4px;
+  }
+  .nl-example {
+    padding: 8px 12px;
+    background: var(--bg-paper);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font-size: 12.5px;
+    cursor: pointer;
+    color: var(--ink-soft);
+  }
+  .nl-example b { color: var(--ink); }
+  .nl-example:hover { border-color: var(--ink); }
+
+  /* Info tooltip on modal title */
+  .title-row { display: flex; align-items: center; gap: 8px; }
+  .info-btn {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    border: 1.5px solid var(--ink-mute);
+    background: transparent;
+    color: var(--ink-mute);
+    font-family: var(--mono);
+    font-size: 11px; font-weight: 700;
+    cursor: pointer;
+    display: grid; place-items: center;
+    padding: 0;
+    transition: all 0.15s;
+    position: relative;
+  }
+  .info-btn:hover { border-color: var(--ink); color: var(--ink); background: var(--bg-paper); }
+  .info-wrap { position: relative; display: inline-block; }
+  .info-pop {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: -8px;
+    width: 280px;
+    background: var(--ink);
+    color: #fff8e6;
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.55;
+    z-index: 100;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-4px);
+    transition: opacity 0.15s, transform 0.15s;
+    letter-spacing: 0;
+  }
+  .info-pop::before {
+    content: "";
+    position: absolute;
+    top: -6px; left: 14px;
+    width: 12px; height: 12px;
+    background: var(--ink);
+    transform: rotate(45deg);
+  }
+  .info-pop.open,
+  .info-wrap:hover .info-pop {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+  .info-pop h4 {
+    margin: 0 0 8px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--yellow);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .info-pop ul { margin: 0; padding-left: 16px; display: flex; flex-direction: column; gap: 4px; }
+  .info-pop ul li::marker { color: var(--yellow-edge); }
+  .info-pop .pros-label { color: #c5e4a8; font-weight: 700; }
+  .info-pop .cons-label { color: #ffb3a8; font-weight: 700; margin-top: 8px; display: block; }
+  .info-pop code {
+    background: rgba(255,255,255,0.1);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--yellow);
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel" src="icons.jsx"></script>
+
+<script type="text/babel">
+const { useState } = React;
+
+// =============================================================
+// InfoBadge — hover or click to reveal guide tooltip
+// =============================================================
+function InfoBadge({ pros = [], cons = [], note }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <span className="info-wrap">
+      <button
+        className="info-btn"
+        onClick={(e) => { e.stopPropagation(); setOpen(o => !o); }}
+        aria-label="정보"
+      >i</button>
+      <div className={"info-pop" + (open ? " open" : "")} onClick={(e) => e.stopPropagation()}>
+        {pros.length > 0 && (
+          <>
+            <span className="pros-label">장점</span>
+            <ul>{pros.map((p, i) => <li key={i} dangerouslySetInnerHTML={{ __html: p }} />)}</ul>
+          </>
+        )}
+        {cons.length > 0 && (
+          <>
+            <span className="cons-label">단점</span>
+            <ul>{cons.map((c, i) => <li key={i} dangerouslySetInnerHTML={{ __html: c }} />)}</ul>
+          </>
+        )}
+        {note && <div style={{ marginTop: 8, paddingTop: 8, borderTop: "1px solid rgba(255,255,255,0.15)", fontSize: 11, color: "#e8dcb8" }}>{note}</div>}
+      </div>
+    </span>
+  );
+}
+
+// =============================================================
+// A안 — 현재 풀폼 모달 (간소화 표시용)
+// =============================================================
+function TxnModalA() {
+  return (
+    <div className="modal-static">
+      <div className="modal-head">
+        <div>
+          <div className="title-row">
+            <h3>+ 내역 추가</h3>
+            <InfoBadge
+              pros={["모든 필드를 한 번에 보고 수정 가능", "일반 사용자에게 친숙한 폼 형태"]}
+              cons={["입력에 평균 <b>15~20초</b> — 매일 쓰기엔 무겁다", "대부분의 필드는 기본값으로 충분"]}
+              note="매일 5~10번 쓰는 동작에 비해 단계가 많음"
+            />
+          </div>
+          <small>오늘의 수입 또는 지출을 기록해보세요</small>
+        </div>
+        <button className="icon-btn" style={{ width: 32, height: 32 }}><Icon name="x" size={14} /></button>
+      </div>
+      <div className="modal-body">
+        <div className="seg">
+          <button className="on">지출</button>
+          <button>수입</button>
+          <button>이체</button>
+        </div>
+        <div className="amount-display out">-₩8,000</div>
+        <div className="field">
+          <label>금액</label>
+          <input defaultValue="8000" />
+        </div>
+        <div className="field-row">
+          <div className="field"><label>날짜</label><input type="date" defaultValue="2026-05-02" /></div>
+          <div className="field"><label>시간</label><input type="time" defaultValue="12:00" /></div>
+        </div>
+        <div className="field">
+          <label>카테고리</label>
+          <div className="cat-chip-row">
+            {["식비","주거","교통","쇼핑","여가","건강","구독","기타"].map((c,i) => (
+              <span key={c} className={"cat-chip" + (i===0 ? " on" : "")}>{c}</span>
+            ))}
+          </div>
+        </div>
+        <div className="field"><label>내용 / 메모</label><input placeholder="예: 점심 — 김밥천국" /></div>
+        <div className="field"><label>결제 수단</label><select><option>신용카드 — 신한1234</option></select></div>
+      </div>
+      <div className="modal-foot">
+        <button className="timer-btn">취소</button>
+        <button className="timer-btn primary">저장하기</button>
+      </div>
+    </div>
+  );
+}
+
+function EventModalA() {
+  return (
+    <div className="modal-static">
+      <div className="modal-head">
+        <div>
+          <div className="title-row">
+            <h3>+ 일정 추가</h3>
+            <InfoBadge
+              pros={["제목·날짜·반복·알림까지 한 화면", "구글캘린더 등 익숙한 패턴"]}
+              cons={["스크롤 발생 — 저장 버튼이 안 보임", "날짜 picker를 일일이 클릭", "색상·반복·알림은 95% 케이스에서 기본값"]}
+            />
+          </div>
+          <small>새로운 일정을 만들어보세요</small>
+        </div>
+        <button className="icon-btn" style={{ width: 32, height: 32 }}><Icon name="x" size={14} /></button>
+      </div>
+      <div className="modal-body">
+        <div className="field"><label>제목</label><input placeholder="예: 팀 스탠드업 미팅" /></div>
+        <div className="field-row">
+          <div className="field"><label>날짜</label><input type="date" defaultValue="2026-05-02" /></div>
+          <div className="field"><label>반복</label><select><option>반복 안함</option></select></div>
+        </div>
+        <div className="field">
+          <label style={{ display: "flex", justifyContent: "space-between" }}>
+            <span>시간</span>
+            <span style={{ fontSize: 11, color: "var(--ink-mute)" }}>☐ 종일</span>
+          </label>
+          <div className="field-row">
+            <input type="time" defaultValue="14:00" />
+            <input type="time" defaultValue="15:00" />
+          </div>
+        </div>
+        <div className="field">
+          <label>카테고리</label>
+          <div className="cat-chip-row">
+            {["업무","개인","운동","금융","기타"].map((c,i) => (
+              <span key={c} className={"cat-chip" + (i===0 ? " on" : "")}>{c}</span>
+            ))}
+          </div>
+        </div>
+        <div className="field">
+          <label>색상</label>
+          <div className="color-chip-row">
+            {["var(--red)","#ffc1ce","#a8d2e8","#5ea66f","#e8c84a","#c9b3e8","#1f1d18"].map((c,i) => (
+              <div key={i} className={"color-chip" + (i===0 ? " on" : "")} style={{ background: c }} />
+            ))}
+          </div>
+        </div>
+        <div className="field"><label>장소</label><input placeholder="예: 회의실 A / Zoom" /></div>
+        <div className="field"><label>알림</label><select><option>15분 전</option></select></div>
+      </div>
+      <div className="modal-foot">
+        <button className="timer-btn">취소</button>
+        <button className="timer-btn primary">저장하기</button>
+      </div>
+    </div>
+  );
+}
+
+// =============================================================
+// B안 — 빠른 입력 (자연어 파싱)
+// =============================================================
+function TxnModalB() {
+  const [val, setVal] = useState("점심 8000 식비");
+  const InfoChip = (
+    <InfoBadge
+      pros={["한 줄 입력 → <b>3~5초</b>면 끝", "실시간 파싱 미리보기로 안심", "최근 항목 chip은 1탭 입력"]}
+      cons={["학습 곡선 — 처음엔 헷갈림", "파싱 실패 케이스 처리 필요"]}
+      note="예: <code>8000 점심</code>, <code>커피 4.5k</code>, <code>+50000 용돈</code>"
+    />
+  );
+  // tiny parser for demo
+  const parsed = (() => {
+    const m = val.match(/(\d[\d,]*)/);
+    const amount = m ? parseInt(m[1].replace(/,/g,""), 10) : 0;
+    const cats = ["식비","주거","교통","쇼핑","여가","건강","구독"];
+    const cat = cats.find(c => val.includes(c)) || "기타";
+    const memo = val.replace(/(\d[\d,]*)/, "").replace(cat, "").trim() || "—";
+    return { amount, cat, memo };
+  })();
+  return (
+    <div className="modal-static">
+      <div className="modal-head">
+        <div>
+          <div className="title-row">
+            <h3>빠른 기록</h3>
+            {InfoChip}
+          </div>
+          <small>한 줄로 적으면 알아서 분류해드려요 ⚡</small>
+        </div>
+        <button className="icon-btn" style={{ width: 32, height: 32 }}><Icon name="x" size={14} /></button>
+      </div>
+      <div className="quick-input-card">
+        <div className="seg">
+          <button className="on">지출</button>
+          <button>수입</button>
+          <button>이체</button>
+        </div>
+        <input
+          className="big-input"
+          value={val}
+          onChange={(e) => setVal(e.target.value)}
+          placeholder="예: 점심 8000 식비"
+          autoFocus
+        />
+        <div className="parsed-preview">
+          <span className="pp-amount">-₩{parsed.amount.toLocaleString()}</span>
+          <span className="parsed-chip">{parsed.cat}</span>
+          <span style={{ flex: 1, color: "var(--ink-soft)", fontSize: 12 }}>{parsed.memo}</span>
+          <span style={{ fontFamily: "var(--mono)", fontSize: 11, color: "var(--ink-mute)" }}>오늘</span>
+        </div>
+        <div>
+          <div style={{ fontSize: 11, fontWeight: 700, color: "var(--ink-mute)", letterSpacing: "0.08em", marginBottom: 6 }}>최근 자주 쓴 항목</div>
+          <div className="quick-suggest">
+            <span className="qs">☕ 커피 4500</span>
+            <span className="qs">🍱 점심 9000</span>
+            <span className="qs">🚇 교통 1500</span>
+            <span className="qs">🍞 빵 5000</span>
+            <span className="qs">+ 더보기</span>
+          </div>
+        </div>
+        <div className="quick-tip">
+          금액 + 메모 + 카테고리를 자유롭게 적으세요<br/>
+          <code>8000 점심</code> · <code>커피 4.5k</code> · <code>+50000 용돈</code>
+        </div>
+      </div>
+      <div className="modal-foot">
+        <button className="timer-btn">상세 입력</button>
+        <button className="timer-btn primary">저장 (Enter)</button>
+      </div>
+    </div>
+  );
+}
+
+function EventModalB() {
+  const [val, setVal] = useState("내일 오후 3시 팀 스탠드업");
+  const InfoChip = (
+    <InfoBadge
+      pros={["\"내일 3시 팀미팅\" → 자동 파싱", "날짜·시간·반복까지 한 줄로 처리", "예시 카드로 학습 도움"]}
+      cons={["한국어 시간 표현 파싱 정확도가 관건", "색상·알림은 따로 설정해야 함"]}
+      note="인식 가능한 표현: <code>월요일 10시</code>, <code>매주 화 9시</code>, <code>5/15 종일</code>"
+    />
+  );
+  return (
+    <div className="modal-static">
+      <div className="modal-head">
+        <div>
+          <div className="title-row">
+            <h3>빠른 일정</h3>
+            {InfoChip}
+          </div>
+          <small>자연스럽게 적으면 자동으로 만들어드려요 ⚡</small>
+        </div>
+        <button className="icon-btn" style={{ width: 32, height: 32 }}><Icon name="x" size={14} /></button>
+      </div>
+      <div className="quick-input-card">
+        <input
+          className="big-input"
+          value={val}
+          onChange={(e) => setVal(e.target.value)}
+          placeholder="예: 내일 오후 3시 팀 미팅"
+          autoFocus
+        />
+        <div className="parsed-preview">
+          <div style={{ width: 4, height: 36, background: "var(--red)", borderRadius: 99 }} />
+          <div style={{ flex: 1 }}>
+            <div style={{ fontWeight: 700, fontSize: 14 }}>팀 스탠드업</div>
+            <div style={{ fontSize: 12, color: "var(--ink-mute)", marginTop: 2 }}>5월 3일 (일) · 오후 3:00 — 4:00</div>
+          </div>
+          <span className="parsed-chip">업무</span>
+        </div>
+        <div>
+          <div style={{ fontSize: 11, fontWeight: 700, color: "var(--ink-mute)", letterSpacing: "0.08em", marginBottom: 6 }}>이렇게 적어보세요</div>
+          <div className="nl-examples">
+            <div className="nl-example"><b>월요일 10시</b> 디자인 리뷰</div>
+            <div className="nl-example"><b>매주 화</b> 9시 영어 스터디</div>
+            <div className="nl-example"><b>5/15 종일</b> 생일 — 엄마</div>
+          </div>
+        </div>
+      </div>
+      <div className="modal-foot">
+        <button className="timer-btn">상세 입력</button>
+        <button className="timer-btn primary">저장 (Enter)</button>
+      </div>
+    </div>
+  );
+}
+
+// =============================================================
+// C안 — 단계형 (numpad-first / time-first)
+// =============================================================
+function TxnModalC() {
+  const [amt, setAmt] = useState("8000");
+  const press = (k) => {
+    if (k === "←") setAmt(a => a.slice(0, -1) || "0");
+    else if (k === "C") setAmt("0");
+    else setAmt(a => a === "0" ? k : a + k);
+  };
+  return (
+    <div className="modal-static">
+      <div className="modal-head">
+        <div>
+          <div className="title-row">
+            <h3>+ 내역 추가</h3>
+            <InfoBadge
+              pros={["금액 → 카테고리 → 메모 순서가 자연스럽다", "큰 숫자키패드 = 모바일/한손 입력 최적", "각 단계가 한 가지 결정만 요구"]}
+              cons={["총 단계가 3개 — 데스크톱에선 살짝 답답할 수도", "뒤 단계로 돌아가는 UX 신경써야 함"]}
+            />
+          </div>
+          <small>1 / 3 단계 · 금액 입력</small>
+        </div>
+        <button className="icon-btn" style={{ width: 32, height: 32 }}><Icon name="x" size={14} /></button>
+      </div>
+      <div className="step-progress">
+        <div className="step-pill active" />
+        <div className="step-pill" />
+        <div className="step-pill" />
+      </div>
+      <div className="step-content">
+        <div className="seg big">
+          <button className="on">지출</button>
+          <button>수입</button>
+          <button>이체</button>
+        </div>
+        <div className="step-num-display">
+          <div className="label">얼마를 썼나요?</div>
+          <div className={"num" + (amt === "0" ? " empty" : "")}>
+            -₩{parseInt(amt || "0", 10).toLocaleString()}
+          </div>
+        </div>
+      </div>
+      <div className="numpad">
+        {["1","2","3","4","5","6","7","8","9"].map(n =>
+          <button key={n} onClick={() => press(n)}>{n}</button>
+        )}
+        <button className="util" onClick={() => press("000")}>000</button>
+        <button onClick={() => press("0")}>0</button>
+        <button className="util bs" onClick={() => press("←")}>← 지움</button>
+      </div>
+      <div className="step-foot">
+        <button className="timer-btn">취소</button>
+        <button className="timer-btn primary">다음 →</button>
+      </div>
+    </div>
+  );
+}
+
+function EventModalC() {
+  const dates = [
+    { d: "오늘", n: "5/2", on: false },
+    { d: "내일", n: "5/3", on: true },
+    { d: "월", n: "5/4", on: false },
+    { d: "화", n: "5/5", on: false },
+    { d: "수", n: "5/6", on: false },
+    { d: "더보기", n: "📅", on: false },
+  ];
+  const durations = ["30분", "1시간", "1.5시간", "2시간"];
+  return (
+    <div className="modal-static">
+      <div className="modal-head">
+        <div>
+          <div className="title-row">
+            <h3>+ 일정 추가</h3>
+            <InfoBadge
+              pros={["날짜 chip — 클릭 한 번에 선택", "지속시간 preset — 시작·끝 따로 안 정해도 됨", "한 화면에 다 보임 (스크롤 X)"]}
+              cons={["3단계 = 화면 전환이 발생", "드물게 쓰는 옵션은 마지막 단계로 숨겨야 함"]}
+            />
+          </div>
+          <small>1 / 3 단계 · 언제 할까요?</small>
+        </div>
+        <button className="icon-btn" style={{ width: 32, height: 32 }}><Icon name="x" size={14} /></button>
+      </div>
+      <div className="step-progress">
+        <div className="step-pill active" />
+        <div className="step-pill" />
+        <div className="step-pill" />
+      </div>
+      <div className="step-content" style={{ paddingBottom: 18 }}>
+        <div className="field" style={{ marginBottom: 16 }}>
+          <label style={{ fontSize: 13, marginBottom: 8 }}>제목</label>
+          <input defaultValue="팀 스탠드업" autoFocus style={{ height: 44, fontSize: 15 }} />
+        </div>
+        <div style={{ fontSize: 12, fontWeight: 600, color: "var(--ink-soft)", marginBottom: 8 }}>날짜</div>
+        <div className="time-chips">
+          {dates.map((d, i) => (
+            <div key={i} className={"time-chip" + (d.on ? " on" : "")}>
+              <div className="tc-day">{d.d}</div>
+              <div className="tc-date">{d.n}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 18, marginBottom: 8 }}>
+          <div style={{ fontSize: 12, fontWeight: 600, color: "var(--ink-soft)" }}>시작</div>
+          <div style={{ fontFamily: "var(--mono)", fontWeight: 700, fontSize: 18 }}>오후 3:00</div>
+        </div>
+        <input type="range" min="0" max="47" defaultValue="30" style={{ width: "100%", accentColor: "var(--ink)" }} />
+        <div style={{ fontSize: 12, fontWeight: 600, color: "var(--ink-soft)", marginTop: 14, marginBottom: 6 }}>지속 시간</div>
+        <div className="duration-row">
+          {durations.map((d, i) => (
+            <button key={d} className={i === 1 ? "on" : ""}>{d}</button>
+          ))}
+        </div>
+      </div>
+      <div className="step-foot">
+        <button className="timer-btn">취소</button>
+        <button className="timer-btn primary">다음 →</button>
+      </div>
+    </div>
+  );
+}
+
+// =============================================================
+// CANVAS
+// =============================================================
+function Canvas() {
+  return (
+    <DesignCanvas title="모달 UX 비교 — A · B · C안">
+      <DCSection id="intro" title="문제 진단 & 제안">
+        <DCArtboard id="problem" label="현재(A안)의 UX 이슈" width={520} height={380}>
+          <div style={{ padding: 28, fontSize: 13, lineHeight: 1.7, color: "var(--ink-soft)" }}>
+            <div style={{ fontFamily: "var(--hand)", fontSize: 28, color: "var(--ink)", marginBottom: 14 }}>
+              지금 모달의 문제점
+            </div>
+            <ol style={{ paddingLeft: 18, margin: 0 }}>
+              <li><b>금액 표시가 두 번</b> — 큰 미리보기 + 입력란 = 시선 분산</li>
+              <li><b>세로 스크롤이 길다</b> — 일정 모달은 한 화면에 안 들어옴</li>
+              <li><b>모든 옵션이 평탄</b> — 알림, 반복, 결제수단까지 동일 비중</li>
+              <li><b>"입력"보다 "설정"</b> — 빠르게 적기엔 단계가 많음</li>
+              <li><b>모바일/터치 미고려</b> — 작은 chip, 키보드 호출 필수</li>
+            </ol>
+            <div style={{ marginTop: 16, padding: 12, background: "#fffaec", borderRadius: 8, fontSize: 12 }}>
+              💡 가계부 입력은 <b>하루에 5~10번</b> 일어나는 행동.<br/>
+              한 번 입력에 평균 <b>15초 → 5초</b>로 줄이는 게 목표.
+            </div>
+          </div>
+        </DCArtboard>
+        <DCArtboard id="approach" label="3가지 접근 방식" width={520} height={380}>
+          <div style={{ padding: 28, fontSize: 13, lineHeight: 1.7 }}>
+            <div style={{ fontFamily: "var(--hand)", fontSize: 28, color: "var(--ink)", marginBottom: 14 }}>
+              비교할 3가지 방향
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              <div style={{ padding: 12, background: "var(--bg-paper)", borderRadius: 10, borderLeft: "4px solid var(--ink-mute)" }}>
+                <b>A안 · 풀폼 (현재)</b>
+                <div style={{ fontSize: 12, color: "var(--ink-mute)", marginTop: 2 }}>모든 필드를 한 번에. 익숙하지만 무겁다.</div>
+              </div>
+              <div style={{ padding: 12, background: "#fff8d8", borderRadius: 10, borderLeft: "4px solid var(--yellow-edge)" }}>
+                <b>B안 · 빠른 입력 (자연어)</b>
+                <div style={{ fontSize: 12, color: "var(--ink-mute)", marginTop: 2 }}>"점심 8000 식비" 한 줄. 파워유저용.</div>
+              </div>
+              <div style={{ padding: 12, background: "#ffe8d8", borderRadius: 10, borderLeft: "4px solid #d96b3a" }}>
+                <b>C안 · 단계형 (numpad-first)</b>
+                <div style={{ fontSize: 12, color: "var(--ink-mute)", marginTop: 2 }}>큰 숫자키패드부터. 모바일/한손 친화적.</div>
+              </div>
+            </div>
+          </div>
+        </DCArtboard>
+      </DCSection>
+
+      <DCSection id="txn" title="가계부 — 내역 추가 모달">
+        <DCArtboard id="txn-a" label="A안 · 풀폼 (현재)" width={520} height={780}>
+          <div className="variant-pad" style={{ minHeight: "100%", paddingTop: 20 }}>
+            <div style={{ textAlign: "center", marginBottom: 14 }}>
+              <span className="v-tag">A · BASELINE</span>
+            </div>
+            <TxnModalA />
+            <div style={{ marginTop: 18, padding: "0 8px" }}>
+              <ul className="v-pros" style={{ margin: "6px 0 8px", paddingLeft: 18 }}>
+                <li>모든 필드를 한 번에 보고 수정 가능</li>
+                <li>일반 사용자에게 친숙한 폼 형태</li>
+              </ul>
+              <ul className="v-cons" style={{ margin: 0, paddingLeft: 18 }}>
+                <li>입력에 평균 15~20초 — 매일 쓰기엔 무겁다</li>
+                <li>대부분의 필드는 기본값으로 충분</li>
+              </ul>
+            </div>
+          </div>
+        </DCArtboard>
+
+        <DCArtboard id="txn-b" label="B안 · 빠른 입력" width={520} height={620}>
+          <div className="variant-pad" style={{ minHeight: "100%", background: "#fff8d8", paddingTop: 20 }}>
+            <div style={{ textAlign: "center", marginBottom: 14 }}>
+              <span className="v-tag" style={{ background: "var(--yellow-edge)", color: "var(--ink)" }}>B · QUICK</span>
+            </div>
+            <TxnModalB />
+          </div>
+        </DCArtboard>
+
+        <DCArtboard id="txn-c" label="C안 · 단계형 numpad" width={520} height={620}>
+          <div className="variant-pad" style={{ minHeight: "100%", background: "#ffe8d8", paddingTop: 20 }}>
+            <div style={{ textAlign: "center", marginBottom: 14 }}>
+              <span className="v-tag" style={{ background: "#d96b3a", color: "white" }}>C · STEPWISE</span>
+            </div>
+            <TxnModalC />
+          </div>
+        </DCArtboard>
+      </DCSection>
+
+      <DCSection id="event" title="캘린더 — 일정 추가 모달">
+        <DCArtboard id="event-a" label="A안 · 풀폼 (현재)" width={520} height={680}>
+          <div className="variant-pad" style={{ minHeight: "100%", paddingTop: 20 }}>
+            <div style={{ textAlign: "center", marginBottom: 14 }}>
+              <span className="v-tag">A · BASELINE</span>
+            </div>
+            <EventModalA />
+          </div>
+        </DCArtboard>
+
+        <DCArtboard id="event-b" label="B안 · 빠른 입력" width={520} height={680}>
+          <div className="variant-pad" style={{ minHeight: "100%", background: "#fff8d8", paddingTop: 20 }}>
+            <div style={{ textAlign: "center", marginBottom: 14 }}>
+              <span className="v-tag" style={{ background: "var(--yellow-edge)", color: "var(--ink)" }}>B · QUICK</span>
+            </div>
+            <EventModalB />
+          </div>
+        </DCArtboard>
+
+        <DCArtboard id="event-c" label="C안 · 단계형 time-first" width={520} height={680}>
+          <div className="variant-pad" style={{ minHeight: "100%", background: "#ffe8d8", paddingTop: 20 }}>
+            <div style={{ textAlign: "center", marginBottom: 14 }}>
+              <span className="v-tag" style={{ background: "#d96b3a", color: "white" }}>C · STEPWISE</span>
+            </div>
+            <EventModalC />
+          </div>
+        </DCArtboard>
+      </DCSection>
+
+      <DCSection id="recommend" title="추천">
+        <DCArtboard id="rec" label="결합안 — 가장 좋은 UX" width={1080} height={360}>
+          <div style={{ padding: 32, fontSize: 13.5, lineHeight: 1.7 }}>
+            <div style={{ fontFamily: "var(--hand)", fontSize: 32, color: "var(--ink)", marginBottom: 16 }}>
+              ✨ 추천: <b>B + C 하이브리드</b>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 28 }}>
+              <div>
+                <div style={{ fontWeight: 700, marginBottom: 8 }}>기본 화면 = B안의 빠른 입력</div>
+                <ul style={{ paddingLeft: 18, color: "var(--ink-soft)", margin: 0 }}>
+                  <li>모달이 열리면 큰 입력창 하나 + 자동 포커스</li>
+                  <li>최근 항목 chip 4~5개로 1탭 입력 지원</li>
+                  <li>Enter = 저장 (저장 버튼은 보조)</li>
+                  <li>파워유저 / 데스크톱에 최적</li>
+                </ul>
+              </div>
+              <div>
+                <div style={{ fontWeight: 700, marginBottom: 8 }}>"상세 입력" 클릭 = C안의 단계형</div>
+                <ul style={{ paddingLeft: 18, color: "var(--ink-soft)", margin: 0 }}>
+                  <li>모바일 또는 처음 사용자는 단계형이 안전</li>
+                  <li>numpad·날짜 chip·시간 슬라이더로 한 손 입력</li>
+                  <li>알림·반복·색상은 마지막 "더보기" 단계에 접어둠</li>
+                </ul>
+              </div>
+            </div>
+            <div style={{ marginTop: 20, padding: 14, background: "#fffaec", borderRadius: 10, fontSize: 12.5 }}>
+              <b>핵심 원칙:</b> 가장 빠른 길 (B안)을 기본으로 두고, 쉬운 길 (C안)을 한 클릭 거리에 둔다. <br/>
+              A안의 풀폼은 "수정" 화면에서만 보여주면 충분.
+            </div>
+          </div>
+        </DCArtboard>
+      </DCSection>
+    </DesignCanvas>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<Canvas />);
+</script>
+</body>
+</html>

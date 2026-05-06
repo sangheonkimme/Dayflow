@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Auth & Onboarding (PC) · Dayflow</title>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Pretendard:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: "Pretendard", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #efe9d9;
+      -webkit-font-smoothing: antialiased;
+    }
+    * { box-sizing: border-box; }
+    .top-toggle {
+      position: fixed; top: 16px; right: 16px; z-index: 100;
+      display: flex; gap: 8px; align-items: center;
+    }
+    .lang-toggle {
+      display: flex; gap: 4px;
+      background: #fff;
+      border: 1px solid rgba(0,0,0,0.1);
+      border-radius: 99px; padding: 4px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .lang-toggle button {
+      padding: 6px 12px; border: none; background: transparent;
+      border-radius: 99px; cursor: pointer; font-family: inherit;
+      font-weight: 600; font-size: 11px; color: rgba(0,0,0,0.6);
+    }
+    .lang-toggle button.on { background: #1a1814; color: #ffd84d; }
+    .dark-toggle {
+      width: 32px; height: 32px; border-radius: 99px;
+      background: #fff; border: 1px solid rgba(0,0,0,0.1); cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      display: grid; place-items: center; font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel" src="design-canvas.jsx"></script>
+  <script type="text/babel" src="browser-window.jsx"></script>
+  <script type="text/babel" src="auth-login.jsx"></script>
+  <script type="text/babel" src="auth-flows.jsx"></script>
+  <script type="text/babel" src="auth-pc.jsx"></script>
+  <script type="text/babel" src="auth-forgot.jsx"></script>
+
+  <script type="text/babel">
+    const { useState } = React;
+
+    function App() {
+      const [lang, setLang] = useState("ko");
+      const [dark, setDark] = useState(false);
+
+      const W = 1280, H = 800;
+      const wrap = (Comp, url, extraProps = {}) => (
+        <ChromeWindow
+          width={W} height={H}
+          tabs={[{ title: "Dayflow", favicon: "🟡" }]}
+          url={url}
+        >
+          <div style={{ width: "100%", height: "100%" }}>
+            <Comp lang={lang} dark={dark} {...extraProps} />
+          </div>
+        </ChromeWindow>
+      );
+
+      return (
+        <>
+          <div className="top-toggle">
+            <button className="dark-toggle" onClick={() => setDark(!dark)} title="Toggle dark mode">{dark ? "☀️" : "🌙"}</button>
+            <div className="lang-toggle">
+              <button className={lang === "ko" ? "on" : ""} onClick={() => setLang("ko")}>한국어</button>
+              <button className={lang === "en" ? "on" : ""} onClick={() => setLang("en")}>English</button>
+            </div>
+          </div>
+
+          <DesignCanvas>
+            <DCSection id="pc-flow" title="PC · 데스크톱 플로우" subtitle="회원가입 → 로그인 · 1280×800">
+              <DCArtboard id="pc-signup" label="1 · 회원가입 (split layout)" width={W} height={H}>
+                {wrap(PCSignup, "dayflow.app/signup")}
+              </DCArtboard>
+              <DCArtboard id="pc-login" label="2 · 로그인 (재방문)" width={W} height={H}>
+                {wrap(PCLogin, "dayflow.app/login")}
+              </DCArtboard>
+            </DCSection>
+            <DCSection id="pc-onboard" title="PC · 온보딩" subtitle="사이드바 스텝퍼 — 용도 → 월급일 → 카테고리 → 완료">
+              <DCArtboard id="pc-ob-1" label="2.1 · 용도 선택" width={W} height={H}>
+                {wrap(PCOnboarding, "dayflow.app/welcome?step=1", { initialStep: 0 })}
+              </DCArtboard>
+              <DCArtboard id="pc-ob-2" label="2.2 · 월급일" width={W} height={H}>
+                {wrap(PCOnboarding, "dayflow.app/welcome?step=2", { initialStep: 1 })}
+              </DCArtboard>
+              <DCArtboard id="pc-ob-3" label="2.3 · 카테고리" width={W} height={H}>
+                {wrap(PCOnboarding, "dayflow.app/welcome?step=3", { initialStep: 2 })}
+              </DCArtboard>
+              <DCArtboard id="pc-ob-4" label="2.4 · 준비 완료" width={W} height={H}>
+                {wrap(PCOnboarding, "dayflow.app/welcome?step=4", { initialStep: 3 })}
+              </DCArtboard>
+            </DCSection>
+            <DCSection id="pc-forgot" title="PC · 비밀번호 찾기" subtitle="이메일 입력 → 메일 전송 → 새 비밀번호 → 완료">
+              <DCArtboard id="pc-fp-1" label="3.1 · 이메일 입력" width={W} height={H}>
+                {wrap(PCForgot, "dayflow.app/forgot", { initialStep: 0 })}
+              </DCArtboard>
+              <DCArtboard id="pc-fp-2" label="3.2 · 메일 전송됨" width={W} height={H}>
+                {wrap(PCForgot, "dayflow.app/forgot/sent", { initialStep: 1 })}
+              </DCArtboard>
+              <DCArtboard id="pc-fp-3" label="3.3 · 새 비밀번호" width={W} height={H}>
+                {wrap(PCForgot, "dayflow.app/reset", { initialStep: 2 })}
+              </DCArtboard>
+              <DCArtboard id="pc-fp-4" label="3.4 · 변경 완료" width={W} height={H}>
+                {wrap(PCForgot, "dayflow.app/reset/done", { initialStep: 3 })}
+              </DCArtboard>
+            </DCSection>
+          </DesignCanvas>
+        </>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+</body>
+</html>

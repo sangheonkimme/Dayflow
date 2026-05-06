@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dayflow · 모바일</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Gaegu:wght@400;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="mobile-app.css">
+
+<style>
+  html, body { margin: 0; padding: 0; height: 100%; }
+  body {
+    background: #efeadb;
+    background-image:
+      radial-gradient(circle at 20% 10%, #f6f0dc 0%, transparent 40%),
+      radial-gradient(circle at 80% 90%, #ede5cf 0%, transparent 40%),
+      #efeadb;
+    font-family: var(--sans);
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    transition: background 0.3s;
+  }
+  body.dark {
+    background: #0d0c08;
+    background-image:
+      radial-gradient(circle at 20% 10%, #1a1812 0%, transparent 50%),
+      radial-gradient(circle at 80% 90%, #14130d 0%, transparent 50%),
+      #0d0c08;
+  }
+  #stage {
+    display: grid;
+    place-items: center;
+    width: 100vw;
+    height: 100vh;
+  }
+  #device-wrap {
+    transform-origin: center center;
+    transition: transform 0.2s;
+  }
+  /* hide scrollbars in iOS body */
+  .dfm-body::-webkit-scrollbar { width: 0; }
+</style>
+</head>
+<body>
+  <div id="stage"></div>
+
+  <!-- React + Babel -->
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <script type="text/babel" src="ios-frame.jsx"></script>
+  <script type="text/babel" src="tweaks-panel.jsx"></script>
+  <script type="text/babel" src="mobile-app.jsx"></script>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+      "dark": false,
+      "initialTab": "menu",
+      "deviceWidth": 390
+    }/*EDITMODE-END*/;
+
+    function fitToViewport() {
+      const wrap = document.getElementById("device-wrap");
+      if (!wrap) return;
+      const w = wrap.offsetWidth || 402;
+      const h = wrap.offsetHeight || 874;
+      const sx = window.innerWidth / (w + 80);
+      const sy = window.innerHeight / (h + 80);
+      const s = Math.min(1, sx, sy);
+      wrap.style.transform = `scale(${s})`;
+    }
+
+    const TAB_LABEL = { home: "홈", ledger: "가계부", calendar: "캘린더", menu: "메뉴" };
+
+    function DeviceApp() {
+      const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+
+      useEffect(() => {
+        document.body.classList.toggle("dark", !!t.dark);
+      }, [t.dark]);
+
+      useEffect(() => {
+        const r = () => fitToViewport();
+        r();
+        window.addEventListener("resize", r);
+        return () => window.removeEventListener("resize", r);
+      }, [t.deviceWidth]);
+
+      return (
+        <>
+          <div id="device-wrap">
+            <IOSDevice width={t.deviceWidth} height={Math.round(t.deviceWidth * 2.16)} dark={t.dark}>
+              <MobileApp initialTab={t.initialTab} key={t.initialTab} />
+            </IOSDevice>
+          </div>
+
+          <TweaksPanel title="Tweaks">
+            <TweakSection label="외관" />
+            <TweakToggle label="다크 모드" value={t.dark} onChange={v => setTweak('dark', v)} />
+
+            <TweakSection label="시작 탭" />
+            <TweakRadio
+              label="탭"
+              value={t.initialTab}
+              options={["home", "ledger", "calendar", "menu"]}
+              onChange={v => setTweak('initialTab', v)}
+            />
+
+            <TweakSection label="기기 크기" />
+            <TweakSlider label="너비" value={t.deviceWidth} min={360} max={430} step={2}
+              unit="px" onChange={v => setTweak('deviceWidth', v)} />
+          </TweaksPanel>
+        </>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("stage")).render(<DeviceApp />);
+  </script>
+</body>
+</html>

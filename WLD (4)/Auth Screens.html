@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Auth & Onboarding · Dayflow</title>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Pretendard:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: "Pretendard", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #efe9d9;
+      -webkit-font-smoothing: antialiased;
+    }
+    * { box-sizing: border-box; }
+    .lang-toggle {
+      position: fixed;
+      top: 16px; right: 16px;
+      z-index: 100;
+      display: flex;
+      gap: 4px;
+      background: #fff;
+      border: 1px solid rgba(0,0,0,0.1);
+      border-radius: 99px;
+      padding: 4px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .lang-toggle button {
+      padding: 6px 12px;
+      border: none;
+      background: transparent;
+      border-radius: 99px;
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 11px;
+      color: rgba(0,0,0,0.6);
+    }
+    .lang-toggle button.on {
+      background: #1a1814;
+      color: #ffd84d;
+    }
+    .dark-toggle {
+      position: fixed;
+      top: 16px; right: 130px;
+      z-index: 100;
+      width: 32px; height: 32px;
+      border-radius: 99px;
+      background: #fff;
+      border: 1px solid rgba(0,0,0,0.1);
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      display: grid;
+      place-items: center;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel" src="design-canvas.jsx"></script>
+  <script type="text/babel" src="ios-frame.jsx"></script>
+  <script type="text/babel" src="auth-login.jsx"></script>
+  <script type="text/babel" src="auth-flows.jsx"></script>
+  <script type="text/babel" src="auth-forgot.jsx"></script>
+
+  <script type="text/babel">
+    const { useState } = React;
+
+    function App() {
+      const [lang, setLang] = useState("ko");
+      const [dark, setDark] = useState(false);
+
+      const phone = (ScreenComp, extraProps = {}) => (
+        <IOSDevice width={390} height={780} dark={dark}>
+          <div style={{ position: "absolute", inset: 0, paddingTop: 54 }}>
+            <ScreenComp variant="A" lang={lang} dark={dark} {...extraProps} />
+          </div>
+        </IOSDevice>
+      );
+
+      return (
+        <>
+          <div className="lang-toggle">
+            <button className={lang === "ko" ? "on" : ""} onClick={() => setLang("ko")}>한국어</button>
+            <button className={lang === "en" ? "on" : ""} onClick={() => setLang("en")}>English</button>
+          </div>
+          <button className="dark-toggle" onClick={() => setDark(!dark)} title="Toggle dark mode">
+            {dark ? "☀️" : "🌙"}
+          </button>
+
+          <DesignCanvas>
+            <DCSection id="flow" title="플로우 · Flow" subtitle="신규 사용자 진입 → 가입 → 온보딩 → 로그인">
+              <DCArtboard id="f-signup" label="1 · 회원가입" width={390} height={780}>{phone(SignupScreen)}</DCArtboard>
+              <DCArtboard id="f-login" label="2 · 로그인 (재방문)" width={390} height={780}>{phone(LoginScreen)}</DCArtboard>
+            </DCSection>
+            <DCSection id="onboard" title="온보딩 · Onboarding" subtitle="가입 직후 4단계 셋업 — 용도 → 월급일 → 카테고리 → 완료">
+              <DCArtboard id="ob-1" label="2.1 · 용도 선택" width={390} height={780}>{phone(OnboardingScreen, { initialStep: 0 })}</DCArtboard>
+              <DCArtboard id="ob-2" label="2.2 · 월급일" width={390} height={780}>{phone(OnboardingScreen, { initialStep: 1 })}</DCArtboard>
+              <DCArtboard id="ob-3" label="2.3 · 카테고리" width={390} height={780}>{phone(OnboardingScreen, { initialStep: 2 })}</DCArtboard>
+              <DCArtboard id="ob-4" label="2.4 · 준비 완료" width={390} height={780}>{phone(OnboardingScreen, { initialStep: 3 })}</DCArtboard>
+            </DCSection>
+            <DCSection id="forgot" title="비밀번호 찾기 · Forgot password" subtitle="이메일 입력 → 메일 전송 → 새 비밀번호 → 완료">
+              <DCArtboard id="fp-1" label="3.1 · 이메일 입력" width={390} height={780}>{phone(ForgotScreen, { initialStep: 0 })}</DCArtboard>
+              <DCArtboard id="fp-2" label="3.2 · 메일 전송됨" width={390} height={780}>{phone(ForgotScreen, { initialStep: 1 })}</DCArtboard>
+              <DCArtboard id="fp-3" label="3.3 · 새 비밀번호" width={390} height={780}>{phone(ForgotScreen, { initialStep: 2 })}</DCArtboard>
+              <DCArtboard id="fp-4" label="3.4 · 변경 완료" width={390} height={780}>{phone(ForgotScreen, { initialStep: 3 })}</DCArtboard>
+            </DCSection>
+          </DesignCanvas>
+        </>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+</body>
+</html>
