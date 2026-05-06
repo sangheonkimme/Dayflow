@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Icon } from '@/components/icons';
-import { TIMER_PRESETS } from '@/data/seeds/lookups';
+import { TIMER_PRESETS } from '@/shared/data/seeds/lookups';
 
 // ============================================================
 // TIMER — generic countdown

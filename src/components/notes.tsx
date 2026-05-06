@@ -5,7 +5,7 @@ import { useStickyNotes } from "@/data/hooks/useStickyNotes";
 import { useChecklist } from "@/data/hooks/useChecklist";
 import { useDailyLog } from "@/data/hooks/useDailyLog";
 import { usePinnedInfo } from "@/data/hooks/usePinnedInfo";
-import { MOODS, emojiToMood, moodToEmoji } from "@/data/seeds/lookups";
+import { MOODS, emojiToMood, moodToEmoji } from "@/shared/data/seeds/lookups";
 import { stickyDateLabel, stickyAuthorLabel } from "@/data/selectors/derived";
 
 // ============================================================

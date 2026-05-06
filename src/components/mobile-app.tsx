@@ -1,13 +1,13 @@
 // @ts-nocheck
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { DOW } from '@/lib/date';
-import { useTransactions } from '@/data/hooks/useTransactions';
-import { useEvents, useEventsByDate } from '@/data/hooks/useEvents';
+import { useTransactions } from '@/features/transactions/hooks/useTransactions';
+import { useEvents, useEventsByDate } from '@/features/events/hooks/useEvents';
 import { useChecklist } from '@/data/hooks/useChecklist';
 import { useAuth } from '@/data/hooks/useAuth';
-import { groupByDay, recent as selectRecent } from '@/data/selectors/transactions';
+import { groupByDay, recent as selectRecent } from '@/features/transactions/selectors/transactions';
 import { inferIcon } from '@/data/selectors/derived';
-import { daysWithEventsInMonth } from '@/data/selectors/events';
+import { daysWithEventsInMonth } from '@/features/events/selectors/events';
 
 // ============================================================
 // Dayflow Mobile · Adaptive layout

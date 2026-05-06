@@ -15,8 +15,8 @@ import {
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { usePreferences } from "@/data/hooks/usePreferences";
 import { useAuth } from "@/data/hooks/useAuth";
-import { useTransactions } from "@/data/hooks/useTransactions";
-import { useEvents } from "@/data/hooks/useEvents";
+import { useTransactions } from "@/features/transactions/hooks/useTransactions";
+import { useEvents } from "@/features/events/hooks/useEvents";
 import type {
   ModalState,
   TxnDraft,
