@@ -5,25 +5,16 @@ import { Modal } from '@/components/ui/Modal';
 import { formatWon } from '@/lib/format';
 import { DOW } from '@/lib/date';
 import { sumBy } from '@/lib/aggregate';
+import { useSubscriptions } from '@/data/hooks/useSubscriptions';
+import {
+  subscriptionColor,
+  subscriptionInitial,
+  formatStarted,
+} from '@/data/selectors/derived';
 
 // ============================================================
 // SUBSCRIPTIONS PAGE — 정기구독 (simplified)
 // ============================================================
-
-const SUBS = [
-  { id: 1, name: "Netflix",       cat: "엔터테인먼트", price: 17000, cycle: "월", day: 7,  color: "#e25c4d", initial: "N",  status: "active",  started: "2023.05" },
-  { id: 2, name: "Spotify",       cat: "음악",         price: 13900, cycle: "월", day: 12, color: "#4a8d5a", initial: "S",  status: "active",  started: "2022.11" },
-  { id: 3, name: "Adobe CC",      cat: "업무 도구",    price: 24000, cycle: "월", day: 15, color: "#ee5a3d", initial: "Ai", status: "active",  started: "2024.01" },
-  { id: 4, name: "Figma Pro",     cat: "업무 도구",    price: 18500, cycle: "월", day: 21, color: "#a259ff", initial: "F",  status: "active",  started: "2023.09" },
-  { id: 5, name: "iCloud+ 200GB", cat: "클라우드",     price: 3300,  cycle: "월", day: 3,  color: "#3a8dde", initial: "iC", status: "active",  started: "2021.04" },
-  { id: 6, name: "쿠팡 와우",      cat: "쇼핑",        price: 7890,  cycle: "월", day: 8,  color: "#e8c84a", initial: "쿠", status: "active",  started: "2022.06" },
-  { id: 7, name: "왓챠",           cat: "엔터테인먼트", price: 12900, cycle: "월", day: 18, color: "#e89aac", initial: "W",  status: "paused",  started: "2024.06" },
-  { id: 8, name: "ChatGPT Plus",  cat: "업무 도구",    price: 28000, cycle: "월", day: 25, color: "#1a1a1a", initial: "G",  status: "active",  started: "2024.03" },
-  { id: 9, name: "노션 패밀리",    cat: "업무 도구",    price: 12000, cycle: "월", day: 6,  color: "#000000", initial: "N",  status: "active",  started: "2023.02" },
-  { id: 10,name: "교보문고 sam",   cat: "독서",         price: 9900,  cycle: "월", day: 14, color: "#2c5e8b", initial: "사", status: "active",  started: "2024.07" },
-  { id: 11,name: "헬스장",         cat: "건강",         price: 89000, cycle: "월", day: 1,  color: "#a8d09b", initial: "헬", status: "active",  started: "2025.04" },
-  { id: 12,name: "도메인 갱신",    cat: "기타",         price: 22000, cycle: "년", day: 4,  color: "#c9bd9f", initial: "D",  status: "active",  started: "2020.04" },
-];
 
 const CAT_COLORS = {
   "업무 도구":    "#a259ff",
@@ -39,32 +30,17 @@ const CAT_COLORS = {
 const SUB_CATS = Object.keys(CAT_COLORS);
 const SUB_PALETTE = ["#e25c4d", "#4a8d5a", "#3a8dde", "#a259ff", "#e8c84a", "#e89aac", "#1a1a1a", "#a8d09b", "#c9bd9f", "#ee5a3d"];
 
-// usage data for save-tip detail (last 30 days)
-const SUB_USAGE = {
-  7: { // 왓챠
-    lastUsed: "2025.08.12 (90일 전)",
-    monthlyMinutes: [240, 180, 60, 0, 0],
-    avgPerWeek: 0,
-    overlap: ["Netflix"],
-  },
-  3: { // Adobe CC
-    lastUsed: "2025.11.04 (어제)",
-    monthlyMinutes: [1820, 1640, 1500, 980, 760],
-    avgPerWeek: 12,
-    overlap: ["Figma Pro"],
-  },
-  4: { // Figma Pro
-    lastUsed: "2025.11.05 (오늘)",
-    monthlyMinutes: [2200, 2400, 2600, 2800, 3000],
-    avgPerWeek: 28,
-    overlap: ["Adobe CC"],
-  },
-};
-
 function SubsPage({ onAdd }) {
   const [sortBy, setSortBy] = useState("day"); // day | price | name
   const [editing, setEditing] = useState(null);
   const [tipOpen, setTipOpen] = useState(null); // { kind: "cancel"|"overlap", subId? }
+
+  const { all: SUBS, usage: USAGE_LIST } = useSubscriptions();
+  const SUB_USAGE = useMemo(() => {
+    const m = {};
+    for (const u of USAGE_LIST) m[u.subscriptionId] = u;
+    return m;
+  }, [USAGE_LIST]);
 
   const today = new Date();
   const todayDate = today.getDate();
@@ -141,8 +117,8 @@ function SubsPage({ onAdd }) {
                 <div className="next7-num">{d.day}</div>
                 <div className="next7-pills">
                   {d.items.slice(0, 3).map(s => (
-                    <span key={s.id} className="next7-pill" style={{ background: s.color }} title={`${s.name} ${fmt(s.price)}`}>
-                      {s.initial}
+                    <span key={s.id} className="next7-pill" style={{ background: subscriptionColor(s) }} title={`${s.name} ${fmt(s.price)}`}>
+                      {subscriptionInitial(s)}
                     </span>
                   ))}
                   {d.items.length > 3 && <span className="next7-more">+{d.items.length - 3}</span>}
@@ -175,7 +151,7 @@ function SubsPage({ onAdd }) {
             const isSoon = dleft !== null && dleft <= 3 && s.status === "active";
             return (
               <div key={s.id} className={"sub-card" + (s.status === "paused" ? " paused" : "")} onClick={() => setEditing(s)}>
-                <div className="sub-mark" style={{ background: s.color }}>{s.initial}</div>
+                <div className="sub-mark" style={{ background: subscriptionColor(s) }}>{subscriptionInitial(s)}</div>
                 <div className="sub-main">
                   <div className="sub-name-row">
                     <h4>{s.name}</h4>
@@ -187,7 +163,7 @@ function SubsPage({ onAdd }) {
                     <span className="dot-sep">·</span>
                     <span>{s.cycle === "월" ? `매월 ${s.day}일` : `매년 ${s.day}월`}</span>
                     <span className="dot-sep">·</span>
-                    <span>가입 {s.started}</span>
+                    <span>가입 {formatStarted(s)}</span>
                   </div>
                 </div>
                 <div className="sub-price">
@@ -226,7 +202,7 @@ function SubsPage({ onAdd }) {
       </div>
 
       {editing && <SubEditModal sub={editing} onClose={() => setEditing(null)} onAnalyze={() => { setTipOpen({ kind: "cancel", subId: editing.id }); setEditing(null); }} />}
-      {tipOpen && <SaveTipModal tip={tipOpen} onClose={() => setTipOpen(null)} />}
+      {tipOpen && <SaveTipModal tip={tipOpen} subs={SUBS} usage={SUB_USAGE} onClose={() => setTipOpen(null)} />}
     </div>
   );
 }
@@ -240,7 +216,7 @@ function SubEditModal({ sub, onClose, onAnalyze }) {
   const [cycle, setCycle] = useState(sub.cycle);
   const [day, setDay] = useState(sub.day);
   const [cat, setCat] = useState(sub.cat);
-  const [color, setColor] = useState(sub.color);
+  const [color, setColor] = useState(subscriptionColor(sub));
   const [status, setStatus] = useState(sub.status);
   const [confirmDel, setConfirmDel] = useState(false);
 
@@ -255,7 +231,7 @@ function SubEditModal({ sub, onClose, onAnalyze }) {
               <h3>구독 수정</h3>
               <span className="badge-edit">✏️ EDIT</span>
             </div>
-            <small>가입 {sub.started} · 누적 결제 약 {fmt(sub.price * Math.max(1, monthsBetween(sub.started)))}</small>
+            <small>가입 {formatStarted(sub)} · 누적 결제 약 {fmt(sub.price * Math.max(1, monthsBetween(formatStarted(sub))))}</small>
           </div>
           <button className="icon-btn" style={{ width: 32, height: 32 }} onClick={onClose}>
             <Icon name="x" size={14} />
@@ -266,7 +242,7 @@ function SubEditModal({ sub, onClose, onAnalyze }) {
           {/* preview header */}
           <div className="sub-edit-preview">
             <div className="sub-mark" style={{ background: color, width: 56, height: 56, fontSize: 20, borderRadius: 14 }}>
-              {sub.initial}
+              {subscriptionInitial(sub)}
             </div>
             <div style={{ flex: 1 }}>
               <div className="sub-edit-name">{name || "—"}</div>
@@ -394,7 +370,7 @@ function monthsBetween(started) {
 // ============================================================
 // SAVE TIP MODAL — 절약 분석
 // ============================================================
-function SaveTipModal({ tip, onClose }) {
+function SaveTipModal({ tip, onClose, subs: SUBS, usage: SUB_USAGE }) {
   const sub = SUBS.find(s => s.id === tip.subId);
   if (!sub) return null;
   const fmt = formatWon;
@@ -473,7 +449,7 @@ function SaveTipModal({ tip, onClose }) {
               <div className="block-sub" style={{ marginBottom: 10 }}>유사한 작업에 쓰이는 도구들이에요</div>
               <div className="overlap-row">
                 <div className="overlap-card">
-                  <div className="sub-mark" style={{ background: sub.color }}>{sub.initial}</div>
+                  <div className="sub-mark" style={{ background: subscriptionColor(sub) }}>{subscriptionInitial(sub)}</div>
                   <div className="overlap-name">{sub.name}</div>
                   <div className="overlap-price">{fmt(sub.price)}<span>/{sub.cycle}</span></div>
                   <div className="overlap-use">주 {usage.avgPerWeek}분 사용</div>
@@ -483,7 +459,7 @@ function SaveTipModal({ tip, onClose }) {
                   const u = SUB_USAGE[o.id] || { avgPerWeek: 0 };
                   return (
                     <div key={o.id} className="overlap-card">
-                      <div className="sub-mark" style={{ background: o.color }}>{o.initial}</div>
+                      <div className="sub-mark" style={{ background: subscriptionColor(o) }}>{subscriptionInitial(o)}</div>
                       <div className="overlap-name">{o.name}</div>
                       <div className="overlap-price">{fmt(o.price)}<span>/{o.cycle}</span></div>
                       <div className="overlap-use">주 {u.avgPerWeek}분 사용</div>

@@ -51,11 +51,11 @@
 - [ ] `calendar_events` — 캘린더 이벤트
 - [ ] 월별 집계 View 또는 RPC 함수
 
-### Phase 4 — 도구 데이터 (1d)
+### Phase 4 — 도구 (DB 불필요)
 
-- [ ] `salary_presets` — 연봉 계산기 저장값
-- [ ] `loan_presets` — 대출 계산기 저장값
-- [ ] (이미지 도구는 클라이언트 처리 → DB 불필요)
+- [x] 연봉 계산기 — 클라이언트 로직만 (원본 포팅)
+- [x] 대출 이자 계산기 — 클라이언트 로직만 (원본 `LoanCalculatorWidget.tsx` 포팅)
+- [x] 이미지 자르기 / 이미지→PDF — 클라이언트 처리
 
 ### Phase 5 — 보안 / 운영 (1d)
 
@@ -101,10 +101,10 @@
          ├──► accounts ───► transactions
          ├──► categories ──► transactions
          ├──► subscriptions
-         ├──► calendar_events
-         ├──► salary_presets
-         └──► loan_presets
+         └──► calendar_events
 ```
+
+> 도구(연봉/대출/이미지)는 클라이언트 로직만 사용 → DB 테이블 없음.
 
 ### 도메인 그룹
 
@@ -125,9 +125,9 @@
 │  calendar_events                           │
 └────────────────────────────────────────────┘
 
-┌────────────── 도구 (Tools) ────────────────┐
-│  salary_presets, loan_presets              │
-└────────────────────────────────────────────┘
+┌──── 도구 (Tools) — 클라이언트 전용 ────┐
+│  연봉 / 대출 / 이미지 — DB 없음        │
+└────────────────────────────────────────┘
 ```
 
 ---
@@ -311,32 +311,17 @@ create table calendar_events (
 create index on calendar_events(user_id, starts_at);
 ```
 
-### 4.12 salary_presets / loan_presets (계산기 저장값)
+### 4.12 도구 (계산기 / 이미지) — DB 테이블 없음
 
-```sql
-create table salary_presets (
-  id uuid primary key default gen_random_uuid(),
-  user_id uuid not null references auth.users(id) on delete cascade,
-  label text,
-  annual_salary numeric(14,2) not null,
-  dependents int default 0,
-  non_taxable numeric(14,2) default 0,
-  result jsonb,                      -- 계산 스냅샷
-  created_at timestamptz default now()
-);
+원본 `worklife-dashboard`에서 **클라이언트 로직만** 가져와 사용:
 
-create table loan_presets (
-  id uuid primary key default gen_random_uuid(),
-  user_id uuid not null references auth.users(id) on delete cascade,
-  label text,
-  principal numeric(14,2) not null,
-  rate numeric(6,3) not null,
-  months int not null,
-  method text check (method in ('equal_payment','equal_principal','bullet')),
-  result jsonb,
-  created_at timestamptz default now()
-);
-```
+- **대출 이자 계산기**: `client/src/components/widgets/LoanCalculatorWidget/LoanCalculatorWidget.tsx`
+  - 입력: 원금, 연이율, 기간(년+월), 거치기간, 상환방식(원리금균등/원금균등/만기일시)
+  - 출력: 월별 상환 스케줄, 총 이자, 대표 월 납입액
+- **연봉 계산기**: 클라이언트 계산 (원본 포팅)
+- **이미지 자르기 / 이미지→PDF**: 브라우저 처리 (pdf-lib 등)
+
+→ 사용자 저장값/이력이 필요해지면 그때 `*_presets` 테이블 추가.
 
 ---
 

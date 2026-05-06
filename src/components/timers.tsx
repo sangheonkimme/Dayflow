@@ -1,6 +1,6 @@
-// @ts-nocheck
 import { useState, useEffect } from 'react';
 import { Icon } from '@/components/icons';
+import { TIMER_PRESETS } from '@/data/seeds/lookups';
 
 // ============================================================
 // TIMER — generic countdown
@@ -9,7 +9,7 @@ function GeneralTimer() {
   const [duration, setDuration] = useState(5 * 60); // seconds
   const [remaining, setRemaining] = useState(5 * 60);
   const [running, setRunning] = useState(false);
-  const presets = [1, 5, 10, 15, 25];
+  const presets = TIMER_PRESETS;
   const [activePreset, setActivePreset] = useState(5);
 
   useEffect(() => {
@@ -23,7 +23,7 @@ function GeneralTimer() {
     return () => clearInterval(id);
   }, [running]);
 
-  const setPreset = (m) => {
+  const setPreset = (m: number) => {
     setDuration(m * 60);
     setRemaining(m * 60);
     setRunning(false);
@@ -105,7 +105,7 @@ function Pomodoro() {
     return () => clearInterval(id);
   }, [running, mode]);
 
-  const switchMode = (m) => {
+  const switchMode = (m: 'focus' | 'break') => {
     setMode(m);
     setRemaining(m === "focus" ? FOCUS : BREAK);
     setRunning(false);
@@ -164,7 +164,7 @@ function Pomodoro() {
 function Stopwatch() {
   const [ms, setMs] = useState(0);
   const [running, setRunning] = useState(false);
-  const [laps, setLaps] = useState([]);
+  const [laps, setLaps] = useState<number[]>([]);
 
   useEffect(() => {
     if (!running) return;

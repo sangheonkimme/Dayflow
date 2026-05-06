@@ -1,5 +1,5 @@
-import { Icon } from '@/components/icons';
-import { DOW } from '@/lib/date';
+import { Icon } from "@/components/icons";
+import { DOW } from "@/lib/date";
 
 // ============================================================
 // SIDEBAR
@@ -22,25 +22,48 @@ function Sidebar({ active, onSelect }: SidebarProps) {
     {
       label: "가계 · 일정",
       items: [
-        { id: "ledger",   icon: "wallet", label: "가계부",   sub: "수입 · 지출 · 통계" },
-        { id: "txns",     icon: "cash",   label: "거래내역", sub: "전체 검색 · 상세" },
-        { id: "subs",     icon: "repeat", label: "정기구독", sub: "구독 관리" },
-        { id: "calendar", icon: "cal",    label: "캘린더",   sub: "일정 · 이벤트" },
+        {
+          id: "ledger",
+          icon: "wallet",
+          label: "가계부",
+          sub: "수입 · 지출 · 통계",
+        },
+        {
+          id: "txns",
+          icon: "cash",
+          label: "거래내역",
+          sub: "전체 검색 · 상세",
+        },
+        { id: "subs", icon: "repeat", label: "정기구독", sub: "구독 관리" },
+        { id: "calendar", icon: "cal", label: "캘린더", sub: "일정 · 이벤트" },
       ],
     },
     {
       label: "기록",
-      items: [
-        { id: "memo", icon: "note", label: "메모", sub: "장문 메모" },
-      ],
+      items: [{ id: "memo", icon: "note", label: "메모", sub: "장문 메모" }],
     },
     {
       label: "도구",
       items: [
-        { id: "salary", icon: "coin", label: "연봉 계산기",   sub: "실수령액 계산" },
-        { id: "loan",   icon: "cash", label: "대출 이자 계산기", sub: "원리금/원금 균등" },
-        { id: "crop",   icon: "crop", label: "이미지 자르기", sub: "비율 / 크롭" },
-        { id: "pdf",    icon: "pdf",  label: "이미지 → PDF",  sub: "한번에 변환" },
+        {
+          id: "salary",
+          icon: "coin",
+          label: "연봉 계산기",
+          sub: "실수령액 계산",
+        },
+        {
+          id: "loan",
+          icon: "cash",
+          label: "대출 이자 계산기",
+          sub: "원리금/원금 균등",
+        },
+        {
+          id: "crop",
+          icon: "crop",
+          label: "이미지 자르기",
+          sub: "비율 / 크롭",
+        },
+        { id: "pdf", icon: "pdf", label: "이미지 → PDF", sub: "한번에 변환" },
       ],
     },
   ];
@@ -57,9 +80,12 @@ function Sidebar({ active, onSelect }: SidebarProps) {
 
       <nav className="nav">
         {groups.map((g, gi) => (
-          <div key={g.label} className={"nav-group" + (gi === 0 ? " first" : "")}>
+          <div
+            key={g.label}
+            className={"nav-group" + (gi === 0 ? " first" : "")}
+          >
             <div className="side-section-label">{g.label}</div>
-            {g.items.map(it => (
+            {g.items.map((it) => (
               <div
                 key={it.id}
                 className={"nav-item" + (active === it.id ? " active" : "")}
@@ -110,9 +136,14 @@ function Topbar({ dark, onToggleDark, onSearch }: TopbarProps) {
   return (
     <div className="topbar">
       <div>
-        <h1>좋은 아침이에요, 나비 <span className="hand">— let's get it done</span></h1>
+        <h1>
+          좋은 아침이에요, 나비{" "}
+          <span className="hand">— let's get it done</span>
+        </h1>
         <div className="topbar-sub">
-          {today.getFullYear()}년 {today.getMonth()+1}월 {today.getDate()}일 ({weekday}) · 오늘은 4개의 일정과 1개의 포모도로 세션이 예약되어 있어요.
+          {today.getFullYear()}년 {today.getMonth() + 1}월 {today.getDate()}일 (
+          {weekday}) · 오늘은 4개의 일정과 1개의 포모도로 세션이 예약되어
+          있어요.
         </div>
       </div>
       <div className="topbar-actions">

@@ -1,6 +1,12 @@
 // @ts-nocheck
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { DOW } from '@/lib/date';
+import { useTransactions } from '@/data/hooks/useTransactions';
+import { useEvents, useEventsByDate } from '@/data/hooks/useEvents';
+import { useChecklist } from '@/data/hooks/useChecklist';
+import { groupByDay, recent as selectRecent } from '@/data/selectors/transactions';
+import { inferIcon } from '@/data/selectors/derived';
+import { daysWithEventsInMonth } from '@/data/selectors/events';
 
 // ============================================================
 // Dayflow Mobile · Adaptive layout
@@ -219,34 +225,48 @@ function SwipeRow({ children, onDelete, actions, actionLabel = "삭제", revealW
 // HOME — fully designed
 // ────────────────────────────────────────────────
 function MobileHome({ onNavigate, onAddTxn, onAddEvent }) {
-  const [todos, setTodos] = useState([
-    { text: "오전 11시 디자인 리뷰 자료 보내기", tag: "업무", done: true },
-    { text: "월말 카드 명세서 정리", tag: "가계부", done: false },
-    { text: "헬스장 가는 길에 우유 사기", tag: "할 일", done: true },
-    { text: "독서 30분", tag: "루틴", done: false },
-    { text: "수요일 회의실 예약", tag: "업무", done: false },
-  ]);
-  const [txns, setTxns] = useState([
-    { ico: "cup", name: "스타벅스 강남점", sub: "오늘 오전 9:42",  amount: -6500,    cat: "식비" },
-    { ico: "bus", name: "교통카드 충전",     sub: "어제 오후 6:12", amount: -50000,   cat: "교통" },
-    { ico: "bag", name: "11월 월급",         sub: "11월 25일 (목)", amount: 3200000,  cat: "수입" },
-  ]);
-  const removeTxn = (i) => setTxns(xs => xs.filter((_, ix) => ix !== i));
-  const editTxn   = (i) => { _openTxnRef && _openTxnRef(txns[i]); };
+  const { data: todoTasks, upsert: upsertTodo, remove: removeTodoById } = useChecklist();
+  // Adapt ChecklistTask → mobile shape (text/tag/done) for the existing render.
+  const todos = useMemo(() => todoTasks.map(t => ({
+    id: t.id, text: t.text, done: t.done, tag: t.time || "할 일",
+  })), [todoTasks]);
+
+  const { all: txnsAll, remove: removeTxnById } = useTransactions();
+  const txns = useMemo(() => selectRecent(txnsAll, 3).map(t => ({
+    id: t.id,
+    ico: inferIcon(t),
+    name: t.label,
+    sub: `${t.date.slice(5).replace('-', '.')}${t.time ? ' ' + t.time : ''}`,
+    amount: t.amount,
+    cat: t.cat || "기타",
+  })), [txnsAll]);
+
+  const removeTxn = (i) => { const id = txns[i]?.id; if (id != null) removeTxnById(id); };
+  const editTxn   = (i) => { const t = txnsAll.find(x => x.id === txns[i]?.id); if (t) _openTxnRef?.(t); };
   const [newTodo, setNewTodo] = useState("");
-  const toggle = (i) => setTodos(ts => ts.map((t, ix) => ix === i ? { ...t, done: !t.done } : t));
-  const removeTodo = (i) => setTodos(ts => ts.filter((_, ix) => ix !== i));
+  const toggle = (i) => {
+    const id = todos[i]?.id; if (id == null) return;
+    const t = todoTasks.find(x => x.id === id);
+    if (t) upsertTodo({ ...t, done: !t.done });
+  };
+  const removeTodo = (i) => { const id = todos[i]?.id; if (id != null) removeTodoById(id); };
   const addTodo = () => {
     const v = newTodo.trim();
     if (!v) return;
-    setTodos(ts => [...ts, { text: v, tag: "할 일", done: false }]);
+    upsertTodo({ id: Date.now(), text: v, done: false, time: "지금" });
     setNewTodo("");
   };
   const doneCount = todos.filter(t => t.done).length;
 
-  // calendar grid (사실상 정적 데모)
-  const today = 14;
-  const eventDays = [3, 7, 14, 18, 22, 27];
+  // calendar event-days derived from real events for the current month.
+  const todayDate = new Date();
+  const today = todayDate.getDate();
+  const { data: monthEvents } = useEvents();
+  const eventDaySet = useMemo(
+    () => daysWithEventsInMonth(monthEvents, todayDate.getFullYear(), todayDate.getMonth()),
+    [monthEvents, todayDate],
+  );
+  const eventDays = useMemo(() => [...eventDaySet], [eventDaySet]);
   const cells = [];
   // 1일이 수요일이라 가정 → 앞에 muted 2칸
   for (let i = 0; i < 2; i++) cells.push({ d: 28 + i, muted: true });
@@ -376,25 +396,43 @@ function MobileHome({ onNavigate, onAddTxn, onAddEvent }) {
             );
           })}
         </div>
-        <div className="dfm-cal-events">
-          <div className="dfm-cal-event">
-            <span className="time">10:00</span>
-            <div className="pill">디자인 시스템 리뷰<small>온라인 · 1시간</small></div>
-          </div>
-          <div className="dfm-cal-event">
-            <span className="time">14:30</span>
-            <div className="pill" style={{ borderLeftColor: "#ffb38a" }}>치과 정기검진<small>강남 OO치과 · 30분</small></div>
-          </div>
-          <div className="dfm-cal-event">
-            <span className="time">19:00</span>
-            <div className="pill" style={{ borderLeftColor: "#b9e7c9" }}>저녁 약속<small>이태원 · 친구 모임</small></div>
-          </div>
-        </div>
+        <MobileCalEvents />
       </div>
     </>
   );
 }
 
+
+// ────────────────────────────────────────────────
+// MobileCalEvents — today's events for MobileHome bottom strip
+// ────────────────────────────────────────────────
+function MobileCalEvents() {
+  const d = new Date();
+  const todayKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  const events = useEventsByDate(todayKey);
+  if (!events.length) {
+    return (
+      <div className="dfm-cal-events">
+        <div style={{ padding: "10px 0", fontSize: 12, color: "var(--ink-mute)" }}>오늘 일정 없음</div>
+      </div>
+    );
+  }
+  return (
+    <div className="dfm-cal-events">
+      {events.slice(0, 3).map((ev) => (
+        <div key={ev.id} className="dfm-cal-event">
+          <span className="time">{ev.allDay ? "종일" : ev.startTime || ""}</span>
+          <div className="pill" style={ev.color ? { borderLeftColor: ev.color } : null}>
+            {ev.title}
+            {(ev.place || ev.endTime) && (
+              <small>{[ev.place, ev.endTime ? `~${ev.endTime}` : ""].filter(Boolean).join(" · ")}</small>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 // ────────────────────────────────────────────────
 // PLACEHOLDER pages (other tabs — 골격 수준)
@@ -440,42 +478,35 @@ function MobileLedger() {
   const r = 42, cx = 55, cy = 55, stroke = 14;
   const C = 2 * Math.PI * r;
 
-  // 일자별 거래 그룹 (요일/날짜 + 거래 배열)
-  const days = [
-    {
-      date: "11월 14일", dow: "오늘 · 목",
-      total: -16400,
-      items: [
-        { ico: "cup",  name: "스타벅스 강남점",   sub: "오전 9:42 · 식비",  amt: -6500,   cat: "식비" },
-        { ico: "bus",  name: "지하철 단건",        sub: "오전 8:51 · 교통",  amt: -1450,   cat: "교통" },
-        { ico: "bag",  name: "GS25 편의점",        sub: "오후 7:18 · 식비",  amt: -8450,   cat: "식비" },
-      ],
-    },
-    {
-      date: "11월 13일", dow: "어제 · 수",
-      total: -77400,
-      items: [
-        { ico: "cup",  name: "탐앤탐스",          sub: "오후 3:12 · 식비",  amt: -5800,   cat: "식비" },
-        { ico: "bag",  name: "이마트 트레이더스",  sub: "오후 8:01 · 식비",  amt: -71600,  cat: "식비" },
-      ],
-    },
-    {
-      date: "11월 12일", dow: "화",
-      total: -67000,
-      items: [
-        { ico: "tag",  name: "넷플릭스",          sub: "정기결제 · 구독",   amt: -17000,  cat: "구독" },
-        { ico: "bag",  name: "무신사",            sub: "셔츠 1벌 · 쇼핑",    amt: -50000,  cat: "쇼핑" },
-      ],
-    },
-    {
-      date: "11월 11일", dow: "월",
-      total: 3582600,
-      items: [
-        { ico: "coin", name: "11월 급여",          sub: "(주)디자인하우스",   amt: 3650000, cat: "급여",  income: true },
-        { ico: "tag",  name: "월세 자동이체",       sub: "정기 출금 · 주거",   amt: -67400,  cat: "주거" },
-      ],
-    },
-  ];
+  // 일자별 거래 그룹 — derived from real txns (most-recent first).
+  const { all: ledgerTxns } = useTransactions();
+  const days = useMemo(() => {
+    const grouped = groupByDay(ledgerTxns);
+    const out = [];
+    const todayKey = (() => {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    })();
+    let count = 0;
+    for (const [date, items] of grouped) {
+      if (count >= 4) break;
+      count++;
+      const dt = new Date(date);
+      const md = `${dt.getMonth() + 1}월 ${dt.getDate()}일`;
+      const dow = (date === todayKey ? "오늘 · " : "") + DOW[dt.getDay()];
+      const adapted = items.map(t => ({
+        ico: inferIcon(t),
+        name: t.label,
+        sub: `${t.time || ""} · ${t.cat || ""}`,
+        amt: t.amount,
+        cat: t.cat || "",
+        income: t.type === "in",
+      }));
+      const total = adapted.reduce((a, x) => a + x.amt, 0);
+      out.push({ date: md, dow, total, items: adapted });
+    }
+    return out;
+  }, [ledgerTxns]);
 
   // chip filter is currently visual-only
 
@@ -624,27 +655,30 @@ function MobileLedger() {
 }
 
 function MobileCalendar() {
-  // events keyed by day-of-month (Nov 2026)
-  const eventsByDay = {
-    3:  [{ t: "09:30", dur: "1시간",  title: "팀 스탠드업",          place: "온라인",       color: "#cfe7ff" }],
-    7:  [
-          { t: "11:00", dur: "30분",   title: "치과 정기검진",         place: "강남 미소치과", color: "#ffb38a" },
-          { t: "19:00", dur: "2시간",  title: "독서 모임",             place: "합정 카페",     color: "#d4c1f0" },
-        ],
-    14: [
-          { t: "10:00", dur: "1시간",  title: "디자인 시스템 리뷰",    place: "온라인",       color: "#cfe7ff" },
-          { t: "14:30", dur: "45분",   title: "1:1 멘토링",            place: "성수 사무실",   color: "#b9e7c9" },
-          { t: "19:30", dur: "2시간",  title: "저녁 약속",             place: "이태원",       color: "#ffb38a" },
-        ],
-    18: [{ t: "15:00", dur: "1.5시간", title: "분기 회고",             place: "회의실 B",    color: "#d4c1f0" }],
-    22: [
-          { t: "전일",  dur: "",       title: "엄마 생신",             place: "본가",         color: "#ffb38a" },
-          { t: "18:00", dur: "3시간",  title: "가족 저녁 식사",         place: "한식당",       color: "#b9e7c9" },
-        ],
-    27: [{ t: "10:00", dur: "1시간",  title: "분기 결산 회의",        place: "온라인",       color: "#cfe7ff" }],
-  };
+  // Events come from the events repo, grouped by day-of-month for the
+  // current calendar month.
+  const { data: monthEventsAll } = useEvents();
+  const todayDateObj = new Date();
+  const yr = todayDateObj.getFullYear(), mo = todayDateObj.getMonth();
+  const monthPrefix = `${yr}-${String(mo + 1).padStart(2, "0")}-`;
+  const eventsByDay = useMemo(() => {
+    const map = {};
+    for (const ev of monthEventsAll) {
+      if (!ev.date.startsWith(monthPrefix)) continue;
+      const day = parseInt(ev.date.slice(8, 10), 10);
+      const adapted = {
+        t: ev.allDay ? "전일" : ev.startTime || "",
+        dur: ev.endTime ? `${ev.startTime || ""}~${ev.endTime}` : "",
+        title: ev.title,
+        place: ev.place || "",
+        color: ev.color || "#cfe7ff",
+      };
+      (map[day] ||= []).push(adapted);
+    }
+    return map;
+  }, [monthEventsAll, monthPrefix]);
   const dayNames = DOW;
-  const today = 14;
+  const today = todayDateObj.getDate();
   const [sel, setSel] = useState(today);
 
   const selEvents = eventsByDay[sel] || [];
@@ -757,69 +791,38 @@ function MobileCommunity() {
     setComposeOpen(false);
   };
 
-  // ── 챌린지 데이터
-  const challenges = [
-    { id: "c1", title: "11월 무지출 5일",      sub: "외식·배달 끊기",      members: 1284, days: "5/30일", progress: 0.82, color: "#ffd84d", emoji: "🍱" },
-    { id: "c2", title: "커피값 모으기",         sub: "매일 ₩4,500 적금",    members:  892, days: "12/30일", progress: 0.40, color: "#cfe7ff", emoji: "☕" },
-    { id: "c3", title: "구독 다이어트",         sub: "월 ₩50,000 줄이기",   members:  567, days: "8/30일",  progress: 0.62, color: "#ffb38a", emoji: "✂️" },
-  ];
+  // ── Data via hooks. The community feed render expects:
+  //   - challenges: { id, title, sub, members, days: "X/30일", progress, color, emoji }
+  //   - posts:      { id, author, avatar, tag, time, title, body, likes, comments, badge?, stat: {label, val, color} }
+  //   - ranking:    { rank, name, saved, avatar, streak, medal: "🥇" | "🥈" | "🥉" | undefined }
+  // Canonical types differ slightly (Post.stat is string; Challenge.days is number;
+  // Ranker.medal is "gold"/"silver"/"bronze") — adapt at this seam so we don't
+  // touch the render below.
+  const challengesRaw = useChallenges().data;
+  const challenges = useMemo(() =>
+    challengesRaw.map(c => ({ ...c, days: `${c.days}/30일` })), [challengesRaw]);
 
-  // ── 인증 피드
-  const posts = [
-    {
-      id: "p1",
-      author: "절약왕민지",
-      avatar: "🌱",
-      tag: "#11월무지출",
-      time: "2시간 전",
-      title: "오늘도 무지출 성공!",
-      body: "회사 도시락 + 집에서 저녁 해먹기. 5일 연속이에요. 처음엔 힘들었는데 이제 습관이 되어가요 ☺️",
-      stat: { label: "오늘 지출", val: "₩0", color: "#4a8d5a" },
-      likes: 142, comments: 18, badge: "🔥 5일 연속",
-    },
-    {
-      id: "p2",
-      author: "커피요정",
-      avatar: "☕",
-      tag: "#커피값모으기",
-      time: "5시간 전",
-      title: "12일째 적금 인증",
-      body: "스타벅스 대신 회사 커피머신. 오늘까지 ₩54,000 모았어요!",
-      stat: { label: "12일 누적", val: "₩54,000", color: "#1f1d18" },
-      likes: 89, comments: 12,
-    },
-    {
-      id: "p3",
-      author: "지출체크",
-      avatar: "📒",
-      tag: "#가계부공유",
-      time: "어제",
-      title: "10월 결산 — 처음으로 +₩50만",
-      body: "월급 받자마자 자동이체 + 주간 예산 ₩100,000 룰 지킨 결과예요. 다음 달은 +₩60만 도전!",
-      stat: { label: "10월 잔고", val: "+₩523,000", color: "#4a8d5a" },
-      likes: 256, comments: 41, badge: "🏆 베스트",
-    },
-    {
-      id: "p4",
-      author: "구독정리꾼",
-      avatar: "✂️",
-      tag: "#구독다이어트",
-      time: "2일 전",
-      title: "안 쓰던 구독 4개 해지함",
-      body: "넷플릭스, 멜론, 클라우드, 운동앱 — 다 해지하고 ₩47,000 절약. 진짜 필요한 것만 남기니 후련해요.",
-      stat: { label: "월 절약액", val: "-₩47,000", color: "#dc4c3e" },
-      likes: 178, comments: 24,
-    },
-  ];
+  const postsRaw = usePosts().data;
+  const parseStat = (statStr) => {
+    // "오늘 지출 ₩0" → { label: "오늘 지출", val: "₩0", color: derived }
+    if (!statStr) return { label: "", val: "", color: "var(--ink)" };
+    const m = String(statStr).match(/^(.+?)\s+([+\-]?₩?[\d,.]+\S*)\s*$/);
+    if (!m) return { label: statStr, val: "", color: "var(--ink)" };
+    const [, label, val] = m;
+    let color = "#1f1d18";
+    if (val.startsWith("+")) color = "#4a8d5a";
+    else if (val.startsWith("-")) color = "#dc4c3e";
+    else if (val === "₩0") color = "#4a8d5a";
+    return { label, val, color };
+  };
+  const posts = useMemo(() =>
+    postsRaw.map(p => ({ ...p, stat: parseStat(p.stat) })), [postsRaw]);
 
-  // ── 이번 주 절약왕 랭킹
-  const ranking = [
-    { rank: 1, name: "절약왕민지",  saved: 312000, avatar: "🌱", streak: 21, medal: "🥇" },
-    { rank: 2, name: "지출체크",     saved: 287500, avatar: "📒", streak: 18, medal: "🥈" },
-    { rank: 3, name: "구독정리꾼",   saved: 184000, avatar: "✂️", streak: 12, medal: "🥉" },
-    { rank: 4, name: "도시락마스터", saved: 156000, avatar: "🍱", streak:  9 },
-    { rank: 5, name: "현금쓰는사람", saved: 142000, avatar: "💵", streak:  7 },
-  ];
+  const rankingRaw = useRanking().data;
+  const ranking = useMemo(() => rankingRaw.map(r => ({
+    ...r,
+    medal: r.medal === 'gold' ? '🥇' : r.medal === 'silver' ? '🥈' : r.medal === 'bronze' ? '🥉' : undefined,
+  })), [rankingRaw]);
 
   return (
     <div>
@@ -1256,36 +1259,19 @@ function ComposePostSheet({ open, onClose, onSubmit }) {
 function CommentsSheet({ post, onClose }) {
   const open = !!post;
   const [draft, setDraft] = useState("");
-  const [extras, setExtras] = useState([]); // user-added comments
+  useEffect(() => { if (open) { setDraft(""); } }, [open, post && post.id]);
 
-  useEffect(() => { if (open) { setDraft(""); setExtras([]); } }, [open, post && post.id]);
-
-  // mocked seed comments per post (deterministic by post.id)
-  const seed = open ? (
-    {
-      p1: [
-        { who: "단호박", emoji: "🎃", time: "2시간 전", text: "와 5일째 진짜 대단해요 👏", likes: 12 },
-        { who: "햇님",    emoji: "☀️", time: "1시간 전", text: "텀블러 같이 챙겨야겠어요!",   likes: 8 },
-        { who: "구름이",  emoji: "☁️", time: "32분 전",  text: "저도 도전해볼게요",           likes: 3 },
-      ],
-      p2: [
-        { who: "초록이", emoji: "🌱", time: "3시간 전", text: "금액이 진짜 크네요 ㄷㄷ", likes: 24 },
-        { who: "달님",   emoji: "🌙", time: "2시간 전", text: "도시락 메뉴 공유해주세요!", likes: 14 },
-      ],
-      p3: [
-        { who: "별빛",   emoji: "✨", time: "5시간 전", text: "구독 정리 진짜 답이에요", likes: 18 },
-      ],
-      p4: [
-        { who: "바다",   emoji: "🌊", time: "어제",    text: "배달은 진짜 무서워요…",   likes: 7 },
-      ],
-    }[post.id] || []
-  ) : [];
-
-  const allComments = [...seed, ...extras];
+  // Comments backed by usePostComments hook (seed + session-local extras).
+  const { comments, add } = usePostComments(post?.id);
+  // Adapt canonical Comment shape → render shape used below.
+  const allComments = useMemo(() => comments.map(c => ({
+    who: c.author, emoji: c.avatar, time: c.time, text: c.body, likes: c.likes,
+    mine: c.author === "나비",
+  })), [comments]);
 
   const submit = () => {
     if (!draft.trim()) return;
-    setExtras(arr => [...arr, { who: "나비", emoji: "🦋", time: "방금", text: draft.trim(), likes: 0, mine: true }]);
+    add(draft.trim());
     setDraft("");
   };
 
@@ -3447,7 +3433,8 @@ function MobileApp({ initialTab = "home" }) {
     //   menu → calendar → 일정 추가  ·  menu → subs → 구독 추가
     //   ledger / home / community → 거래 추가
     const top = menuStack[menuStack.length - 1];
-    if (tab === "menu" && top === "calendar") setAddEventOpen(true);
+    if (tab === "calendar") setAddEventOpen(true);
+    else if (tab === "menu" && top === "calendar") setAddEventOpen(true);
     else if (tab === "menu" && top === "subs") setAddSubOpen(true);
     else setAddTxnOpen(true);
   };
@@ -3459,7 +3446,7 @@ function MobileApp({ initialTab = "home" }) {
 
   // unified navigate — main tabs go to tabs, sub-routes (subs/notif/salary/loan/crop/pdf/calendar) push menu stack
   const navigate = (route) => {
-    const tabs = ["home", "ledger", "community", "menu"];
+    const tabs = ["home", "ledger", "calendar", "menu"];
     if (tabs.includes(route)) { goTab(route); return; }
     // calendar opens as a sub-route inside menu (since it's no longer a bottom tab)
     setTab("menu");
@@ -3483,7 +3470,7 @@ function MobileApp({ initialTab = "home" }) {
   const Page = (
     tab === "home"      ? <MobileHome onNavigate={navigate} onAddTxn={() => setAddTxnOpen(true)} onAddEvent={() => setAddEventOpen(true)} /> :
     tab === "ledger"    ? <MobileLedger /> :
-    tab === "community" ? <MobileCommunity /> :
+    tab === "calendar"  ? <MobileCalendar /> :
     tab === "menu"      ? MenuPage :
     null
   );
@@ -3492,7 +3479,7 @@ function MobileApp({ initialTab = "home" }) {
   const titleByTab = {
     home:      { greet: "안녕하세요 ☀️", name: "나비님" },
     ledger:    { greet: "11월의 흐름",   name: "가계부" },
-    community: { greet: "함께 절약해요", name: "커뮤니티" },
+    calendar:  { greet: "이번 달 일정",   name: "캘린더" },
     menu:      { greet: "내 정보",        name: "메뉴" },
   };
   const subTitleByRoute = {
@@ -3534,11 +3521,11 @@ function MobileApp({ initialTab = "home" }) {
         </button>
         <button className="dfm-tab fab" onClick={onFab}>
           <span className="fab-btn"><Ico name="plus" size={24} /></span>
-          <span className="label">{(tab === "menu" && menuStack[menuStack.length - 1] === "calendar") ? "일정" : "거래"}</span>
+          <span className="label">{(tab === "calendar" || (tab === "menu" && menuStack[menuStack.length - 1] === "calendar")) ? "일정" : "거래"}</span>
         </button>
-        <button className={`dfm-tab ${tab === "community" ? "active" : ""}`} onClick={() => goTab("community")}>
-          <Ico name="users" />
-          <span className="label">커뮤니티</span>
+        <button className={`dfm-tab ${tab === "calendar" ? "active" : ""}`} onClick={() => goTab("calendar")}>
+          <Ico name="cal" />
+          <span className="label">캘린더</span>
         </button>
         <button className={`dfm-tab ${tab === "menu" ? "active" : ""}`} onClick={() => goTab("menu")}>
           <Ico name="menu" />

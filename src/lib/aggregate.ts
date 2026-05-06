@@ -9,7 +9,7 @@ export const sumBy = <T extends Record<string, unknown>, K extends keyof T>(
 ): number =>
   arr.reduce((a, x) => {
     const v = x[key];
-    return a + (typeof v === 'number' ? v : 0);
+    return a + (typeof v === "number" ? v : 0);
   }, 0);
 
 export interface CategoryBreakdownEntry {
@@ -32,14 +32,14 @@ export const categoryBreakdown = <T extends Record<string, unknown>>(
   items.forEach((it) => {
     const k = String(it[catKey]);
     const v = it[amtKey];
-    map[k] = (map[k] || 0) + (typeof v === 'number' ? v : 0);
+    map[k] = (map[k] || 0) + (typeof v === "number" ? v : 0);
   });
   const total = Object.values(map).reduce((a, n) => a + n, 0);
   return Object.entries(map)
     .map(([cat, amount]) => ({
       cat,
       amount,
-      pct: total > 0 ? ((amount / total) * 100).toFixed(1) : '0.0',
+      pct: total > 0 ? ((amount / total) * 100).toFixed(1) : "0.0",
     }))
     .sort((a, b) => b.amount - a.amount);
 };
