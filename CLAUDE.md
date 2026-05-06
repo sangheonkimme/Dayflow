@@ -64,3 +64,9 @@ When adding a new domain entity: add seeds → add a `Repository` to mock source
 - Component files often export multiple named components (e.g. `pages.tsx` exports `LedgerPage`, `CalendarPage`, `SettingsPage`). Lazy imports use `.then(m => ({ default: m.X }))` — keep this pattern when adding lazy routes.
 - All copy is Korean. Match the existing tone for new UI strings.
 - Styles are plain CSS files under `src/styles/`, imported once via `main.tsx`. There is no CSS modules / Tailwind setup.
+
+## Commit message convention
+
+- **본문은 한국어로 작성.** Conventional Commits 접두사(`feat:`, `fix:`, `chore:`, `refactor:`, `docs:` 등)는 영어 그대로 유지. 예: `feat: 사이드바 스크롤 + 로그아웃 버튼 정리`.
+- 마이그레이션 Phase 커밋은 `chore(phase-N): ...` 형태로 통일.
+- 본문/푸터 한국어. `Co-Authored-By` / `🤖 Generated with` 풋터는 추가하지 않음 (전역 룰).
