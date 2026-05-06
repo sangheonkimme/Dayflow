@@ -2,7 +2,7 @@
 // PINNED_INFO_SEEDS — extracted from notes.tsx DeskPile pins
 // ============================================================
 
-import type { PinnedInfo } from '@/data/seeds/types';
+import type { PinnedInfo } from '@/shared/data/seeds/types';
 
 export const PINNED_INFO_SEEDS: PinnedInfo[] = [
   { id: 1, label: '사무실 wifi',   value: 'WL_office / coffee2024' },

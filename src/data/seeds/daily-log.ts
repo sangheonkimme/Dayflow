@@ -3,7 +3,7 @@
 // One entry keyed by today's YYYY-MM-DD.
 // ============================================================
 
-import type { DailyLog } from '@/data/seeds/types';
+import type { DailyLog } from '@/shared/data/seeds/types';
 
 const today = new Date();
 const id = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
