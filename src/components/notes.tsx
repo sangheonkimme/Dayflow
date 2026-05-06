@@ -1,10 +1,10 @@
 // @ts-nocheck
 import { useState } from "react";
 import { Icon } from "@/components/icons";
-import { useStickyNotes } from "@/data/hooks/useStickyNotes";
-import { useChecklist } from "@/data/hooks/useChecklist";
-import { useDailyLog } from "@/data/hooks/useDailyLog";
-import { usePinnedInfo } from "@/data/hooks/usePinnedInfo";
+import { useStickyNotes } from "@/features/sticky-notes/hooks/useStickyNotes";
+import { useChecklist } from "@/features/checklist/hooks/useChecklist";
+import { useDailyLog } from "@/features/daily-log/hooks/useDailyLog";
+import { usePinnedInfo } from "@/features/pinned-info/hooks/usePinnedInfo";
 import { MOODS, emojiToMood, moodToEmoji } from "@/shared/data/seeds/lookups";
 import { stickyDateLabel, stickyAuthorLabel } from "@/data/selectors/derived";
 

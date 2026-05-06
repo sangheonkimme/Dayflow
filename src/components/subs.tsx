@@ -5,7 +5,7 @@ import { Modal } from '@/components/ui/Modal';
 import { formatWon } from '@/lib/format';
 import { DOW } from '@/lib/date';
 import { sumBy } from '@/lib/aggregate';
-import { useSubscriptions } from '@/data/hooks/useSubscriptions';
+import { useSubscriptions } from '@/features/subscriptions/hooks/useSubscriptions';
 import {
   subscriptionColor,
   subscriptionInitial,
