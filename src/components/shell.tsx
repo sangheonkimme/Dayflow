@@ -1,5 +1,6 @@
 import { Icon } from "@/components/icons";
 import { DOW } from "@/lib/date";
+import { useAuth } from "@/data/hooks/useAuth";
 
 // ============================================================
 // SIDEBAR
@@ -10,6 +11,9 @@ interface SidebarProps {
 }
 
 function Sidebar({ active, onSelect }: SidebarProps) {
+  const { user, signOut } = useAuth();
+  const displayName = user?.email?.split("@")[0] ?? "나비";
+  const avatarChar = (displayName[0] ?? "N").toUpperCase();
   // settings is reachable via gear icon next to user name in the side-foot,
   // so it doesn't need its own nav entry.
   const groups = [
@@ -103,10 +107,10 @@ function Sidebar({ active, onSelect }: SidebarProps) {
       </nav>
 
       <div className={"side-foot" + (active === "settings" ? " active" : "")}>
-        <div className="avatar">N</div>
+        <div className="avatar">{avatarChar}</div>
         <div className="side-foot-meta">
-          <b>나비</b>
-          <span>무료 플랜</span>
+          <b>{displayName}</b>
+          <span>{user ? "무료 플랜" : "로그인 필요"}</span>
         </div>
         <button
           className="side-foot-settings"
@@ -116,6 +120,16 @@ function Sidebar({ active, onSelect }: SidebarProps) {
         >
           <Icon name="settings" size={16} />
         </button>
+        {user && (
+          <button
+            className="side-foot-settings"
+            onClick={() => signOut()}
+            title="로그아웃"
+            aria-label="로그아웃"
+          >
+            <Icon name="arrow" size={16} />
+          </button>
+        )}
       </div>
     </aside>
   );

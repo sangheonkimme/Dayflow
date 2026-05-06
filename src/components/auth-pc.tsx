@@ -83,7 +83,7 @@ function BrandPanel({ dark, lang }) {
   const t = AUTH_TEXT[lang];
   return (
     <div style={{
-      flex: 1, height: "100%",
+      flex: 1, minHeight: "100vh",
       background: "#1a1814",
       color: "#fff",
       padding: "48px 56px",
@@ -183,9 +183,9 @@ function PCLogin({ lang = "ko", dark = false, onSwitch }) {
   const subtle = dark ? "rgba(255,255,255,0.4)" : "rgba(26,24,20,0.42)";
 
   return (
-    <div style={{ display: "flex", height: "100%", background: dark ? "#0e0d0a" : "#faf7f0" }}>
+    <div style={{ display: "flex", minHeight: "100vh", background: dark ? "#0e0d0a" : "#faf7f0" }}>
       <BrandPanel dark={dark} lang={lang} />
-      <div style={{ flex: 1, height: "100%", display: "flex", alignItems: "center", justifyContent: "center", padding: 48, color: ink }}>
+      <div style={{ flex: 1, minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: 48, color: ink }}>
         <div style={{ width: "100%", maxWidth: 380, display: "flex", flexDirection: "column", gap: 24 }}>
           <div>
             <div style={{ fontSize: 12, fontWeight: 700, color: mute, letterSpacing: "0.1em", textTransform: "uppercase" }}>{lang === "ko" ? "로그인" : "Sign in"}</div>
@@ -297,9 +297,9 @@ function PCSignup({ lang = "ko", dark = false, onSwitch }) {
   );
 
   return (
-    <div style={{ display: "flex", height: "100%", background: dark ? "#0e0d0a" : "#faf7f0" }}>
+    <div style={{ display: "flex", minHeight: "100vh", background: dark ? "#0e0d0a" : "#faf7f0" }}>
       <BrandPanel dark={dark} lang={lang} />
-      <div style={{ flex: 1, height: "100%", display: "flex", alignItems: "center", justifyContent: "center", padding: 48, color: ink, overflowY: "auto" }}>
+      <div style={{ flex: 1, minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: 48, color: ink, overflowY: "auto" }}>
         <div style={{ width: "100%", maxWidth: 380, display: "flex", flexDirection: "column", gap: 22 }}>
           <div>
             <div style={{ fontSize: 12, fontWeight: 700, color: mute, letterSpacing: "0.1em", textTransform: "uppercase" }}>{lang === "ko" ? "회원가입" : "Sign up"}</div>

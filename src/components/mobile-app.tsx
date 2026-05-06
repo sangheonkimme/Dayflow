@@ -4,6 +4,7 @@ import { DOW } from '@/lib/date';
 import { useTransactions } from '@/data/hooks/useTransactions';
 import { useEvents, useEventsByDate } from '@/data/hooks/useEvents';
 import { useChecklist } from '@/data/hooks/useChecklist';
+import { useAuth } from '@/data/hooks/useAuth';
 import { groupByDay, recent as selectRecent } from '@/data/selectors/transactions';
 import { inferIcon } from '@/data/selectors/derived';
 import { daysWithEventsInMonth } from '@/data/selectors/events';
@@ -1799,8 +1800,9 @@ function NotificationsScreen({ onBack }) {
 // PROFILE — 프로필 / 계정
 // ────────────────────────────────────────────────
 function ProfileScreen({ onBack, onUpgrade }) {
-  const [name, setName] = useState("나비");
-  const [email] = useState("nabi@dayflow.app");
+  const { user, signOut } = useAuth();
+  const [name, setName] = useState(user?.email?.split("@")[0] ?? "나비");
+  const [email] = useState(user?.email ?? "");
   const [editOpen, setEditOpen] = useState(false);
   const [pwOpen, setPwOpen] = useState(false);
   const stats = [
@@ -1882,7 +1884,7 @@ function ProfileScreen({ onBack, onUpgrade }) {
       </div>
 
       <div className="dfm-card" style={{ padding: 0, marginBottom: 14 }}>
-        <Row title="로그아웃" onClick={() => {}} danger last />
+        <Row title="로그아웃" onClick={() => signOut()} danger last />
       </div>
 
       <div style={{ textAlign: "center", fontSize: 10, color: "var(--ink-mute)", padding: "8px 0 24px", letterSpacing: "0.06em" }}>

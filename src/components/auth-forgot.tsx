@@ -75,7 +75,7 @@ function ForgotScreen({ lang = "ko", dark = false, initialStep = 0, onBackToLogi
   );
 
   return (
-    <div style={{ minHeight: "100%", background: bg, padding: "44px 24px 28px", display: "flex", flexDirection: "column", color: ink, gap: 22 }}>
+    <div style={{ minHeight: "100vh", background: bg, padding: "44px 24px 28px", display: "flex", flexDirection: "column", color: ink, gap: 22 }}>
       {/* Header */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <button onClick={onBackToLogin} style={{

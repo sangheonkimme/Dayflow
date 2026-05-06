@@ -72,7 +72,7 @@ function SignupScreen({ variant = "A", lang = "ko", dark = false, onSwitch }) {
   if (variant === "A") {
     return (
       <div style={{
-        minHeight: "100%",
+        minHeight: "100vh",
         background: dark ? "#0e0d0a" : "#faf7f0",
         padding: "44px 24px 28px",
         display: "flex",
@@ -137,7 +137,7 @@ function SignupScreen({ variant = "A", lang = "ko", dark = false, onSwitch }) {
   // ─────── B · Yellow hero (matches login B) ───────
   if (variant === "B") {
     return (
-      <div style={{ minHeight: "100%", background: dark ? "#0e0d0a" : "#faf7f0", display: "flex", flexDirection: "column", color: ink }}>
+      <div style={{ minHeight: "100vh", background: dark ? "#0e0d0a" : "#faf7f0", display: "flex", flexDirection: "column", color: ink }}>
         <div style={{ background: "#1a1814", color: "#fff", padding: "52px 24px 32px", position: "relative", overflow: "hidden" }}>
           <div style={{ position: "absolute", top: 30, right: -10, fontSize: 80, opacity: 0.08, fontWeight: 800 }}>👋</div>
           <BrandMark size={28} dark={true} />
@@ -175,7 +175,7 @@ function SignupScreen({ variant = "A", lang = "ko", dark = false, onSwitch }) {
   // ─────── C · Two-step (email first, then details) ───────
   const [step, setStep] = useState(0);
   return (
-    <div style={{ minHeight: "100%", background: dark ? "#0e0d0a" : "#faf7f0", padding: "44px 24px 28px", display: "flex", flexDirection: "column", gap: 22, color: ink }}>
+    <div style={{ minHeight: "100vh", background: dark ? "#0e0d0a" : "#faf7f0", padding: "44px 24px 28px", display: "flex", flexDirection: "column", gap: 22, color: ink }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <BrandMark dark={dark} size={26} />
         <div style={{ display: "flex", gap: 4 }}>
@@ -252,7 +252,7 @@ function OnboardingScreen({ variant = "A", lang = "ko", dark = false, initialSte
   // ─────── Variant A · Stepper layout ───────
   if (variant === "A") {
     return (
-      <div style={{ minHeight: "100%", background: dark ? "#0e0d0a" : "#faf7f0", display: "flex", flexDirection: "column", color: ink }}>
+      <div style={{ minHeight: "100vh", background: dark ? "#0e0d0a" : "#faf7f0", display: "flex", flexDirection: "column", color: ink }}>
         <div style={{ padding: "44px 24px 0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <div style={{ display: "flex", gap: 6 }}>
             {[0,1,2,3].map(i => (
@@ -383,7 +383,7 @@ function OnboardingScreen({ variant = "A", lang = "ko", dark = false, initialSte
   if (variant === "B") {
     const heroBg = ["#ffd84d", "#c8e8d2", "#ffd5dc", "#1a1814"];
     return (
-      <div style={{ minHeight: "100%", background: dark ? "#0e0d0a" : "#faf7f0", display: "flex", flexDirection: "column", color: ink }}>
+      <div style={{ minHeight: "100vh", background: dark ? "#0e0d0a" : "#faf7f0", display: "flex", flexDirection: "column", color: ink }}>
         <div style={{ padding: "44px 24px 0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <span style={{ fontSize: 12, fontWeight: 700, color: mute, fontFamily: "ui-monospace, monospace", letterSpacing: "0.08em" }}>{step + 1} / {totalSteps}</span>
           <a style={{ fontSize: 12, fontWeight: 600, color: mute, cursor: "pointer", textDecoration: "none" }}>{t.skip}</a>
@@ -474,7 +474,7 @@ function OnboardingScreen({ variant = "A", lang = "ko", dark = false, initialSte
 
   // ─────── Variant C · Conversational, no progress bar ───────
   return (
-    <div style={{ minHeight: "100%", background: dark ? "#0e0d0a" : "#faf7f0", padding: "44px 24px 24px", display: "flex", flexDirection: "column", color: ink }}>
+    <div style={{ minHeight: "100vh", background: dark ? "#0e0d0a" : "#faf7f0", padding: "44px 24px 24px", display: "flex", flexDirection: "column", color: ink }}>
       <div style={{ display: "flex", justifyContent: "space-between" }}>
         <BrandMark dark={dark} size={24} />
         <a style={{ fontSize: 12, fontWeight: 600, color: mute, cursor: "pointer", textDecoration: "none" }}>{t.skip}</a>
