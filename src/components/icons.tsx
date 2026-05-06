@@ -57,6 +57,7 @@ const Icon = ({ name, size = 18 }: IconProps) => {
     history: <><path d="M3 12a9 9 0 1 0 3-6.7L3 8" /><path d="M3 3v5h5" /><path d="M12 8v4l3 2" /></>,
     quote: <><path d="M7 7h4v4H7zm0 4c0 3 1 4 3 5M13 7h4v4h-4zm0 4c0 3 1 4 3 5" /></>,
     h1: <><path d="M4 4v16M14 4v16M4 12h10" /></>,
+    logout: <><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><path d="M16 17l5-5-5-5" /><path d="M21 12H9" /></>,
   };
   return <svg {...props}>{paths[name] || null}</svg>;
 };

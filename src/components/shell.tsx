@@ -106,28 +106,31 @@ function Sidebar({ active, onSelect }: SidebarProps) {
         ))}
       </nav>
 
-      <div className={"side-foot" + (active === "settings" ? " active" : "")}>
-        <div className="avatar">{avatarChar}</div>
-        <div className="side-foot-meta">
-          <b>{displayName}</b>
-          <span>{user ? "무료 플랜" : "로그인 필요"}</span>
-        </div>
-        <button
-          className="side-foot-settings"
-          onClick={() => onSelect("settings")}
-          title="환경설정"
-          aria-label="환경설정"
-        >
-          <Icon name="settings" size={16} />
-        </button>
-        {user && (
+      <div className="side-foot-wrap">
+        <div className={"side-foot" + (active === "settings" ? " active" : "")}>
+          <div className="avatar">{avatarChar}</div>
+          <div className="side-foot-meta">
+            <b>{displayName}</b>
+            <span>{user ? "무료 플랜" : "로그인 필요"}</span>
+          </div>
           <button
             className="side-foot-settings"
+            onClick={() => onSelect("settings")}
+            title="환경설정"
+            aria-label="환경설정"
+          >
+            <Icon name="settings" size={16} />
+          </button>
+        </div>
+        {user && (
+          <button
+            type="button"
+            className="side-foot-logout"
             onClick={() => signOut()}
-            title="로그아웃"
             aria-label="로그아웃"
           >
-            <Icon name="arrow" size={16} />
+            <Icon name="logout" size={14} />
+            로그아웃
           </button>
         )}
       </div>
