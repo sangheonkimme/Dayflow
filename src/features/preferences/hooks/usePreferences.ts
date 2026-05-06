@@ -6,7 +6,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import type { Tweaks } from '@/types';
-import { TWEAK_DEFAULTS } from '@/data/seeds';
+import { TWEAK_DEFAULTS } from '@/shared/data/seeds';
 
 const KEY = 'dayflow.preferences';
 

@@ -13,8 +13,8 @@ import {
   TweakRadio,
 } from "@/components/tweaks-panel";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
-import { usePreferences } from "@/data/hooks/usePreferences";
-import { useAuth } from "@/data/hooks/useAuth";
+import { usePreferences } from "@/features/preferences/hooks/usePreferences";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 import { useTransactions } from "@/features/transactions/hooks/useTransactions";
 import { useEvents } from "@/features/events/hooks/useEvents";
 import type {

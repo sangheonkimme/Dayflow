@@ -7,7 +7,7 @@ import {
   memoExcerpt,
   memoWordCount,
   memoUpdatedLabel,
-} from "@/data/selectors/derived";
+} from "@/features/memos/selectors/derived";
 
 // ============================================================
 // MEMO PAGE — 장문 메모 detail page

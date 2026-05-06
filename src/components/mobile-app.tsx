@@ -4,9 +4,9 @@ import { DOW } from '@/lib/date';
 import { useTransactions } from '@/features/transactions/hooks/useTransactions';
 import { useEvents, useEventsByDate } from '@/features/events/hooks/useEvents';
 import { useChecklist } from '@/features/checklist/hooks/useChecklist';
-import { useAuth } from '@/data/hooks/useAuth';
+import { useAuth } from '@/features/auth/hooks/useAuth';
 import { groupByDay, recent as selectRecent } from '@/features/transactions/selectors/transactions';
-import { inferIcon } from '@/data/selectors/derived';
+import { inferIcon } from '@/features/transactions/selectors/derived';
 import { daysWithEventsInMonth } from '@/features/events/selectors/events';
 
 // ============================================================

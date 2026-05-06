@@ -7,7 +7,7 @@ import {
   EyeIcon,
   pwdScore,
 } from "@/components/auth-login";
-import { useAuth } from "@/data/hooks/useAuth";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 
 // ============================================================
 // PC / DESKTOP AUTH SCREENS

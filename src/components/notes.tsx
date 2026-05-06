@@ -6,7 +6,7 @@ import { useChecklist } from "@/features/checklist/hooks/useChecklist";
 import { useDailyLog } from "@/features/daily-log/hooks/useDailyLog";
 import { usePinnedInfo } from "@/features/pinned-info/hooks/usePinnedInfo";
 import { MOODS, emojiToMood, moodToEmoji } from "@/shared/data/seeds/lookups";
-import { stickyDateLabel, stickyAuthorLabel } from "@/data/selectors/derived";
+import { stickyDateLabel, stickyAuthorLabel } from "@/features/sticky-notes/selectors/derived";
 
 // ============================================================
 // STICKY NOTES — hero feature

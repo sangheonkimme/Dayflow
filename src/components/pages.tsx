@@ -8,7 +8,7 @@ import {
   TRANSACTION_CATEGORIES,
 } from "@/lib/categories";
 import { useTransactions } from "@/features/transactions/hooks/useTransactions";
-import { inferIcon } from "@/data/selectors/derived";
+import { inferIcon } from "@/features/transactions/selectors/derived";
 import { useEvents } from "@/features/events/hooks/useEvents";
 import {
   monthlyTotals,

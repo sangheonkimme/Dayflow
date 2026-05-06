@@ -10,7 +10,7 @@ import {
   subscriptionColor,
   subscriptionInitial,
   formatStarted,
-} from '@/data/selectors/derived';
+} from '@/features/subscriptions/selectors/derived';
 
 // ============================================================
 // SUBSCRIPTIONS PAGE — 정기구독 (simplified)

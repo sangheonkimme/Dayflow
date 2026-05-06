@@ -10,7 +10,7 @@ import {
   currentMonthSummary,
   recent as selectRecent,
 } from '@/features/transactions/selectors/transactions';
-import { inferIcon, inferPayday } from '@/data/selectors/derived';
+import { inferIcon, inferPayday } from '@/features/transactions/selectors/derived';
 import {
   daysWithEventsInMonth,
   upcoming as upcomingEvents,

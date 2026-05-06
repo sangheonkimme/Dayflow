@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { useState } from 'react';
 import { AUTH_TEXT, BrandMark, Field, Btn, EyeIcon, pwdScore } from '@/components/auth-login';
-import { useAuth } from '@/data/hooks/useAuth';
+import { useAuth } from '@/features/auth/hooks/useAuth';
 
 // ============================================================
 // FORGOT PASSWORD — mobile (3 steps)
