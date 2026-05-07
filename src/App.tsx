@@ -3,7 +3,9 @@ import { Sidebar, Topbar } from "@/components/shell";
 import { StickyNotes, Checklist } from "@/components/notes";
 import { GeneralTimer, Pomodoro, Stopwatch } from "@/components/timers";
 import { MoneyFlow, MiniCalendar, ToolCard } from "@/components/money";
-import { LedgerPage, CalendarPage, SettingsPage } from "@/components/pages";
+import { LedgerPage } from "@/pages/ledger-page";
+import { CalendarPage } from "@/pages/calendar-page";
+import { SettingsPage } from "@/pages/settings/settings-page";
 import { TxnsPage } from "@/components/txns";
 import { TxnModal, EventModal } from "@/components/modals";
 import {
