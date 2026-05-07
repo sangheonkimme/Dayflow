@@ -3,9 +3,9 @@ import { Sidebar, Topbar } from "@/components/shell";
 import { StickyNotes, Checklist } from "@/components/notes";
 import { GeneralTimer, Pomodoro, Stopwatch } from "@/components/timers";
 import { MoneyFlow, MiniCalendar, ToolCard } from "@/components/money";
-import { LedgerPage } from "@/pages/ledger-page";
-import { CalendarPage } from "@/pages/calendar-page";
-import { SettingsPage } from "@/pages/settings/settings-page";
+import { LedgerPage } from "@/pages/LedgerPage";
+import { CalendarPage } from "@/pages/CalendarPage";
+import { SettingsPage } from "@/pages/SettingsPage";
 import { TxnsPage } from "@/components/txns";
 import { TxnModal, EventModal } from "@/components/modals";
 import {
@@ -62,7 +62,7 @@ const PdfCanvasPage = lazy(() =>
   })),
 );
 const MobileApp = lazy(() =>
-  import("@/components/mobile-app").then((m) => ({ default: m.MobileApp })),
+  import("@/pages/mobile/MobileApp").then((m) => ({ default: m.MobileApp })),
 );
 const LoginScreen = lazy(() =>
   import("@/pages/auth/mobile/Login").then((m) => ({
