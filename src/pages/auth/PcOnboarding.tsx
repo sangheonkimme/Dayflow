@@ -1,10 +1,10 @@
 // @ts-nocheck
-import { BrandMark } from "@/pages/auth/shared/BrandMark";
+import { BrandMark } from "@/pages/auth/BrandMark";
 import { useState } from "react";
-import { AUTH_TEXT } from "@/pages/auth/shared/AuthText";
-import { PCField } from "@/pages/auth/pc/Field";
-import { PCBtn } from "@/pages/auth/pc/Btn";
-import { BrandPanel } from "@/pages/auth/pc/BrandPanel";
+import { AUTH_TEXT } from "@/pages/auth/authText";
+import { PCField } from "@/pages/auth/PcField";
+import { PCBtn } from "@/pages/auth/PcBtn";
+import { BrandPanel } from "@/pages/auth/PcBrandPanel";
 
 export const PCOnboarding = ({ lang = "ko", dark = false, initialStep = 0 }) => {
   const t = AUTH_TEXT[lang];

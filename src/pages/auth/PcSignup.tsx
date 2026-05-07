@@ -1,13 +1,13 @@
 // @ts-nocheck
 import { useState } from "react";
-import { AUTH_TEXT } from "@/pages/auth/shared/AuthText";
-import { GoogleIcon } from "@/pages/auth/shared/GoogleIcon";
-import { EyeIcon } from "@/pages/auth/shared/EyeIcon";
-import { pwdScore } from "@/pages/auth/shared/PwdScore";
+import { AUTH_TEXT } from "@/pages/auth/authText";
+import { GoogleIcon } from "@/pages/auth/GoogleIcon";
+import { EyeIcon } from "@/pages/auth/EyeIcon";
+import { pwdScore } from "@/pages/auth/pwdScore";
 import { useAuth } from "@/data/auth";
-import { PCField } from "@/pages/auth/pc/Field";
-import { PCBtn } from "@/pages/auth/pc/Btn";
-import { BrandPanel } from "@/pages/auth/pc/BrandPanel";
+import { PCField } from "@/pages/auth/PcField";
+import { PCBtn } from "@/pages/auth/PcBtn";
+import { BrandPanel } from "@/pages/auth/PcBrandPanel";
 
 export const PCSignup = ({ lang = "ko", dark = false, onSwitch }) => {
   const t = AUTH_TEXT[lang];

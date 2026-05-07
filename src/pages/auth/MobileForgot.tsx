@@ -1,12 +1,12 @@
 // @ts-nocheck
-import { pwdScore } from "@/pages/auth/shared/PwdScore";
+import { pwdScore } from "@/pages/auth/pwdScore";
 import { useState } from "react";
 import { useAuth } from "@/data/auth";
-import { AUTH_TEXT } from "@/pages/auth/shared/AuthText";
-import { EyeIcon } from "@/pages/auth/shared/EyeIcon";
-import { BrandMark } from "@/pages/auth/shared/BrandMark";
-import { Field } from "@/pages/auth/shared/Field";
-import { Btn } from "@/pages/auth/shared/Btn";
+import { AUTH_TEXT } from "@/pages/auth/authText";
+import { EyeIcon } from "@/pages/auth/EyeIcon";
+import { BrandMark } from "@/pages/auth/BrandMark";
+import { Field } from "@/pages/auth/Field";
+import { Btn } from "@/pages/auth/Btn";
 
 export const ForgotScreen = ({ lang = "ko", dark = false, initialStep = 0, onBackToLogin }) => {
   const t = AUTH_TEXT[lang];

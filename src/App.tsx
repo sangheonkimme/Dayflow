@@ -8,10 +8,10 @@ import { Stopwatch } from "@/pages/home/timers/Stopwatch";
 import { MoneyFlow } from "@/pages/home/MoneyFlow";
 import { MiniCalendar } from "@/pages/home/MiniCalendar";
 import { ToolCard } from "@/pages/home/ToolCard";
-import { LedgerPage } from "@/pages/LedgerPage";
-import { CalendarPage } from "@/pages/CalendarPage";
-import { SettingsPage } from "@/pages/SettingsPage";
-import { TxnsPage } from "@/pages/TxnsPage";
+import { LedgerPage } from "@/pages/ledger/LedgerPage";
+import { CalendarPage } from "@/pages/calendar/CalendarPage";
+import { SettingsPage } from "@/pages/settings/SettingsPage";
+import { TxnsPage } from "@/pages/txns/TxnsPage";
 import { TxnModal } from "@/pages/ledger/TxnModal";
 import { EventModal } from "@/pages/calendar/EventModal";
 import {
@@ -37,33 +37,33 @@ import type {
 } from "@/types";
 
 const MemoPage = lazy(() =>
-  import("@/pages/MemoPage").then((m) => ({ default: m.MemoPage })),
+  import("@/pages/memo/MemoPage").then((m) => ({ default: m.MemoPage })),
 );
 const SubsPage = lazy(() =>
-  import("@/pages/SubsPage").then((m) => ({ default: m.SubsPage })),
+  import("@/pages/subs/SubsPage").then((m) => ({ default: m.SubsPage })),
 );
 const SalaryCalcPage = lazy(() =>
-  import("@/pages/SalaryCalcPage").then((m) => ({
+  import("@/pages/salary/SalaryCalcPage").then((m) => ({
     default: m.SalaryCalcPage,
   })),
 );
 const LoanCalcPage = lazy(() =>
-  import("@/pages/LoanSearch").then((m) => ({
+  import("@/pages/loan/LoanSearch").then((m) => ({
     default: m.LoanCalcPage,
   })),
 );
 const SearchOverlay = lazy(() =>
-  import("@/pages/LoanSearch").then((m) => ({
+  import("@/pages/loan/LoanSearch").then((m) => ({
     default: m.SearchOverlay,
   })),
 );
 const CropCanvasPage = lazy(() =>
-  import("@/pages/ImageTools").then((m) => ({
+  import("@/pages/tools/ImageTools").then((m) => ({
     default: m.CropCanvasPage,
   })),
 );
 const PdfCanvasPage = lazy(() =>
-  import("@/pages/ImageTools").then((m) => ({
+  import("@/pages/tools/ImageTools").then((m) => ({
     default: m.PdfCanvasPage,
   })),
 );
@@ -71,36 +71,36 @@ const MobileApp = lazy(() =>
   import("@/pages/mobile/MobileApp").then((m) => ({ default: m.MobileApp })),
 );
 const LoginScreen = lazy(() =>
-  import("@/pages/auth/mobile/Login").then((m) => ({
+  import("@/pages/auth/MobileLogin").then((m) => ({
     default: m.LoginScreen,
   })),
 );
 const SignupScreen = lazy(() =>
-  import("@/pages/auth/mobile/Signup").then((m) => ({
+  import("@/pages/auth/MobileSignup").then((m) => ({
     default: m.SignupScreen,
   })),
 );
 const OnboardingScreen = lazy(() =>
-  import("@/pages/auth/mobile/Onboarding").then((m) => ({
+  import("@/pages/auth/MobileOnboarding").then((m) => ({
     default: m.OnboardingScreen,
   })),
 );
 const ForgotScreen = lazy(() =>
-  import("@/pages/auth/mobile/Forgot").then((m) => ({
+  import("@/pages/auth/MobileForgot").then((m) => ({
     default: m.ForgotScreen,
   })),
 );
 const PCLogin = lazy(() =>
-  import("@/pages/auth/pc/Login").then((m) => ({ default: m.PCLogin })),
+  import("@/pages/auth/PcLogin").then((m) => ({ default: m.PCLogin })),
 );
 const PCSignup = lazy(() =>
-  import("@/pages/auth/pc/Signup").then((m) => ({ default: m.PCSignup })),
+  import("@/pages/auth/PcSignup").then((m) => ({ default: m.PCSignup })),
 );
 const PCForgot = lazy(() =>
-  import("@/pages/auth/pc/Forgot").then((m) => ({ default: m.PCForgot })),
+  import("@/pages/auth/PcForgot").then((m) => ({ default: m.PCForgot })),
 );
 const PCOnboarding = lazy(() =>
-  import("@/pages/auth/pc/Onboarding").then((m) => ({
+  import("@/pages/auth/PcOnboarding").then((m) => ({
     default: m.PCOnboarding,
   })),
 );

@@ -1,8 +1,8 @@
 // @ts-nocheck
 import { useState } from "react";
-import { EyeIcon } from "@/pages/auth/shared/EyeIcon";
+import { EyeIcon } from "@/pages/auth/EyeIcon";
 
-export const Field = ({
+export const PCField = ({
   label,
   type = "text",
   value,
@@ -15,25 +15,25 @@ export const Field = ({
 }) => {
   const ink = dark ? "#fff" : "#1a1814";
   const mute = dark ? "rgba(255,255,255,0.55)" : "rgba(26,24,20,0.55)";
-  const bg = dark ? "rgba(255,255,255,0.06)" : "#fff";
+  const bg = dark ? "rgba(255,255,255,0.04)" : "#fff";
   const line = error
     ? "#dc4c3e"
     : dark
-      ? "rgba(255,255,255,0.14)"
+      ? "rgba(255,255,255,0.12)"
       : "rgba(0,0,0,0.1)";
   return (
     <div
       style={{
         display: "flex",
         flexDirection: "column",
-        gap: 6,
+        gap: 7,
         width: "100%",
       }}
     >
       {label && (
         <label
           style={{
-            fontSize: 12,
+            fontSize: 13,
             fontWeight: 600,
             color: mute,
             letterSpacing: "0.01em",
@@ -47,7 +47,7 @@ export const Field = ({
           position: "relative",
           background: bg,
           border: `1px solid ${line}`,
-          borderRadius: 12,
+          borderRadius: 10,
           transition: "border-color 0.15s",
         }}
       >
@@ -59,11 +59,11 @@ export const Field = ({
           placeholder={placeholder}
           style={{
             width: "100%",
-            padding: "13px 14px",
+            padding: "12px 14px",
             paddingRight: rightSlot ? 44 : 14,
             border: "none",
             background: "transparent",
-            fontSize: 15,
+            fontSize: 14,
             fontFamily: "inherit",
             color: ink,
             outline: "none",
@@ -84,10 +84,12 @@ export const Field = ({
         )}
       </div>
       {error && (
-        <span style={{ fontSize: 11, color: "#dc4c3e", fontWeight: 500 }}>
+        <span style={{ fontSize: 12, color: "#dc4c3e", fontWeight: 500 }}>
           {error}
         </span>
       )}
     </div>
   );
 }
+
+// ─────────── PC Button ───────────

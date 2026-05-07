@@ -1,6 +1,6 @@
 // @ts-nocheck
-import { BrandMark } from "@/pages/auth/shared/BrandMark";
-import { AUTH_TEXT } from "@/pages/auth/shared/AuthText";
+import { BrandMark } from "@/pages/auth/BrandMark";
+import { AUTH_TEXT } from "@/pages/auth/authText";
 
 export const BrandPanel = ({ dark, lang }) => {
   const t = AUTH_TEXT[lang];

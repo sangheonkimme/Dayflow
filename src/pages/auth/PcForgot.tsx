@@ -1,13 +1,13 @@
 // @ts-nocheck
-import { BrandMark } from "@/pages/auth/shared/BrandMark";
-import { pwdScore } from "@/pages/auth/shared/PwdScore";
+import { BrandMark } from "@/pages/auth/BrandMark";
+import { pwdScore } from "@/pages/auth/pwdScore";
 import { useState } from "react";
 import { useAuth } from "@/data/auth";
-import { AUTH_TEXT } from "@/pages/auth/shared/AuthText";
-import { EyeIcon } from "@/pages/auth/shared/EyeIcon";
-import { PCField } from "@/pages/auth/pc/Field";
-import { PCBtn } from "@/pages/auth/pc/Btn";
-import { BrandPanel } from "@/pages/auth/pc/BrandPanel";
+import { AUTH_TEXT } from "@/pages/auth/authText";
+import { EyeIcon } from "@/pages/auth/EyeIcon";
+import { PCField } from "@/pages/auth/PcField";
+import { PCBtn } from "@/pages/auth/PcBtn";
+import { BrandPanel } from "@/pages/auth/PcBrandPanel";
 
 export const PCForgot = ({ lang = "ko", dark = false, initialStep = 0 }) => {
   const t = AUTH_TEXT[lang];

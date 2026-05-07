@@ -1,12 +1,12 @@
 // @ts-nocheck
 import { useState } from "react";
 import { useAuth } from "@/data/auth";
-import { AUTH_TEXT } from "@/pages/auth/shared/AuthText";
-import { EyeIcon } from "@/pages/auth/shared/EyeIcon";
-import { BrandMark } from "@/pages/auth/shared/BrandMark";
-import { Field } from "@/pages/auth/shared/Field";
-import { Btn } from "@/pages/auth/shared/Btn";
-import { GoogleIcon } from "@/pages/auth/shared/GoogleIcon";
+import { AUTH_TEXT } from "@/pages/auth/authText";
+import { EyeIcon } from "@/pages/auth/EyeIcon";
+import { BrandMark } from "@/pages/auth/BrandMark";
+import { Field } from "@/pages/auth/Field";
+import { Btn } from "@/pages/auth/Btn";
+import { GoogleIcon } from "@/pages/auth/GoogleIcon";
 
 export const LoginScreen = ({ variant = "A", lang = "ko", dark = false, onSwitch }) => {
   const t = AUTH_TEXT[lang];
