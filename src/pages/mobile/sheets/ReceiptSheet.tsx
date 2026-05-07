@@ -1,10 +1,9 @@
-// @ts-nocheck
 import { useEffect } from "react";
 import { DOW } from "@/lib/date";
 import { Ico } from "@/pages/mobile/shared/Ico";
 import { inferIcon } from "@/data/transactions";
 
-export const ReceiptSheet = ({ txn, onClose }) => {
+export const ReceiptSheet = ({ txn, onClose }: any) => {
   const open = !!txn;
   // synthesize receipt-like data based on txn
   const data = txn || {};

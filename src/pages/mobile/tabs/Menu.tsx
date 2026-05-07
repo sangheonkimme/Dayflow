@@ -1,8 +1,7 @@
-// @ts-nocheck
 import { Ico } from "@/pages/mobile/shared/Ico";
 import { SectionHeader } from "@/pages/mobile/shared/SectionHeader";
 
-export const MobileMenu = ({ onNavigate, onProfile }) => {
+export const MobileMenu = ({ onNavigate, onProfile }: any) => {
   const links = [
     ["wallet", "가계부 상세", "거래 내역 · 카테고리 분석", "ledger"],
     ["tag", "구독 관리", "12개 활성 · 이번 달 ₩47,000", "subs"],

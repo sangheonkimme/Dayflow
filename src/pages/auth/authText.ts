@@ -1,4 +1,3 @@
-// @ts-nocheck
 export const AUTH_TEXT = {
   ko: {
     brand: "Dayflow",

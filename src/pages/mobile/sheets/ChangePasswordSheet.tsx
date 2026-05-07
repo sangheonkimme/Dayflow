@@ -1,12 +1,11 @@
-// @ts-nocheck
-import { useState } from "react";
+import {    useState , useMemo , useEffect , useRef } from "react";
 import { Ico } from "@/pages/mobile/shared/Ico";
 
 export const ChangePasswordSheet = ({
   open,
   onClose,
   email = "nabi@dayflow.app",
-}) => {
+}: any) => {
   // 0 · confirm send  ·  1 · sent (waiting)
   const [step, setStep] = useState(0);
   const [sending, setSending] = useState(false);

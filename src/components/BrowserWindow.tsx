@@ -1,4 +1,3 @@
-// @ts-nocheck
 
 // Chrome.jsx — Simplified Chrome browser window (dark theme, macOS)
 // No dependencies, no image assets. All inline styles + inline SVG.

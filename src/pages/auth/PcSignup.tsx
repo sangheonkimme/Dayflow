@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { useState } from "react";
 import { AUTH_TEXT } from "@/pages/auth/authText";
 import { GoogleIcon } from "@/pages/auth/GoogleIcon";
@@ -9,7 +8,7 @@ import { PCField } from "@/pages/auth/PcField";
 import { PCBtn } from "@/pages/auth/PcBtn";
 import { BrandPanel } from "@/pages/auth/PcBrandPanel";
 
-export const PCSignup = ({ lang = "ko", dark = false, onSwitch }) => {
+export const PCSignup = ({ lang = "ko", dark = false, onSwitch }: any) => {
   const t = AUTH_TEXT[lang];
   const { signUp } = useAuth();
   const [name, setName] = useState("");
@@ -47,7 +46,7 @@ export const PCSignup = ({ lang = "ko", dark = false, onSwitch }) => {
   const pwdLabels = [t.pwdWeak, t.pwdWeak, t.pwdMid, t.pwdStrong];
   const pwdColors = ["#dc4c3e", "#dc4c3e", "#e8a93a", "#4a8d5a"];
 
-  const Check = ({ on, onClick, label, required }) => (
+  const Check = ({ on, onClick, label, required }: any) => (
     <label
       onClick={onClick}
       style={{

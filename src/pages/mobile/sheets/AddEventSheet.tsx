@@ -1,9 +1,8 @@
-// @ts-nocheck
 import { useState, useEffect } from "react";
 import { Ico } from "@/pages/mobile/shared/Ico";
 import { useEvents } from "@/data/events";
 
-export const AddEventSheet = ({ open, onClose }) => {
+export const AddEventSheet = ({ open, onClose }: any) => {
   const [title, setTitle] = useState("");
   const [cat, setCat] = useState("업무");
   const [allDay, setAllDay] = useState(false);

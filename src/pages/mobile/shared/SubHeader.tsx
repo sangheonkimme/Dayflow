@@ -1,7 +1,6 @@
-// @ts-nocheck
 import { Ico } from "@/pages/mobile/shared/Ico";
 
-export const SubHeader = ({ title, onBack, action }) => {
+export const SubHeader = ({ title, onBack, action }: any) => {
   return (
     <div
       style={{

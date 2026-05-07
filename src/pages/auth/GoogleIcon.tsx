@@ -1,4 +1,3 @@
-// @ts-nocheck
 export const GoogleIcon = () => (
   <svg width="17" height="17" viewBox="0 0 18 18">
     <path

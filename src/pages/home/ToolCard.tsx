@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Icon } from "@/components/Icon";
 
 export function ToolCard({ icon, title, desc, items, onClick }) {

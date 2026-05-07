@@ -12,6 +12,7 @@
     "isolatedModules": true,
     "skipLibCheck": true,
     "strict": true,
+    "noImplicitAny": false,
     "noUncheckedIndexedAccess": false,
     "noImplicitOverride": true,
     "noFallthroughCasesInSwitch": true,

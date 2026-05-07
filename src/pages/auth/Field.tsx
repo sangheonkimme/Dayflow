@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { useState } from "react";
 import { EyeIcon } from "@/pages/auth/EyeIcon";
 
@@ -12,7 +11,7 @@ export const Field = ({
   autoFocus,
   placeholder,
   error,
-}) => {
+}: any) => {
   const ink = dark ? "#fff" : "#1a1814";
   const mute = dark ? "rgba(255,255,255,0.55)" : "rgba(26,24,20,0.55)";
   const bg = dark ? "rgba(255,255,255,0.06)" : "#fff";

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { useState, useEffect } from "react";
 import { Ico } from "@/pages/mobile/shared/Ico";
 
@@ -8,7 +7,7 @@ export const EditProfileSheet = ({
   initialName,
   email,
   onSave,
-}) => {
+}: any) => {
   const [name, setName] = useState(initialName || "");
   const [handle, setHandle] = useState("nabi.flow");
   const [bio, setBio] = useState("매일의 흐름을 기록 중 ☁️");

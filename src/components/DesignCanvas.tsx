@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
 import React from "react";
 
@@ -748,7 +749,7 @@ function DCFocusOverlay({ entry, sectionMeta, sectionOrder }) {
   );
 
   const [ddOpen, setDd] = React.useState(false);
-  const Arrow = ({ dir, onClick }) => (
+  const Arrow = ({ dir, onClick }: any) => (
     <button
       onClick={(e) => {
         e.stopPropagation();

@@ -1,6 +1,5 @@
-// @ts-nocheck
 
-export const DfmSwitch = ({ on, onChange }) => {
+export const DfmSwitch = ({ on, onChange }: any) => {
   return (
     <button
       onClick={(e) => {

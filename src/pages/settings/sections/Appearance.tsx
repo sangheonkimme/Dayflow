@@ -1,9 +1,8 @@
-// @ts-nocheck
 import { Icon } from "@/components/Icon";
 import { SettingRow } from "@/pages/settings/SettingRow";
 import { ToggleSwitch } from "@/pages/settings/ToggleSwitch";
 
-export const AppearanceSection = ({ tweaks, setTweak }) => {
+export const AppearanceSection = ({ tweaks, setTweak }: any) => {
   const accents = [
     { id: "yellow", c: "#ffe27a", label: "노랑" },
     { id: "coral", c: "#ffb38a", label: "코랄" },

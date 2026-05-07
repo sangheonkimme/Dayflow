@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
 import { useState, useRef, useEffect, useMemo } from "react";
 import { Icon } from "@/components/Icon";

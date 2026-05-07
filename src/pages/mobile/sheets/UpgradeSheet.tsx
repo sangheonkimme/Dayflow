@@ -1,8 +1,7 @@
-// @ts-nocheck
-import { useState } from "react";
+import {    useState , useMemo , useEffect , useRef } from "react";
 import { Ico } from "@/pages/mobile/shared/Ico";
 
-export const UpgradeSheet = ({ open, onClose }) => {
+export const UpgradeSheet = ({ open, onClose }: any) => {
   const [plan, setPlan] = useState("year"); // month | year
   const [confirmed, setConfirmed] = useState(false);
   useEffect(() => {

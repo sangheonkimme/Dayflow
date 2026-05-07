@@ -1,9 +1,8 @@
-// @ts-nocheck
 import { useState, useEffect } from "react";
 import { Ico } from "@/pages/mobile/shared/Ico";
 import { DfmSwitch } from "@/pages/mobile/shared/DfmSwitch";
 
-export const TimerSettingsSheet = ({ open, onClose, settings, onChange }) => {
+export const TimerSettingsSheet = ({ open, onClose, settings, onChange }: any) => {
   if (!settings)
     settings = {
       focus: 25,
@@ -21,7 +20,7 @@ export const TimerSettingsSheet = ({ open, onClose, settings, onChange }) => {
   const longBreakOpts = [10, 15, 20, 30];
   const setsOpts = [2, 3, 4, 5, 6];
 
-  const Row = ({ label, sub, children }) => (
+  const Row = ({ label, sub, children }: any) => (
     <div style={{ padding: "14px 0", borderBottom: "1px dashed var(--line)" }}>
       <div
         style={{
@@ -46,7 +45,7 @@ export const TimerSettingsSheet = ({ open, onClose, settings, onChange }) => {
     </div>
   );
 
-  const Chip = ({ active, onClick, children }) => (
+  const Chip = ({ active, onClick, children }: any) => (
     <button
       onClick={onClick}
       style={{

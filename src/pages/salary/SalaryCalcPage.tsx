@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { useState, useMemo } from "react";
 import { Icon } from "@/components/Icon";
 import { formatWon } from "@/lib/format";

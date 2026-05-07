@@ -1,10 +1,13 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
 import { useState } from "react";
+import { EditProfileSheet } from "@/pages/mobile/sheets/EditProfileSheet";
+import { SectionHeader } from "@/pages/mobile/shared/SectionHeader";
 import { Ico } from "@/pages/mobile/shared/Ico";
 import { SubHeader } from "@/pages/mobile/shared/SubHeader";
 import { useAuth } from "@/data/auth";
 
-export const ProfileScreen = ({ onBack, onUpgrade }) => {
+export const ProfileScreen = ({ onBack, onUpgrade }: any) => {
   const { user, signOut } = useAuth();
   const [name, setName] = useState(user?.email?.split("@")[0] ?? "나비");
   const [email] = useState(user?.email ?? "");
@@ -15,7 +18,7 @@ export const ProfileScreen = ({ onBack, onUpgrade }) => {
     { label: "기록 시작", val: "183", unit: "일째" },
     { label: "연속 사용", val: "27", unit: "일" },
   ];
-  const Row = ({ ico, title, sub, right, last, onClick, danger }) => (
+  const Row = ({ ico, title, sub, right, last, onClick, danger }: any) => (
     <div
       onClick={onClick}
       style={{

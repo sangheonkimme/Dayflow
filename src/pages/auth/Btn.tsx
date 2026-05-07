@@ -1,4 +1,3 @@
-// @ts-nocheck
 export const Btn = ({
   children,
   kind = "primary",
@@ -6,7 +5,7 @@ export const Btn = ({
   dark,
   disabled,
   full = true,
-}) => {
+}: any) => {
   const styles = {
     primary: {
       background: dark ? "#fff" : "#1a1814",

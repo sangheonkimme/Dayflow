@@ -1,5 +1,4 @@
-// @ts-nocheck
-export const BrandMark = ({ size = 28, dark = false }) => {
+export const BrandMark = ({ size = 28, dark = false }: any) => {
   const ink = dark ? "#fff" : "#1a1814";
   const yellow = "#ffd84d";
   return (

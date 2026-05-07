@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { useState } from "react";
 import { AUTH_TEXT } from "@/pages/auth/authText";
 import { GoogleIcon } from "@/pages/auth/GoogleIcon";
@@ -8,7 +7,7 @@ import { PCField } from "@/pages/auth/PcField";
 import { PCBtn } from "@/pages/auth/PcBtn";
 import { BrandPanel } from "@/pages/auth/PcBrandPanel";
 
-export const PCLogin = ({ lang = "ko", dark = false, onSwitch }) => {
+export const PCLogin = ({ lang = "ko", dark = false, onSwitch }: any) => {
   const t = AUTH_TEXT[lang];
   const { signIn } = useAuth();
   const [email, setEmail] = useState("");
