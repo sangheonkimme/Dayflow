@@ -1,17 +1,15 @@
 // @ts-nocheck
 import { useState } from "react";
 import { Icon } from "@/shared/ui/Icon";
-import { useStickyNotes } from "@/data/sticky-notes";
-import { useChecklist } from "@/data/checklist";
+import { useStickyNotes, stickyDateLabel, stickyAuthorLabel } from "@/data/sticky-notes";
 import { useDailyLog } from "@/data/daily-log";
 import { usePinnedInfo } from "@/data/pinned-info";
 import { MOODS, emojiToMood, moodToEmoji } from "@/data/lookups";
-import { stickyDateLabel, stickyAuthorLabel } from "@/data/sticky-notes";
 
 // ============================================================
-// STICKY NOTES — hero feature
+// STICKY NOTES — hero feature (with DeskPile beneath)
 // ============================================================
-function StickyNotes() {
+export function StickyNotes() {
   const { data: notes, upsert, remove } = useStickyNotes();
   const [activeColor, setActiveColor] = useState("yellow");
 
@@ -124,9 +122,9 @@ function StickyNotes() {
 }
 
 // ============================================================
-// DESK PILE — under the sticky-note board, fills empty space
-// 1) 오늘의 한 줄 (lined-paper journal entry)
-// 2) 자주 쓰는 정보 (index-card chips: phone, account, etc.)
+// DESK PILE — under sticky-note board
+// 1) 오늘의 한 줄 (lined-paper journal)
+// 2) 자주 쓰는 정보 (index-card chips)
 // ============================================================
 function DeskPile() {
   const { entry, setOneLine, setMood: setMoodHook } = useDailyLog();
@@ -268,109 +266,3 @@ function PinCard({ pin, onRemove, onUpdate }) {
     </div>
   );
 }
-
-// ============================================================
-// CHECKLIST
-// ============================================================
-function Checklist() {
-  const { data: tasks, upsert, remove: removeTask } = useChecklist();
-  const [input, setInput] = useState("");
-
-  const done = tasks.filter((t) => t.done).length;
-  const pct = tasks.length ? Math.round((done / tasks.length) * 100) : 0;
-  const r = 24,
-    c = 2 * Math.PI * r;
-
-  const toggle = (id) => {
-    const t = tasks.find((x) => x.id === id);
-    if (t) upsert({ ...t, done: !t.done });
-  };
-  const remove = (id) => removeTask(id);
-  const add = () => {
-    if (!input.trim()) return;
-    upsert({ id: Date.now(), text: input, done: false, time: "지금" });
-    setInput("");
-  };
-
-  return (
-    <div className="checklist-card col-3">
-      <div className="card-head">
-        <div>
-          <div className="card-title">
-            <span className="dot" />
-            오늘 체크리스트
-          </div>
-          <div className="card-sub">
-            완료 {done}/{tasks.length}개
-          </div>
-        </div>
-        <div className="progress-ring">
-          <svg width="60" height="60">
-            <circle
-              cx="30"
-              cy="30"
-              r={r}
-              stroke="var(--line)"
-              strokeWidth="5"
-              fill="none"
-            />
-            <circle
-              cx="30"
-              cy="30"
-              r={r}
-              stroke="var(--ink)"
-              strokeWidth="5"
-              fill="none"
-              strokeDasharray={c}
-              strokeDashoffset={c - (c * pct) / 100}
-              strokeLinecap="round"
-              style={{ transition: "stroke-dashoffset 0.4s" }}
-            />
-          </svg>
-          <div className="pct">{pct}%</div>
-        </div>
-      </div>
-
-      <div className="add-task">
-        <input
-          placeholder="할 일을 입력하고 Enter"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && add()}
-        />
-        <button onClick={add}>
-          <Icon name="plus" size={14} />
-        </button>
-      </div>
-
-      <ul className="tasks">
-        {tasks.map((t) => (
-          <li
-            key={t.id}
-            className={"task" + (t.done ? " done" : "")}
-            onClick={() => toggle(t.id)}
-          >
-            <span className="check">
-              <Icon name="check" size={12} />
-            </span>
-            <div style={{ flex: 1 }}>
-              <div className="task-label">{t.text}</div>
-              <div className="task-meta">{t.time}</div>
-            </div>
-            <button
-              className="task-del"
-              onClick={(e) => {
-                e.stopPropagation();
-                remove(t.id);
-              }}
-            >
-              <Icon name="trash" size={14} />
-            </button>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
-export { StickyNotes, Checklist };

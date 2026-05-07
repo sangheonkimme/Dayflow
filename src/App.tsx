@@ -1,13 +1,19 @@
 import { lazy, Suspense, useState, useEffect } from "react";
 import { Sidebar, Topbar } from "@/widgets/Shell";
-import { StickyNotes, Checklist } from "@/widgets/Notes";
-import { GeneralTimer, Pomodoro, Stopwatch } from "@/widgets/Timers";
-import { MoneyFlow, MiniCalendar, ToolCard } from "@/widgets/Money";
+import { StickyNotes } from "@/pages/home/StickyNotes";
+import { Checklist } from "@/pages/home/Checklist";
+import { GeneralTimer } from "@/pages/home/timers/GeneralTimer";
+import { Pomodoro } from "@/pages/home/timers/Pomodoro";
+import { Stopwatch } from "@/pages/home/timers/Stopwatch";
+import { MoneyFlow } from "@/pages/home/MoneyFlow";
+import { MiniCalendar } from "@/pages/home/MiniCalendar";
+import { ToolCard } from "@/pages/home/ToolCard";
 import { LedgerPage } from "@/pages/LedgerPage";
 import { CalendarPage } from "@/pages/CalendarPage";
 import { SettingsPage } from "@/pages/SettingsPage";
 import { TxnsPage } from "@/pages/TxnsPage";
-import { TxnModal, EventModal } from "@/widgets/Modals";
+import { TxnModal } from "@/pages/ledger/TxnModal";
+import { EventModal } from "@/pages/calendar/EventModal";
 import {
   TweaksPanel,
   TweakSection,
@@ -26,7 +32,6 @@ import { configureDataSource } from "@/data/source";
 import { queryClient } from "@/app/queryClient";
 import type {
   TxnDraft,
-  EventDraft,
   AccentColor,
   AuthPreviewView,
 } from "@/types";

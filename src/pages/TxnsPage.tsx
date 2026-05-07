@@ -4,7 +4,7 @@ import { Icon } from '@/shared/ui/Icon';
 import { formatSignedWon } from '@/lib/format';
 import { DOW } from '@/lib/date';
 import { TRANSACTION_CATEGORIES } from '@/lib/categories';
-import { ReceiptUploadModal } from '@/widgets/Flows';
+import { ReceiptUploadModal } from '@/pages/ledger/ReceiptUploadModal';
 import { useTransactions } from '@/data/transactions';
 import { inferIcon } from '@/data/transactions';
 
