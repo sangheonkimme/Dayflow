@@ -21,6 +21,7 @@ import { useTransactions } from "@/features/transactions/hooks/useTransactions";
 import { useEvents } from "@/features/events/hooks/useEvents";
 import { useDataModeStore } from "@/shared/state/dataMode";
 import { useModalStore } from "@/shared/state/modal";
+import { DemoBanner } from "@/widgets/DemoBanner";
 import { configureDataSource } from "@/shared/data/source";
 import { queryClient } from "@/app/queryClient";
 import type {
@@ -225,6 +226,7 @@ function AppShell() {
   if (isMobile) {
     return (
       <Suspense fallback={<PageFallback />}>
+        <DemoBanner />
         <MobileApp initialTab="home" />
         {renderTweaks()}
       </Suspense>
@@ -442,6 +444,7 @@ function AppShell() {
 
   return (
     <>
+      <DemoBanner />
       <div className="app">
         <Sidebar active={active} onSelect={setActive} />
         <main className="main" data-screen-label={active}>
