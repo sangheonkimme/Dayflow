@@ -1,10 +1,10 @@
 // @ts-nocheck
 import { useState, useMemo } from 'react';
-import { Icon } from '@/components/icons';
+import { Icon } from '@/shared/ui/Icon';
 import { formatSignedWon } from '@/lib/format';
 import { DOW } from '@/lib/date';
 import { TRANSACTION_CATEGORIES } from '@/lib/categories';
-import { ReceiptUploadModal } from '@/components/flows';
+import { ReceiptUploadModal } from '@/widgets/Flows';
 import { useTransactions } from '@/features/transactions/hooks/useTransactions';
 import { inferIcon } from '@/features/transactions/selectors/derived';
 

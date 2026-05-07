@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Icon } from '@/components/icons';
+import { Icon } from '@/shared/ui/Icon';
 import { TIMER_PRESETS } from '@/shared/data/seeds/lookups';
 
 // ============================================================

@@ -1,19 +1,19 @@
 import { lazy, Suspense, useState, useEffect } from "react";
-import { Sidebar, Topbar } from "@/components/shell";
-import { StickyNotes, Checklist } from "@/components/notes";
-import { GeneralTimer, Pomodoro, Stopwatch } from "@/components/timers";
-import { MoneyFlow, MiniCalendar, ToolCard } from "@/components/money";
+import { Sidebar, Topbar } from "@/widgets/Shell";
+import { StickyNotes, Checklist } from "@/widgets/Notes";
+import { GeneralTimer, Pomodoro, Stopwatch } from "@/widgets/Timers";
+import { MoneyFlow, MiniCalendar, ToolCard } from "@/widgets/Money";
 import { LedgerPage } from "@/pages/LedgerPage";
 import { CalendarPage } from "@/pages/CalendarPage";
 import { SettingsPage } from "@/pages/SettingsPage";
-import { TxnsPage } from "@/components/txns";
-import { TxnModal, EventModal } from "@/components/modals";
+import { TxnsPage } from "@/pages/TxnsPage";
+import { TxnModal, EventModal } from "@/widgets/Modals";
 import {
   TweaksPanel,
   TweakSection,
   TweakToggle,
   TweakRadio,
-} from "@/components/tweaks-panel";
+} from "@/widgets/TweaksPanel";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { usePreferences } from "@/features/preferences/hooks/usePreferences";
 import { useAuth } from "@/features/auth/hooks/useAuth";
@@ -31,33 +31,33 @@ import type {
 } from "@/types";
 
 const MemoPage = lazy(() =>
-  import("@/components/memo").then((m) => ({ default: m.MemoPage })),
+  import("@/pages/MemoPage").then((m) => ({ default: m.MemoPage })),
 );
 const SubsPage = lazy(() =>
-  import("@/components/subs").then((m) => ({ default: m.SubsPage })),
+  import("@/pages/SubsPage").then((m) => ({ default: m.SubsPage })),
 );
 const SalaryCalcPage = lazy(() =>
-  import("@/components/salary").then((m) => ({
+  import("@/pages/SalaryCalcPage").then((m) => ({
     default: m.SalaryCalcPage,
   })),
 );
 const LoanCalcPage = lazy(() =>
-  import("@/components/loan-search").then((m) => ({
+  import("@/pages/LoanSearch").then((m) => ({
     default: m.LoanCalcPage,
   })),
 );
 const SearchOverlay = lazy(() =>
-  import("@/components/loan-search").then((m) => ({
+  import("@/pages/LoanSearch").then((m) => ({
     default: m.SearchOverlay,
   })),
 );
 const CropCanvasPage = lazy(() =>
-  import("@/components/image-tools").then((m) => ({
+  import("@/pages/ImageTools").then((m) => ({
     default: m.CropCanvasPage,
   })),
 );
 const PdfCanvasPage = lazy(() =>
-  import("@/components/image-tools").then((m) => ({
+  import("@/pages/ImageTools").then((m) => ({
     default: m.PdfCanvasPage,
   })),
 );

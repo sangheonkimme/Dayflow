@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { useMemo } from 'react';
-import { Icon } from '@/components/icons';
+import { Icon } from '@/shared/ui/Icon';
 import { formatWon, formatSignedWon } from '@/lib/format';
 import { DOW } from '@/lib/date';
 import { useTransactions } from '@/features/transactions/hooks/useTransactions';
