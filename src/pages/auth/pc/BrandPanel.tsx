@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { AUTH_TEXT } from "@/components/auth-login";
+import { AUTH_TEXT } from "@/pages/auth/shared/AuthText";
 
 export const BrandPanel = ({ dark, lang }) => {
   const t = AUTH_TEXT[lang];
