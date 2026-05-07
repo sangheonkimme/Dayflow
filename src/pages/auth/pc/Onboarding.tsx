@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { BrandMark } from "@/pages/auth/shared/BrandMark";
 import { useState } from "react";
 import { AUTH_TEXT } from "@/pages/auth/shared/AuthText";
 import { PCField } from "@/pages/auth/pc/Field";

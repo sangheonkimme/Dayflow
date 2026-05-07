@@ -1,7 +1,9 @@
 // @ts-nocheck
+import { pwdScore } from "@/pages/auth/shared/PwdScore";
 import { useState } from "react";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { AUTH_TEXT } from "@/pages/auth/shared/AuthText";
+import { EyeIcon } from "@/pages/auth/shared/EyeIcon";
 import { BrandMark } from "@/pages/auth/shared/BrandMark";
 import { Field } from "@/pages/auth/shared/Field";
 import { Btn } from "@/pages/auth/shared/Btn";

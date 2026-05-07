@@ -2,10 +2,10 @@
 // useDataModeStore — 데이터 소스 모드 (live | mock)
 // ============================================================
 //
-// 'live'  — 실제 Supabase 연결 (인증된 사용자 데이터)
-// 'mock'  — 시드 기반 in-memory (온보딩/시안 시연/데모용)
+// 'live'  — 실제 Supabase 연결 (인증된 사용자 데이터, 기본값)
+// 'mock'  — 시드 기반 in-memory (시연/디자인 QA 전용, TweaksPanel에서 opt-in)
 //
-// persist 안 함 — 매 부팅 시 mock으로 시작 (비로그인 첫 방문 = 데모 화면)
+// persist 안 함 — 매 부팅 시 'live'로 시작 → 비로그인이면 인증 화면 진입.
 
 import { create } from 'zustand';
 
@@ -18,7 +18,7 @@ interface DataModeState {
 }
 
 export const useDataModeStore = create<DataModeState>((set) => ({
-  mode: 'mock',
+  mode: 'live',
   setMode: (mode) => set({ mode }),
   toggle: () => set((s) => ({ mode: s.mode === 'mock' ? 'live' : 'mock' })),
 }));
