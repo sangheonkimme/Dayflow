@@ -309,4 +309,4 @@ export const CalendarPage = ({ onAdd, onEditEvent }) => {
       </div>
     </div>
   );
-}
+};

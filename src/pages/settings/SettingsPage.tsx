@@ -13,13 +13,48 @@ import { AccountSection } from "@/pages/settings/sections/Account";
 export const SettingsPage = ({ tweaks, setTweak }) => {
   const [section, setSection] = useState("profile");
   const sections = [
-    { id: "profile", icon: "home", label: "프로필", sub: "이름 · 이메일 · 사진" },
-    { id: "appearance", icon: "sparkle", label: "테마 · 외관", sub: "다크 모드 · 색상" },
-    { id: "ledger", icon: "wallet", label: "가계부 설정", sub: "월급일 · 카테고리 · 통화" },
-    { id: "notifications", icon: "bell", label: "알림", sub: "푸시 · 이메일 · 사운드" },
-    { id: "tools", icon: "settings", label: "도구 설정", sub: "타이머 · 메모 기본값" },
-    { id: "security", icon: "settings", label: "보안 · 잠금", sub: "비밀번호 · 생체 인증" },
-    { id: "data", icon: "wallet", label: "데이터", sub: "백업 · 내보내기 · 삭제" },
+    {
+      id: "profile",
+      icon: "home",
+      label: "프로필",
+      sub: "이름 · 이메일 · 사진",
+    },
+    {
+      id: "appearance",
+      icon: "sparkle",
+      label: "테마 · 외관",
+      sub: "다크 모드 · 색상",
+    },
+    {
+      id: "ledger",
+      icon: "wallet",
+      label: "가계부 설정",
+      sub: "월급일 · 카테고리 · 통화",
+    },
+    {
+      id: "notifications",
+      icon: "bell",
+      label: "알림",
+      sub: "푸시 · 이메일 · 사운드",
+    },
+    {
+      id: "tools",
+      icon: "settings",
+      label: "도구 설정",
+      sub: "타이머 · 메모 기본값",
+    },
+    {
+      id: "security",
+      icon: "settings",
+      label: "보안 · 잠금",
+      sub: "비밀번호 · 생체 인증",
+    },
+    {
+      id: "data",
+      icon: "wallet",
+      label: "데이터",
+      sub: "백업 · 내보내기 · 삭제",
+    },
     { id: "account", icon: "coin", label: "계정 · 결제", sub: "플랜 · 청구" },
   ];
 
@@ -70,4 +105,4 @@ export const SettingsPage = ({ tweaks, setTweak }) => {
       </div>
     </div>
   );
-}
+};

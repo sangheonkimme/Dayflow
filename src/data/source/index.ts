@@ -8,13 +8,16 @@
 
 import type { DataSource } from "@/data/source/types";
 import { createMockSource } from "@/data/source/mock";
-import { createSupabaseSource, disposeSupabaseSource } from "@/data/source/supabase";
+import {
+  createSupabaseSource,
+  disposeSupabaseSource,
+} from "@/data/source/supabase";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import type { DataMode } from "@/store/dataMode";
 
 let _instance: DataSource | null = null;
 let _initPromise: Promise<void> | null = null;
-let _mode: DataMode = 'mock';
+let _mode: DataMode = "mock";
 let _userId: string | null = null;
 
 export interface ConfigureOptions {
@@ -37,7 +40,7 @@ export function getDataSource(): DataSource {
   if (_instance) return _instance;
 
   // live 모드 + supabase 클라이언트 + 인증된 user 가 모두 있어야 실 데이터
-  if (_mode === 'live' && isSupabaseConfigured && supabase && _userId) {
+  if (_mode === "live" && isSupabaseConfigured && supabase && _userId) {
     // createSupabaseSource는 비동기 init이 필요해 placeholder를 만들고 init 시 채움
     // 단순화: 비동기 생성을 동기 진입점에서 처리하기 위해 즉시 mock fallback 후 교체.
     // 실제 createSupabaseSource는 카테고리 캐시 로딩이 await 되어야 하므로

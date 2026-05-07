@@ -11,11 +11,11 @@
 //
 // SupabaseSource가 mutation 직전에 호출한다.
 
-import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database, Tables } from '@/data/source/db.types';
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database, Tables } from "@/data/source/db.types";
 
-export type CategoryKind = 'income' | 'expense' | 'subscription';
-export type Category = Tables<'categories'>;
+export type CategoryKind = "income" | "expense" | "subscription";
+export type Category = Tables<"categories">;
 
 interface CategoryCache {
   byId: Map<string, Category>;
@@ -34,9 +34,9 @@ export async function loadCategoryCache(
   userId: string,
 ): Promise<CategoryCache> {
   const { data, error } = await client
-    .from('categories')
-    .select('*')
-    .eq('user_id', userId);
+    .from("categories")
+    .select("*")
+    .eq("user_id", userId);
   if (error) throw error;
   const cache: CategoryCache = { byId: new Map(), byKey: new Map() };
   for (const row of data ?? []) {
@@ -47,7 +47,10 @@ export async function loadCategoryCache(
   return cache;
 }
 
-export function getCachedCategoryById(userId: string, id: string): Category | undefined {
+export function getCachedCategoryById(
+  userId: string,
+  id: string,
+): Category | undefined {
   return _cacheByUser.get(userId)?.byId.get(id);
 }
 
@@ -62,12 +65,13 @@ export async function resolveCategoryId(
   kind: CategoryKind,
 ): Promise<string | null> {
   if (!name) return null;
-  const cache = _cacheByUser.get(userId) ?? (await loadCategoryCache(client, userId));
+  const cache =
+    _cacheByUser.get(userId) ?? (await loadCategoryCache(client, userId));
   const hit = cache.byKey.get(key(kind, name));
   if (hit) return hit.id;
   // lazy create
   const { data, error } = await client
-    .from('categories')
+    .from("categories")
     .insert({ user_id: userId, name, kind, position: cache.byKey.size })
     .select()
     .single();

@@ -31,15 +31,20 @@
   letter-spacing: -0.01em;
 }
 .salary-reset {
-  width: 30px; height: 30px;
+  width: 30px;
+  height: 30px;
   border-radius: 8px;
   background: transparent;
   border: 1px solid transparent;
   color: var(--ink-mute);
   cursor: pointer;
-  display: grid; place-items: center;
+  display: grid;
+  place-items: center;
 }
-.salary-reset:hover { color: var(--ink); border-color: var(--line); }
+.salary-reset:hover {
+  color: var(--ink);
+  border-color: var(--line);
+}
 
 .salary-options-label {
   font-size: 12px;
@@ -57,7 +62,9 @@
   padding: 10px 0;
   border-bottom: 1px dashed var(--line);
 }
-.salary-field:last-of-type { border-bottom: none; }
+.salary-field:last-of-type {
+  border-bottom: none;
+}
 .salary-field label {
   font-size: 13px;
   font-weight: 600;
@@ -93,7 +100,7 @@
 .salary-seg button.on {
   background: var(--card);
   color: var(--ink);
-  box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
 }
 
 .salary-input-wrap {
@@ -135,7 +142,8 @@
   gap: 12px;
 }
 .num-stepper button {
-  width: 32px; height: 32px;
+  width: 32px;
+  height: 32px;
   border-radius: 8px;
   background: var(--bg-paper);
   border: 1px solid var(--line);
@@ -145,7 +153,11 @@
   font-weight: 700;
   cursor: pointer;
 }
-.num-stepper button:hover { background: var(--ink); color: var(--yellow); border-color: var(--ink); }
+.num-stepper button:hover {
+  background: var(--ink);
+  color: var(--yellow);
+  border-color: var(--ink);
+}
 .num-stepper span {
   min-width: 50px;
   text-align: center;
@@ -165,13 +177,17 @@
   font-weight: 500;
   color: var(--ink-soft);
 }
-.salary-check input { display: none; }
+.salary-check input {
+  display: none;
+}
 .salary-check-box {
-  width: 18px; height: 18px;
+  width: 18px;
+  height: 18px;
   border-radius: 5px;
   border: 1.5px solid var(--line-strong);
   background: #fff;
-  display: grid; place-items: center;
+  display: grid;
+  place-items: center;
   position: relative;
   transition: all 0.15s;
 }
@@ -181,7 +197,8 @@
 }
 .salary-check input:checked + .salary-check-box::after {
   content: "";
-  width: 10px; height: 6px;
+  width: 10px;
+  height: 6px;
   border-left: 2px solid var(--yellow);
   border-bottom: 2px solid var(--yellow);
   transform: rotate(-45deg) translate(1px, -1px);
@@ -266,14 +283,22 @@
   padding-bottom: 9px;
   margin-bottom: 4px;
 }
-.pg-row-head b { font-family: var(--mono); font-weight: 800; }
-.pg-row-head b.blue { color: #3b82d6; }
-.pg-row-head b.purple { color: #9b6bd0; }
+.pg-row-head b {
+  font-family: var(--mono);
+  font-weight: 800;
+}
+.pg-row-head b.blue {
+  color: #3b82d6;
+}
+.pg-row-head b.purple {
+  color: #9b6bd0;
+}
 
 .qmark {
   display: inline-grid;
   place-items: center;
-  width: 14px; height: 14px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
   border: 1px solid var(--line-strong);
   font-size: 9px;
@@ -313,7 +338,10 @@
   text-align: center;
   line-height: 1.7;
 }
-body.dark .payslip-note { background: #2a3540; color: #b6cae0; }
+body.dark .payslip-note {
+  background: #2a3540;
+  color: #b6cae0;
+}
 
 .payslip-net {
   margin-top: 14px;
@@ -324,7 +352,7 @@ body.dark .payslip-note { background: #2a3540; color: #b6cae0; }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  box-shadow: 0 6px 18px rgba(59,130,214,0.25);
+  box-shadow: 0 6px 18px rgba(59, 130, 214, 0.25);
 }
 .payslip-net span {
   font-size: 16px;
@@ -344,5 +372,7 @@ body.dark .payslip-note { background: #2a3540; color: #b6cae0; }
 }
 
 @media (max-width: 1100px) {
-  .salary-layout { grid-template-columns: 1fr; }
+  .salary-layout {
+    grid-template-columns: 1fr;
+  }
 }

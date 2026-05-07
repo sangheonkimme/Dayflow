@@ -3,11 +3,7 @@ import { useState, useMemo } from "react";
 import { Icon } from "@/components/Icon";
 import { useMemos } from "@/data/memos";
 import { FOLDERS, ALL_TAGS } from "@/data/memos";
-import {
-  memoExcerpt,
-  memoWordCount,
-  memoUpdatedLabel,
-} from "@/data/memos";
+import { memoExcerpt, memoWordCount, memoUpdatedLabel } from "@/data/memos";
 
 // ============================================================
 // MEMO PAGE — 장문 메모 detail page
@@ -87,7 +83,8 @@ function MemoPage() {
             메모 <span className="hand-sub">— 떠오를 때 곧바로 적어두세요</span>
           </h1>
           <div className="page-sub">
-            {memos.length}개의 장문 메모 · 마지막 편집 {active ? memoUpdatedLabel(active) : "—"}
+            {memos.length}개의 장문 메모 · 마지막 편집{" "}
+            {active ? memoUpdatedLabel(active) : "—"}
           </div>
         </div>
         <div className="row" style={{ gap: 8 }}>
@@ -233,7 +230,9 @@ function MemoPage() {
                   >
                     {folderLabel(active.folder)}
                   </span>
-                  <span className="muted">최종 편집 · {memoUpdatedLabel(active)}</span>
+                  <span className="muted">
+                    최종 편집 · {memoUpdatedLabel(active)}
+                  </span>
                   <span className="muted">·</span>
                   <span className="muted">{memoWordCount(active)}자</span>
                 </div>

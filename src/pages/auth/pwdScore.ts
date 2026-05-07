@@ -5,4 +5,4 @@ export const pwdScore = (p) => {
   if (/[A-Z]/.test(p) && /[a-z]/.test(p)) s++;
   if (/\d/.test(p) && /[^A-Za-z0-9]/.test(p)) s++;
   return s;
-}
+};

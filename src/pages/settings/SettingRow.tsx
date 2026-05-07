@@ -10,4 +10,4 @@ export const SettingRow = ({ label, sub, children }) => {
       <div className="setting-control">{children}</div>
     </div>
   );
-}
+};

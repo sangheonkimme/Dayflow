@@ -238,7 +238,7 @@ export const PCLogin = ({ lang = "ko", dark = false, onSwitch }) => {
       </div>
     </div>
   );
-}
+};
 
 // ============================================================
 // PC SIGNUP

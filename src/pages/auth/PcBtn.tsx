@@ -63,6 +63,6 @@ export const PCBtn = ({
       {children}
     </button>
   );
-}
+};
 
 // ─────────── Brand panel (left side, big visual) ───────────

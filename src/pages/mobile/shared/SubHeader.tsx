@@ -3,7 +3,14 @@ import { Ico } from "@/pages/mobile/shared/Ico";
 
 export const SubHeader = ({ title, onBack, action }) => {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 10,
+        marginBottom: 14,
+      }}
+    >
       <button className="dfm-icon-btn" onClick={onBack} aria-label="뒤로">
         <Ico name="chevL" size={18} />
       </button>
@@ -11,7 +18,7 @@ export const SubHeader = ({ title, onBack, action }) => {
       {action}
     </div>
   );
-}
+};
 
 // ────────────────────────────────────────────────
 // SUBSCRIPTIONS — 구독 관리

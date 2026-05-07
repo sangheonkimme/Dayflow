@@ -6,7 +6,11 @@ import { PCField } from "@/pages/auth/PcField";
 import { PCBtn } from "@/pages/auth/PcBtn";
 import { BrandPanel } from "@/pages/auth/PcBrandPanel";
 
-export const PCOnboarding = ({ lang = "ko", dark = false, initialStep = 0 }) => {
+export const PCOnboarding = ({
+  lang = "ko",
+  dark = false,
+  initialStep = 0,
+}) => {
   const t = AUTH_TEXT[lang];
   const [step, setStep] = useState(initialStep);
   const [purpose, setPurpose] = useState(2);
@@ -567,5 +571,4 @@ export const PCOnboarding = ({ lang = "ko", dark = false, initialStep = 0 }) => 
       </div>
     </div>
   );
-}
-
+};

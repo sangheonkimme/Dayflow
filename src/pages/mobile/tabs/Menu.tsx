@@ -14,24 +14,69 @@ export const MobileMenu = ({ onNavigate, onProfile }) => {
   ];
   return (
     <div>
-      <div className="dfm-card" onClick={onProfile} style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14, cursor: "pointer" }}>
-        <div style={{ width: 48, height: 48, borderRadius: 14, background: "var(--yellow)", display: "grid", placeItems: "center", fontFamily: "var(--hand)", fontWeight: 700, fontSize: 22, border: "1px solid var(--yellow-edge)" }}>나</div>
+      <div
+        className="dfm-card"
+        onClick={onProfile}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 12,
+          marginBottom: 14,
+          cursor: "pointer",
+        }}
+      >
+        <div
+          style={{
+            width: 48,
+            height: 48,
+            borderRadius: 14,
+            background: "var(--yellow)",
+            display: "grid",
+            placeItems: "center",
+            fontFamily: "var(--hand)",
+            fontWeight: 700,
+            fontSize: 22,
+            border: "1px solid var(--yellow-edge)",
+          }}
+        >
+          나
+        </div>
         <div style={{ flex: 1 }}>
           <b style={{ fontSize: 15 }}>나비</b>
-          <div style={{ fontSize: 12, color: "var(--ink-mute)" }}>nabi@dayflow.app · 무료 플랜</div>
+          <div style={{ fontSize: 12, color: "var(--ink-mute)" }}>
+            nabi@dayflow.app · 무료 플랜
+          </div>
         </div>
         <Ico name="chevR" size={16} />
       </div>
       <SectionHeader title="바로가기" />
       <div className="dfm-card" style={{ padding: 0 }}>
         {links.map(([icoName, ttl, sub, route], i) => (
-          <div key={i}
+          <div
+            key={i}
             onClick={() => route && onNavigate?.(route)}
-            style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 14px", borderBottom: i < links.length - 1 ? "1px dashed var(--line)" : "none", cursor: route ? "pointer" : "default", opacity: route ? 1 : 0.78 }}>
-            <div className="dfm-tool-ico" style={{ width: 36, height: 36, fontSize: 16 }}><Ico name={icoName} size={16} /></div>
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 12,
+              padding: "14px 14px",
+              borderBottom:
+                i < links.length - 1 ? "1px dashed var(--line)" : "none",
+              cursor: route ? "pointer" : "default",
+              opacity: route ? 1 : 0.78,
+            }}
+          >
+            <div
+              className="dfm-tool-ico"
+              style={{ width: 36, height: 36, fontSize: 16 }}
+            >
+              <Ico name={icoName} size={16} />
+            </div>
             <div style={{ flex: 1 }}>
               <b style={{ fontSize: 13, display: "block" }}>{ttl}</b>
-              <small style={{ fontSize: 11, color: "var(--ink-mute)" }}>{sub}</small>
+              <small style={{ fontSize: 11, color: "var(--ink-mute)" }}>
+                {sub}
+              </small>
             </div>
             <Ico name="chevR" size={14} />
           </div>
@@ -39,7 +84,7 @@ export const MobileMenu = ({ onNavigate, onProfile }) => {
       </div>
     </div>
   );
-}
+};
 
 // ────────────────────────────────────────────────
 // SUB-SCREEN HEADER (back button + title)

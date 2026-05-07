@@ -338,7 +338,7 @@ export const PCSignup = ({ lang = "ko", dark = false, onSwitch }) => {
       </div>
     </div>
   );
-}
+};
 
 // ============================================================
 // PC ONBOARDING — wider, two-column step layout

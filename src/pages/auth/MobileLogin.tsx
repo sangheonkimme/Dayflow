@@ -8,7 +8,12 @@ import { Field } from "@/pages/auth/Field";
 import { Btn } from "@/pages/auth/Btn";
 import { GoogleIcon } from "@/pages/auth/GoogleIcon";
 
-export const LoginScreen = ({ variant = "A", lang = "ko", dark = false, onSwitch }) => {
+export const LoginScreen = ({
+  variant = "A",
+  lang = "ko",
+  dark = false,
+  onSwitch,
+}) => {
   const t = AUTH_TEXT[lang];
   const { signIn } = useAuth();
   const [email, setEmail] = useState("");
@@ -474,4 +479,4 @@ export const LoginScreen = ({ variant = "A", lang = "ko", dark = false, onSwitch
       </div>
     </div>
   );
-}
+};

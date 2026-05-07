@@ -2,14 +2,14 @@
 // Memos — seeds + selectors + hook
 // ============================================================
 
-import { useMemo } from 'react';
-import type { MemoDoc } from '@/types';
-import { getRelativeDateLabel } from '@/lib/date';
-import { getDataSource } from '@/data/source';
+import { useMemo } from "react";
+import type { MemoDoc } from "@/types";
+import { getRelativeDateLabel } from "@/lib/date";
+import { getDataSource } from "@/data/source";
 import {
   useRepositoryQuery,
   type RepositoryQueryView,
-} from '@/data/useRepositoryQuery';
+} from "@/data/useRepositoryQuery";
 
 // ─────────────────────────────────────────────
 // Folder + seed types
@@ -25,14 +25,15 @@ export interface MemoFolder {
 export const MEMO_SEEDS: MemoDoc[] = [
   {
     id: 1,
-    title: '디자인 시스템 v2 — 컬러 토큰 정리',
-    folder: 'work',
-    tags: ['디자인', '토큰'],
+    title: "디자인 시스템 v2 — 컬러 토큰 정리",
+    folder: "work",
+    tags: ["디자인", "토큰"],
     starred: true,
     pinned: true,
-    updated: '오늘 오후 2:14',
+    updated: "오늘 오후 2:14",
     word: 612,
-    excerpt: 'primary / secondary / surface 3-tier로 재정리. 다크 모드 대응은 oklch로…',
+    excerpt:
+      "primary / secondary / surface 3-tier로 재정리. 다크 모드 대응은 oklch로…",
     body: `# 디자인 시스템 v2 — 컬러 토큰 정리
 
 오늘 회의에서 결정된 사항 정리.
@@ -60,14 +61,14 @@ export const MEMO_SEEDS: MemoDoc[] = [
   },
   {
     id: 2,
-    title: '이번 분기 회고',
-    folder: 'personal',
-    tags: ['회고', '성장'],
+    title: "이번 분기 회고",
+    folder: "personal",
+    tags: ["회고", "성장"],
     starred: true,
     pinned: false,
-    updated: '어제',
+    updated: "어제",
     word: 384,
-    excerpt: '잘한 것: 디자인 시스템 안정화, 신규 기능 3건 출시. 아쉬운 것…',
+    excerpt: "잘한 것: 디자인 시스템 안정화, 신규 기능 3건 출시. 아쉬운 것…",
     body: `# 이번 분기 회고
 
 ## 잘한 것
@@ -87,14 +88,14 @@ export const MEMO_SEEDS: MemoDoc[] = [
   },
   {
     id: 3,
-    title: '주말에 갈 동네 카페 리스트',
-    folder: 'personal',
-    tags: ['카페', '주말'],
+    title: "주말에 갈 동네 카페 리스트",
+    folder: "personal",
+    tags: ["카페", "주말"],
     starred: false,
     pinned: false,
-    updated: '그저께',
+    updated: "그저께",
     word: 142,
-    excerpt: '성수 — 어니언, 대림창고. 연남 — 카멜커피, 피어커피…',
+    excerpt: "성수 — 어니언, 대림창고. 연남 — 카멜커피, 피어커피…",
     body: `# 주말 카페 리스트
 
 ## 성수
@@ -112,14 +113,14 @@ export const MEMO_SEEDS: MemoDoc[] = [
   },
   {
     id: 4,
-    title: '신규 프로젝트 킥오프 — 아이디어 메모',
-    folder: 'work',
-    tags: ['기획', '아이디어'],
+    title: "신규 프로젝트 킥오프 — 아이디어 메모",
+    folder: "work",
+    tags: ["기획", "아이디어"],
     starred: false,
     pinned: false,
-    updated: '월요일',
+    updated: "월요일",
     word: 256,
-    excerpt: '타겟: 20-30대 직장인. 핵심 가치: 일과 삶의 분리…',
+    excerpt: "타겟: 20-30대 직장인. 핵심 가치: 일과 삶의 분리…",
     body: `# 신규 프로젝트 — 아이디어 노트
 
 ## 타겟
@@ -135,14 +136,14 @@ export const MEMO_SEEDS: MemoDoc[] = [
   },
   {
     id: 5,
-    title: '책 — 『생각의 탄생』 발췌',
-    folder: 'study',
-    tags: ['독서', '발췌'],
+    title: "책 — 『생각의 탄생』 발췌",
+    folder: "study",
+    tags: ["독서", "발췌"],
     starred: false,
     pinned: false,
-    updated: '지난주',
+    updated: "지난주",
     word: 521,
-    excerpt: '관찰, 형상화, 추상, 패턴인식… 13가지 생각도구.',
+    excerpt: "관찰, 형상화, 추상, 패턴인식… 13가지 생각도구.",
     body: `# 『생각의 탄생』 — 핵심 정리
 
 ## 13가지 생각도구
@@ -162,14 +163,14 @@ export const MEMO_SEEDS: MemoDoc[] = [
   },
   {
     id: 6,
-    title: '엄마 생신 선물 아이디어',
-    folder: 'personal',
-    tags: ['가족', '선물'],
+    title: "엄마 생신 선물 아이디어",
+    folder: "personal",
+    tags: ["가족", "선물"],
     starred: false,
     pinned: false,
-    updated: '11.20',
+    updated: "11.20",
     word: 84,
-    excerpt: '캐시미어 머플러? 안마의자는 부담스럽고…',
+    excerpt: "캐시미어 머플러? 안마의자는 부담스럽고…",
     body: `# 엄마 생신 (12월 14일)
 
 ## 후보
@@ -182,14 +183,14 @@ export const MEMO_SEEDS: MemoDoc[] = [
   },
   {
     id: 7,
-    title: '인터뷰 준비 — 자주 받는 질문',
-    folder: 'study',
-    tags: ['커리어'],
+    title: "인터뷰 준비 — 자주 받는 질문",
+    folder: "study",
+    tags: ["커리어"],
     starred: false,
     pinned: false,
-    updated: '11.18',
+    updated: "11.18",
     word: 402,
-    excerpt: '본인 소개, 강점/약점, 갈등 해결 사례, 실패 경험…',
+    excerpt: "본인 소개, 강점/약점, 갈등 해결 사례, 실패 경험…",
     body: `# 인터뷰 준비
 
 ## 자주 받는 질문
@@ -208,40 +209,58 @@ export const MEMO_SEEDS: MemoDoc[] = [
 ];
 
 export const FOLDERS: MemoFolder[] = [
-  { id: 'all',      label: '전체 메모',   icon: 'note',   count: 7 },
-  { id: 'starred',  label: '즐겨찾기',    icon: 'star',   count: 2 },
-  { id: 'work',     label: '업무',        icon: 'folder', count: 2, color: '#e89aac' },
-  { id: 'personal', label: '개인',        icon: 'folder', count: 3, color: '#8ec0d6' },
-  { id: 'study',    label: '공부 · 독서', icon: 'folder', count: 2, color: '#a8d09b' },
-  { id: 'trash',    label: '휴지통',      icon: 'trash',  count: 0 },
+  { id: "all", label: "전체 메모", icon: "note", count: 7 },
+  { id: "starred", label: "즐겨찾기", icon: "star", count: 2 },
+  { id: "work", label: "업무", icon: "folder", count: 2, color: "#e89aac" },
+  { id: "personal", label: "개인", icon: "folder", count: 3, color: "#8ec0d6" },
+  {
+    id: "study",
+    label: "공부 · 독서",
+    icon: "folder",
+    count: 2,
+    color: "#a8d09b",
+  },
+  { id: "trash", label: "휴지통", icon: "trash", count: 0 },
 ];
 
 export const ALL_TAGS = [
-  '디자인', '토큰', '회고', '성장', '카페', '주말',
-  '기획', '아이디어', '독서', '가족', '커리어',
+  "디자인",
+  "토큰",
+  "회고",
+  "성장",
+  "카페",
+  "주말",
+  "기획",
+  "아이디어",
+  "독서",
+  "가족",
+  "커리어",
 ];
 
 // ─────────────────────────────────────────────
 // Derived display selectors
 // ─────────────────────────────────────────────
-export function memoExcerpt(memo: Pick<MemoDoc, 'excerpt' | 'body'>, max = 140): string {
+export function memoExcerpt(
+  memo: Pick<MemoDoc, "excerpt" | "body">,
+  max = 140,
+): string {
   if (memo.excerpt) return memo.excerpt;
-  const flat = (memo.body ?? '').replace(/\s+/g, ' ').trim();
-  return flat.length > max ? flat.slice(0, max) + '…' : flat;
+  const flat = (memo.body ?? "").replace(/\s+/g, " ").trim();
+  return flat.length > max ? flat.slice(0, max) + "…" : flat;
 }
 
-export function memoWordCount(memo: Pick<MemoDoc, 'word' | 'body'>): number {
-  if (typeof memo.word === 'number') return memo.word;
-  return (memo.body ?? '').replace(/\s/g, '').length;
+export function memoWordCount(memo: Pick<MemoDoc, "word" | "body">): number {
+  if (typeof memo.word === "number") return memo.word;
+  return (memo.body ?? "").replace(/\s/g, "").length;
 }
 
 export function memoUpdatedLabel(
-  memo: Pick<MemoDoc, 'updated'>,
+  memo: Pick<MemoDoc, "updated">,
   fallbackDate?: Date,
 ): string {
   if (memo.updated) return memo.updated;
   if (fallbackDate) return getRelativeDateLabel(fallbackDate);
-  return '—';
+  return "—";
 }
 
 // ─────────────────────────────────────────────
@@ -252,12 +271,14 @@ export interface MemosView extends RepositoryQueryView<MemoDoc> {
 }
 
 export function useMemos(folder?: string): MemosView {
-  const view = useRepositoryQuery(getDataSource().memos, { queryKey: ['memos'] });
+  const view = useRepositoryQuery(getDataSource().memos, {
+    queryKey: ["memos"],
+  });
   const { data: all } = view;
   const data = useMemo(() => {
-    if (!folder || folder === 'all') return all;
-    if (folder === 'starred') return all.filter((m) => m.starred);
-    if (folder === 'trash') return [];
+    if (!folder || folder === "all") return all;
+    if (folder === "starred") return all.filter((m) => m.starred);
+    if (folder === "trash") return [];
     return all.filter((m) => m.folder === folder);
   }, [all, folder]);
   return useMemo(() => ({ ...view, data, all }), [view, data, all]);

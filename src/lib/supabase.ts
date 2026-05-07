@@ -10,7 +10,7 @@
 //   createClient<Database>(url, key, ...)
 // 로 교체.
 
-import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 const url = import.meta.env.VITE_SUPABASE_URL;
 const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -34,7 +34,7 @@ export const supabase: SupabaseClient | null = isSupabaseConfigured
 export function requireSupabase(): SupabaseClient {
   if (!supabase) {
     throw new Error(
-      'Supabase is not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in .env',
+      "Supabase is not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in .env",
     );
   }
   return supabase;

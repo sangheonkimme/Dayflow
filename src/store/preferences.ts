@@ -5,9 +5,9 @@
 // 기존 usePreferences(React state + 수동 localStorage)에서 이전.
 // EDITMODE postMessage 브릿지는 별도 subscribe로 유지 (호스트 환경 호환).
 
-import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
-import type { Tweaks } from '@/types';
+import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
+import type { Tweaks } from "@/types";
 import { TWEAK_DEFAULTS } from "@/data/lookups";
 
 export type SetPreference = <K extends keyof Tweaks>(
@@ -21,7 +21,7 @@ interface PreferencesState {
   resetTweaks: () => void;
 }
 
-const KEY = 'dayflow.preferences';
+const KEY = "dayflow.preferences";
 
 export const usePreferencesStore = create<PreferencesState>()(
   persist(
@@ -42,13 +42,13 @@ export const usePreferencesStore = create<PreferencesState>()(
 );
 
 // EDITMODE postMessage 브릿지 — tweaks가 바뀔 때마다 부모 iframe에 알림
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
   usePreferencesStore.subscribe((state, prev) => {
     if (state.tweaks === prev.tweaks) return;
     try {
       window.parent?.postMessage(
-        { type: '__edit_mode_set_keys', edits: state.tweaks },
-        '*',
+        { type: "__edit_mode_set_keys", edits: state.tweaks },
+        "*",
       );
     } catch {
       /* not in iframe — silent */

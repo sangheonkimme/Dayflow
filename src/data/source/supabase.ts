@@ -9,10 +9,10 @@
 //
 // RLS가 user_id 기반이라 SupabaseClient가 인증된 세션을 가지고 있다고 가정.
 
-import type { SupabaseClient } from '@supabase/supabase-js';
-import { createStore, type Store, type Identifiable } from '@/data/store';
-import type { DataSource, Repository } from '@/data/source/types';
-import type { Database } from '@/data/source/db.types';
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { createStore, type Store, type Identifiable } from "@/data/store";
+import type { DataSource, Repository } from "@/data/source/types";
+import type { Database } from "@/data/source/db.types";
 import type {
   Txn,
   CalendarEvent,
@@ -20,22 +20,22 @@ import type {
   StickyNote,
   ChecklistTask,
   Subscription,
-} from '@/types';
-import type { PinnedInfo } from '@/data/pinned-info';
-import type { DailyLog } from '@/data/daily-log';
+} from "@/types";
+import type { PinnedInfo } from "@/data/pinned-info";
+import type { DailyLog } from "@/data/daily-log";
 import {
   loadCategoryCache,
   resolveCategoryId,
   clearCategoryCache,
-} from '@/data/source/mappers/categories';
-import * as TxnMap from '@/data/source/mappers/transactions';
-import * as EventMap from '@/data/source/mappers/events';
-import * as MemoMap from '@/data/source/mappers/memos';
-import * as StickyMap from '@/data/source/mappers/sticky-notes';
-import * as ChecklistMap from '@/data/source/mappers/checklist';
-import * as SubMap from '@/data/source/mappers/subscriptions';
-import * as PinnedMap from '@/data/source/mappers/pinned-info';
-import * as DailyMap from '@/data/source/mappers/daily-log';
+} from "@/data/source/mappers/categories";
+import * as TxnMap from "@/data/source/mappers/transactions";
+import * as EventMap from "@/data/source/mappers/events";
+import * as MemoMap from "@/data/source/mappers/memos";
+import * as StickyMap from "@/data/source/mappers/sticky-notes";
+import * as ChecklistMap from "@/data/source/mappers/checklist";
+import * as SubMap from "@/data/source/mappers/subscriptions";
+import * as PinnedMap from "@/data/source/mappers/pinned-info";
+import * as DailyMap from "@/data/source/mappers/daily-log";
 
 type Client = SupabaseClient<Database>;
 
@@ -53,12 +53,15 @@ function makeRepo<T extends Identifiable, Row>(
   return {
     store,
     init: async () => {
-      store.setStatus('loading');
+      store.setStatus("loading");
       let q = client.from(cfg.table as never).select(cfg.select);
-      if (cfg.orderBy) q = q.order(cfg.orderBy.column, { ascending: cfg.orderBy.ascending ?? false });
+      if (cfg.orderBy)
+        q = q.order(cfg.orderBy.column, {
+          ascending: cfg.orderBy.ascending ?? false,
+        });
       const { data, error } = await q;
       if (error) {
-        store.setStatus('error', error as Error);
+        store.setStatus("error", error as Error);
         throw error;
       }
       store.setAll(((data ?? []) as Row[]).map(cfg.toDomain));
@@ -75,7 +78,10 @@ function makeRepo<T extends Identifiable, Row>(
       return item;
     },
     remove: async (id) => {
-      const { error } = await client.from(cfg.table as never).delete().eq('id', id as string);
+      const { error } = await client
+        .from(cfg.table as never)
+        .delete()
+        .eq("id", id as string);
       if (error) throw error;
       store.remove(id);
     },
@@ -102,25 +108,33 @@ export async function createSupabaseSource(
   const transactions: Repository<Txn> = {
     store: txnStore,
     init: async () => {
-      txnStore.setStatus('loading');
+      txnStore.setStatus("loading");
       const { data, error } = await client
-        .from('transactions')
-        .select('*, categories(name, color), accounts(name)')
-        .order('occurred_at', { ascending: false });
+        .from("transactions")
+        .select("*, categories(name, color), accounts(name)")
+        .order("occurred_at", { ascending: false });
       if (error) {
-        txnStore.setStatus('error', error as Error);
+        txnStore.setStatus("error", error as Error);
         throw error;
       }
-      txnStore.setAll((data ?? []).map((r) => TxnMap.toDomain(r as TxnMap.TxnJoinedRow)));
+      txnStore.setAll(
+        (data ?? []).map((r) => TxnMap.toDomain(r as TxnMap.TxnJoinedRow)),
+      );
     },
     upsert: async (input) => {
-      const kind: 'income' | 'expense' = input.type === 'in' ? 'income' : 'expense';
-      const categoryId = await resolveCategoryId(client, userId, input.cat, kind);
+      const kind: "income" | "expense" =
+        input.type === "in" ? "income" : "expense";
+      const categoryId = await resolveCategoryId(
+        client,
+        userId,
+        input.cat,
+        kind,
+      );
       const row = TxnMap.toRow(input, { userId, categoryId });
       const { data, error } = await client
-        .from('transactions')
+        .from("transactions")
         .upsert(row)
-        .select('*, categories(name, color), accounts(name)')
+        .select("*, categories(name, color), accounts(name)")
         .single();
       if (error) throw error;
       const item = TxnMap.toDomain(data as TxnMap.TxnJoinedRow);
@@ -128,7 +142,10 @@ export async function createSupabaseSource(
       return item;
     },
     remove: async (id) => {
-      const { error } = await client.from('transactions').delete().eq('id', id as string);
+      const { error } = await client
+        .from("transactions")
+        .delete()
+        .eq("id", id as string);
       if (error) throw error;
       txnStore.remove(id);
     },
@@ -138,24 +155,31 @@ export async function createSupabaseSource(
   const subscriptions: Repository<Subscription> = {
     store: subStore,
     init: async () => {
-      subStore.setStatus('loading');
+      subStore.setStatus("loading");
       const { data, error } = await client
-        .from('subscriptions')
-        .select('*, categories(name, color)')
-        .order('next_billing_at', { ascending: true });
+        .from("subscriptions")
+        .select("*, categories(name, color)")
+        .order("next_billing_at", { ascending: true });
       if (error) {
-        subStore.setStatus('error', error as Error);
+        subStore.setStatus("error", error as Error);
         throw error;
       }
-      subStore.setAll((data ?? []).map((r) => SubMap.toDomain(r as SubMap.SubJoinedRow)));
+      subStore.setAll(
+        (data ?? []).map((r) => SubMap.toDomain(r as SubMap.SubJoinedRow)),
+      );
     },
     upsert: async (input) => {
-      const categoryId = await resolveCategoryId(client, userId, input.cat, 'subscription');
+      const categoryId = await resolveCategoryId(
+        client,
+        userId,
+        input.cat,
+        "subscription",
+      );
       const row = SubMap.toRow(input, { userId, categoryId });
       const { data, error } = await client
-        .from('subscriptions')
+        .from("subscriptions")
         .upsert(row)
-        .select('*, categories(name, color)')
+        .select("*, categories(name, color)")
         .single();
       if (error) throw error;
       const item = SubMap.toDomain(data as SubMap.SubJoinedRow);
@@ -163,7 +187,10 @@ export async function createSupabaseSource(
       return item;
     },
     remove: async (id) => {
-      const { error } = await client.from('subscriptions').delete().eq('id', id as string);
+      const { error } = await client
+        .from("subscriptions")
+        .delete()
+        .eq("id", id as string);
       if (error) throw error;
       subStore.remove(id);
     },
@@ -173,46 +200,51 @@ export async function createSupabaseSource(
     transactions,
     subscriptions,
     events: makeRepo<CalendarEvent, never>(client, eventStore, {
-      table: 'calendar_events',
-      select: '*',
+      table: "calendar_events",
+      select: "*",
       toDomain: (r) => EventMap.toDomain(r as never),
-      toRow: (input) => EventMap.toRow(input, userId) as Record<string, unknown>,
-      orderBy: { column: 'starts_at', ascending: true },
+      toRow: (input) =>
+        EventMap.toRow(input, userId) as Record<string, unknown>,
+      orderBy: { column: "starts_at", ascending: true },
     }),
     memos: makeRepo<MemoDoc, never>(client, memoStore, {
-      table: 'notes',
-      select: '*',
+      table: "notes",
+      select: "*",
       toDomain: (r) => MemoMap.toDomain(r as never),
       toRow: (input) => MemoMap.toRow(input, userId) as Record<string, unknown>,
-      orderBy: { column: 'created_at', ascending: false },
+      orderBy: { column: "created_at", ascending: false },
     }),
     stickyNotes: makeRepo<StickyNote, never>(client, stickyStore, {
-      table: 'sticky_notes',
-      select: '*',
+      table: "sticky_notes",
+      select: "*",
       toDomain: (r) => StickyMap.toDomain(r as never),
-      toRow: (input) => StickyMap.toRow(input, userId) as Record<string, unknown>,
-      orderBy: { column: 'position', ascending: true },
+      toRow: (input) =>
+        StickyMap.toRow(input, userId) as Record<string, unknown>,
+      orderBy: { column: "position", ascending: true },
     }),
     checklist: makeRepo<ChecklistTask, never>(client, checklistStore, {
-      table: 'checklist_items',
-      select: '*',
+      table: "checklist_items",
+      select: "*",
       toDomain: (r) => ChecklistMap.toDomain(r as never),
-      toRow: (input) => ChecklistMap.toRow(input, userId) as Record<string, unknown>,
-      orderBy: { column: 'position', ascending: true },
+      toRow: (input) =>
+        ChecklistMap.toRow(input, userId) as Record<string, unknown>,
+      orderBy: { column: "position", ascending: true },
     }),
     pinnedInfo: makeRepo<PinnedInfo, never>(client, pinnedStore, {
-      table: 'pinned_info',
-      select: '*',
+      table: "pinned_info",
+      select: "*",
       toDomain: (r) => PinnedMap.toDomain(r as never),
-      toRow: (input) => PinnedMap.toRow(input, userId) as Record<string, unknown>,
-      orderBy: { column: 'position', ascending: true },
+      toRow: (input) =>
+        PinnedMap.toRow(input, userId) as Record<string, unknown>,
+      orderBy: { column: "position", ascending: true },
     }),
     dailyLog: makeRepo<DailyLog, never>(client, dailyStore, {
-      table: 'daily_logs',
-      select: '*',
+      table: "daily_logs",
+      select: "*",
       toDomain: (r) => DailyMap.toDomain(r as never),
-      toRow: (input) => DailyMap.toRow(input, userId) as Record<string, unknown>,
-      orderBy: { column: 'date', ascending: false },
+      toRow: (input) =>
+        DailyMap.toRow(input, userId) as Record<string, unknown>,
+      orderBy: { column: "date", ascending: false },
     }),
   };
 }

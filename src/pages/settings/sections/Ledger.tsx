@@ -124,4 +124,4 @@ export const LedgerSettingsSection = ({ tweaks, setTweak }) => {
       </div>
     </>
   );
-}
+};

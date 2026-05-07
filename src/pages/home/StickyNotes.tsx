@@ -1,7 +1,11 @@
 // @ts-nocheck
 import { useState } from "react";
 import { Icon } from "@/components/Icon";
-import { useStickyNotes, stickyDateLabel, stickyAuthorLabel } from "@/data/sticky-notes";
+import {
+  useStickyNotes,
+  stickyDateLabel,
+  stickyAuthorLabel,
+} from "@/data/sticky-notes";
 import { useDailyLog } from "@/data/daily-log";
 import { usePinnedInfo } from "@/data/pinned-info";
 import { MOODS, emojiToMood, moodToEmoji } from "@/data/lookups";

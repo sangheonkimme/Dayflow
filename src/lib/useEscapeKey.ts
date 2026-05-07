@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect } from "react";
 
 /**
  * Bind a global Escape keydown listener while `enabled` is truthy.
@@ -8,9 +8,9 @@ export function useEscapeKey(onEscape: () => void, enabled = true): void {
   useEffect(() => {
     if (!enabled) return undefined;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onEscape();
+      if (e.key === "Escape") onEscape();
     };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
   }, [enabled, onEscape]);
 }

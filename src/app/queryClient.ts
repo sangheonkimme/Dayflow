@@ -2,7 +2,7 @@
 // QueryClient — 단일 인스턴스 (App + 외부 코드가 invalidate에 접근)
 // ============================================================
 
-import { QueryClient } from '@tanstack/react-query';
+import { QueryClient } from "@tanstack/react-query";
 
 export const queryClient = new QueryClient({
   defaultOptions: {

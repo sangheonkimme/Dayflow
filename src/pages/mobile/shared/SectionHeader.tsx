@@ -8,10 +8,12 @@ export const SectionHeader = ({ title, action, onAction }) => {
           className={"more" + (onAction ? " clickable" : "")}
           onClick={onAction}
           style={onAction ? { cursor: "pointer" } : undefined}
-        >{action} →</span>
+        >
+          {action} →
+        </span>
       )}
     </div>
   );
-}
+};
 
 // ───────── Swipe-actions row (iOS pattern) ─────────

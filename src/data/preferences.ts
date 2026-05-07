@@ -4,8 +4,8 @@
 // 실 저장소는 shared/state/preferences.ts (persist middleware).
 // ============================================================
 
-import type { Tweaks } from '@/types';
-import { usePreferencesStore, type SetPreference } from '@/store/preferences';
+import type { Tweaks } from "@/types";
+import { usePreferencesStore, type SetPreference } from "@/store/preferences";
 
 export type { SetPreference };
 

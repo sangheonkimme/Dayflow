@@ -48,4 +48,4 @@ export const BrandMark = ({ size = 28, dark = false }) => {
       </b>
     </div>
   );
-}
+};

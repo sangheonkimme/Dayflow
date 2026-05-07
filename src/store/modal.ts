@@ -6,8 +6,8 @@
 // Zustand로 올리면 어떤 컴포넌트에서도 직접 openTxn/openEvent 호출 가능.
 // (현 단계는 인프라만 — App.tsx 수정. 페이지별 직접 호출은 점진 이전)
 
-import { create } from 'zustand';
-import type { ModalState, TxnDraft, EventDraft } from '@/types';
+import { create } from "zustand";
+import type { ModalState, TxnDraft, EventDraft } from "@/types";
 
 interface ModalStoreState {
   modal: ModalState;
@@ -18,7 +18,7 @@ interface ModalStoreState {
 
 export const useModalStore = create<ModalStoreState>((set) => ({
   modal: null,
-  openTxn: (editing) => set({ modal: { type: 'txn', editing } }),
-  openEvent: (editing) => set({ modal: { type: 'event', editing } }),
+  openTxn: (editing) => set({ modal: { type: "txn", editing } }),
+  openEvent: (editing) => set({ modal: { type: "event", editing } }),
   close: () => set({ modal: null }),
 }));

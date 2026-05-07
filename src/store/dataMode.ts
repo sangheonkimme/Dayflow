@@ -7,9 +7,9 @@
 //
 // persist 안 함 — 매 부팅 시 'live'로 시작 → 비로그인이면 인증 화면 진입.
 
-import { create } from 'zustand';
+import { create } from "zustand";
 
-export type DataMode = 'live' | 'mock';
+export type DataMode = "live" | "mock";
 
 interface DataModeState {
   mode: DataMode;
@@ -18,7 +18,7 @@ interface DataModeState {
 }
 
 export const useDataModeStore = create<DataModeState>((set) => ({
-  mode: 'live',
+  mode: "live",
   setMode: (mode) => set({ mode }),
-  toggle: () => set((s) => ({ mode: s.mode === 'mock' ? 'live' : 'mock' })),
+  toggle: () => set((s) => ({ mode: s.mode === "mock" ? "live" : "mock" })),
 }));

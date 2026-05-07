@@ -16,18 +16,18 @@ import {
   useQuery,
   useQueryClient,
   type UseMutationOptions,
-} from '@tanstack/react-query';
-import { useSyncExternalStore } from 'react';
-import type { Repository } from '@/data/source/types';
-import type { Status } from '@/data/store';
+} from "@tanstack/react-query";
+import { useSyncExternalStore } from "react";
+import type { Repository } from "@/data/source/types";
+import type { Status } from "@/data/store";
 
 export interface RepositoryQueryView<T extends { id: string | number }> {
   data: readonly T[];
   status: Status;
   error: Error | null;
   isLoading: boolean;
-  upsert: (item: Partial<T> & { id?: T['id'] }) => Promise<T>;
-  remove: (id: T['id']) => Promise<void>;
+  upsert: (item: Partial<T> & { id?: T["id"] }) => Promise<T>;
+  remove: (id: T["id"]) => Promise<void>;
 }
 
 export interface UseRepositoryQueryOptions<T extends { id: string | number }> {
@@ -35,13 +35,10 @@ export interface UseRepositoryQueryOptions<T extends { id: string | number }> {
   queryKey: readonly unknown[];
   /** 추가 mutation 훅 옵션 (낙관적 업데이트용). */
   upsertOptions?: Omit<
-    UseMutationOptions<T, Error, Partial<T> & { id?: T['id'] }>,
-    'mutationFn'
+    UseMutationOptions<T, Error, Partial<T> & { id?: T["id"] }>,
+    "mutationFn"
   >;
-  removeOptions?: Omit<
-    UseMutationOptions<void, Error, T['id']>,
-    'mutationFn'
-  >;
+  removeOptions?: Omit<UseMutationOptions<void, Error, T["id"]>, "mutationFn">;
 }
 
 export function useRepositoryQuery<T extends { id: string | number }>(
@@ -52,7 +49,10 @@ export function useRepositoryQuery<T extends { id: string | number }>(
   const { queryKey } = options;
 
   // store를 RQ와 분리해서 직접 구독 — 외부 변경(mutation 결과, realtime)이 즉시 반영
-  const data = useSyncExternalStore(repo.store.subscribe, repo.store.getSnapshot);
+  const data = useSyncExternalStore(
+    repo.store.subscribe,
+    repo.store.getSnapshot,
+  );
 
   // queryFn은 init lifecycle만 담당. 데이터 자체는 위 useSyncExternalStore에서.
   const query = useQuery({
@@ -64,7 +64,7 @@ export function useRepositoryQuery<T extends { id: string | number }>(
     staleTime: Infinity, // store가 진실 원천이라 자동 refetch 안 함
   });
 
-  const upsertM = useMutation<T, Error, Partial<T> & { id?: T['id'] }>({
+  const upsertM = useMutation<T, Error, Partial<T> & { id?: T["id"] }>({
     mutationFn: (item) => repo.upsert(item),
     ...options.upsertOptions,
     onSettled: (...args) => {
@@ -73,7 +73,7 @@ export function useRepositoryQuery<T extends { id: string | number }>(
     },
   });
 
-  const removeM = useMutation<void, Error, T['id']>({
+  const removeM = useMutation<void, Error, T["id"]>({
     mutationFn: (id) => repo.remove(id),
     ...options.removeOptions,
     onSettled: (...args) => {

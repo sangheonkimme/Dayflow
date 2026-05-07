@@ -8,7 +8,7 @@
 // ─────────────────────────────────────────────
 // 거래 (Transaction)
 // ─────────────────────────────────────────────
-export type TxnType = 'in' | 'out';
+export type TxnType = "in" | "out";
 
 export interface Txn {
   id: number | string;
@@ -39,7 +39,7 @@ export type TxnDraft = Partial<Txn>;
 // ─────────────────────────────────────────────
 // 일정 (CalendarEvent)
 // ─────────────────────────────────────────────
-export type EventRepeat = 'none' | '매일' | '매주' | '매월';
+export type EventRepeat = "none" | "매일" | "매주" | "매월";
 
 export interface CalendarEvent {
   id: string;
@@ -66,7 +66,7 @@ export type EventDraft = Partial<CalendarEvent>;
 // ─────────────────────────────────────────────
 // 메모 / 스티키
 // ─────────────────────────────────────────────
-export type StickyColor = 'yellow' | 'pink' | 'blue';
+export type StickyColor = "yellow" | "pink" | "blue";
 
 export interface StickyNote {
   id: number;
@@ -108,8 +108,8 @@ export interface ChecklistTask {
 // ─────────────────────────────────────────────
 // 정기구독
 // ─────────────────────────────────────────────
-export type SubCycle = '월' | '년';
-export type SubStatus = 'active' | 'paused';
+export type SubCycle = "월" | "년";
+export type SubStatus = "active" | "paused";
 
 export interface Subscription {
   id: number | string;
@@ -132,17 +132,17 @@ export interface Subscription {
 // 모달 (App-level)
 // ─────────────────────────────────────────────
 export type ModalState =
-  | { type: 'txn'; editing?: TxnDraft }
-  | { type: 'event'; editing?: EventDraft }
+  | { type: "txn"; editing?: TxnDraft }
+  | { type: "event"; editing?: EventDraft }
   | null;
 
 // ─────────────────────────────────────────────
 // 사용자 설정 (Tweaks)
 // ─────────────────────────────────────────────
-export type AccentColor = 'yellow' | 'coral' | 'mint' | 'lilac';
-export type NoteStyle = 'tilted' | 'flat';
-export type Density = 'comfy' | 'compact';
-export type AuthPreviewView = 'login' | 'signup' | 'onboarding' | 'forgot';
+export type AccentColor = "yellow" | "coral" | "mint" | "lilac";
+export type NoteStyle = "tilted" | "flat";
+export type Density = "comfy" | "compact";
+export type AuthPreviewView = "login" | "signup" | "onboarding" | "forgot";
 
 export interface Tweaks {
   dark: boolean;
@@ -156,8 +156,8 @@ export interface Tweaks {
   authPreview: AuthPreviewView;
   // SettingsPage가 동적으로 추가하는 필드들 (월급일 등)
   payday?: number;
-  paydayType?: 'fixed' | 'lastDay' | 'firstDay';
-  cycleStart?: 'payday' | '1st' | 'custom';
+  paydayType?: "fixed" | "lastDay" | "firstDay";
+  cycleStart?: "payday" | "1st" | "custom";
   [extra: string]: unknown;
 }
 

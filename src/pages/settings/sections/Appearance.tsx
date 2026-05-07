@@ -15,7 +15,10 @@ export const AppearanceSection = ({ tweaks, setTweak }) => {
       <div className="settings-group">
         <h3>테마</h3>
         <SettingRow label="다크 모드" sub="저녁 작업에 편한 어두운 테마">
-          <ToggleSwitch on={!!tweaks.dark} onChange={(v) => setTweak("dark", v)} />
+          <ToggleSwitch
+            on={!!tweaks.dark}
+            onChange={(v) => setTweak("dark", v)}
+          />
         </SettingRow>
         <SettingRow label="포인트 컬러" sub="브랜드 색상과 강조 요소에 적용">
           <div className="row" style={{ gap: 8 }}>
@@ -59,4 +62,4 @@ export const AppearanceSection = ({ tweaks, setTweak }) => {
       </div>
     </>
   );
-}
+};

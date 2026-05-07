@@ -1,5 +1,5 @@
-import { ReactNode } from 'react';
-import { useEscapeKey } from '@/lib/useEscapeKey';
+import { ReactNode } from "react";
+import { useEscapeKey } from "@/lib/useEscapeKey";
 
 interface ModalProps {
   open?: boolean;
@@ -21,8 +21,8 @@ export function Modal({
   open = true,
   onClose,
   children,
-  className = '',
-  overlayClassName = '',
+  className = "",
+  overlayClassName = "",
 }: ModalProps) {
   useEscapeKey(() => onClose?.(), !!open);
 
@@ -30,11 +30,11 @@ export function Modal({
 
   return (
     <div
-      className={('modal-overlay ' + overlayClassName).trim()}
+      className={("modal-overlay " + overlayClassName).trim()}
       onClick={onClose}
     >
       <div
-        className={('modal ' + className).trim()}
+        className={("modal " + className).trim()}
         onClick={(e) => e.stopPropagation()}
       >
         {children}

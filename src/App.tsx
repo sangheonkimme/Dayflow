@@ -30,11 +30,7 @@ import { useModalStore } from "@/store/modal";
 import { DemoBanner } from "@/components/DemoBanner";
 import { configureDataSource } from "@/data/source";
 import { queryClient } from "@/app/queryClient";
-import type {
-  TxnDraft,
-  AccentColor,
-  AuthPreviewView,
-} from "@/types";
+import type { TxnDraft, AccentColor, AuthPreviewView } from "@/types";
 
 const MemoPage = lazy(() =>
   import("@/pages/memo/MemoPage").then((m) => ({ default: m.MemoPage })),
@@ -128,7 +124,7 @@ export default function App() {
   }
 
   // mode/userId 변경 시 트리 remount → 모든 도메인 hook이 새 store 구독
-  const sourceKey = `${mode}:${userId ?? 'guest'}`;
+  const sourceKey = `${mode}:${userId ?? "guest"}`;
   return <AppShell key={sourceKey} />;
 }
 
@@ -397,14 +393,18 @@ function AppShell() {
             ]}
             onChange={(v: string) => setDataMode(v as "live" | "mock")}
           />
-          <div style={{ fontSize: 11, color: "var(--ink-mute)", padding: "4px 0" }}>
+          <div
+            style={{ fontSize: 11, color: "var(--ink-mute)", padding: "4px 0" }}
+          >
             {mode === "mock"
               ? "in-memory 시드 — 새로고침 시 리셋"
               : "Supabase 연결 — 로그인 필요"}
           </div>
         </TweakSection>
         <TweakSection title="인증">
-          <div style={{ fontSize: 12, color: "var(--ink-mute)", padding: "4px 0" }}>
+          <div
+            style={{ fontSize: 12, color: "var(--ink-mute)", padding: "4px 0" }}
+          >
             {auth.user ? auth.user.email : "비로그인"}
           </div>
           {auth.user && (
