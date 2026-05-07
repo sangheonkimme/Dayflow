@@ -291,10 +291,6 @@ export function inferPayday(
   return /월급|급여/.test(txn.label ?? "") || txn.cat === "급여";
 }
 
-export function txnDisplayLabel(txn: Pick<Txn, "label" | "note">): string {
-  return txn.label ?? txn.note ?? "거래";
-}
-
 void TRANSACTION_CATEGORIES; // 향후 카테고리 색상 derive 용도 reserve
 
 // ─────────────────────────────────────────────
@@ -474,15 +470,3 @@ export function useTransactions(filter?: TransactionsFilter): TransactionsView {
   return useMemo(() => ({ ...view, data, all }), [view, data, all]);
 }
 
-export interface TransactionStats {
-  monthly: MonthlyTotals;
-  summary: MonthSummary;
-}
-
-export function useTransactionStats(): TransactionStats {
-  const { all } = useTransactions();
-  return useMemo(
-    () => ({ monthly: monthlyTotals(all), summary: currentMonthSummary(all) }),
-    [all],
-  );
-}
