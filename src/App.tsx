@@ -18,10 +18,10 @@ import { useAuth } from "@/features/auth/hooks/useAuth";
 import { useTransactions } from "@/features/transactions/hooks/useTransactions";
 import { useEvents } from "@/features/events/hooks/useEvents";
 import { useDataModeStore } from "@/shared/state/dataMode";
+import { useModalStore } from "@/shared/state/modal";
 import { configureDataSource } from "@/shared/data/source";
 import { queryClient } from "@/app/queryClient";
 import type {
-  ModalState,
   TxnDraft,
   EventDraft,
   AccentColor,
@@ -135,7 +135,10 @@ function AppShell() {
   const { upsert: upsertTxn, remove: removeTxn } = useTransactions();
   const { upsert: upsertEvent, remove: removeEvent } = useEvents();
   const [active, setActive] = useState<string>("home");
-  const [modal, setModal] = useState<ModalState>(null);
+  const modal = useModalStore((s) => s.modal);
+  const openTxn = useModalStore((s) => s.openTxn);
+  const openEvent = useModalStore((s) => s.openEvent);
+  const closeModal = useModalStore((s) => s.close);
   const [searchOpen, setSearchOpen] = useState(false);
   const [quickMemo, setQuickMemo] = useState("");
   const [memos, setMemos] = useState<string[]>([
@@ -145,11 +148,6 @@ function AppShell() {
 
   const isNarrowViewport = useMediaQuery("(max-width: 768px)");
   const isMobile = tweaks.forceMobile || isNarrowViewport;
-
-  const openTxn = (editing?: TxnDraft) => setModal({ type: "txn", editing });
-  const openEvent = (editing?: EventDraft) =>
-    setModal({ type: "event", editing });
-  const closeModal = () => setModal(null);
 
   useEffect(() => {
     document.body.classList.toggle("dark", !!tweaks.dark);
