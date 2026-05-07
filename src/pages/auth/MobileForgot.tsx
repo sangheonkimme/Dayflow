@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { pwdScore } from "@/pages/auth/pwdScore";
 import { useState } from "react";
 import { useAuth } from "@/data/auth";
@@ -13,7 +12,7 @@ export const ForgotScreen = ({
   dark = false,
   initialStep = 0,
   onBackToLogin,
-}) => {
+}: any) => {
   const t = AUTH_TEXT[lang];
   const { sendPasswordReset } = useAuth();
   const [step, setStep] = useState(initialStep);

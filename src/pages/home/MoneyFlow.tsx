@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { useMemo } from "react";
 import { Icon } from "@/components/Icon";
 import { formatWon, formatSignedWon } from "@/lib/format";

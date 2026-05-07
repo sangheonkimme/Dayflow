@@ -1,5 +1,4 @@
-// @ts-nocheck
-import { useState } from "react";
+import {    useState , useMemo , useEffect , useRef } from "react";
 import { Ico } from "@/pages/mobile/shared/Ico";
 
 export const ChallengeDetailSheet = ({
@@ -7,7 +6,7 @@ export const ChallengeDetailSheet = ({
   onClose,
   onJoin,
   onLeave,
-}) => {
+}: any) => {
   const open = !!challenge;
   const [justJoined, setJustJoined] = useState(false);
   useEffect(() => {

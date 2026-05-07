@@ -1,11 +1,12 @@
-// @ts-nocheck
 import { useState } from "react";
+import { NotifToggleRow } from "@/pages/mobile/shared/NotifToggleRow";
+import { SectionHeader } from "@/pages/mobile/shared/SectionHeader";
 import { Ico } from "@/pages/mobile/shared/Ico";
 import { SubHeader } from "@/pages/mobile/shared/SubHeader";
 import { DfmSwitch } from "@/pages/mobile/shared/DfmSwitch";
 import { usePreferences } from "@/data/preferences";
 
-export const ThemeScreen = ({ onBack }) => {
+export const ThemeScreen = ({ onBack }: any) => {
   const [mode, setMode] = useState("auto"); // light | dark | auto
   const [accent, setAccent] = useState("yellow");
   const [font, setFont] = useState("hand"); // hand | sans | serif

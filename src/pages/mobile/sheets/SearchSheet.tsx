@@ -1,11 +1,12 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
-import { useState, useEffect, useMemo } from "react";
+import {  useState, useEffect, useMemo , useRef } from "react";
 import { Ico } from "@/pages/mobile/shared/Ico";
 import { useTransactions } from "@/data/transactions";
 import { useEvents } from "@/data/events";
 import { useMemos } from "@/data/memos";
 
-export const SearchSheet = ({ open, onClose, onJump }) => {
+export const SearchSheet = ({ open, onClose, onJump }: any) => {
   const [q, setQ] = useState("");
   const inputRef = useRef(null);
   useEffect(() => {

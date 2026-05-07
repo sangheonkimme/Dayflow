@@ -1,8 +1,7 @@
-// @ts-nocheck
 import { SettingRow } from "@/pages/settings/SettingRow";
 import { ToggleSwitch } from "@/pages/settings/ToggleSwitch";
 
-export const LedgerSettingsSection = ({ tweaks, setTweak }) => {
+export const LedgerSettingsSection = ({ tweaks, setTweak }: any) => {
   const payday = tweaks.payday || 25;
   const paydayType = tweaks.paydayType || "fixed";
   const currency = tweaks.currency || "KRW";

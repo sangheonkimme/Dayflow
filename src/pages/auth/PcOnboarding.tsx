@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { BrandMark } from "@/pages/auth/BrandMark";
 import { useState } from "react";
 import { AUTH_TEXT } from "@/pages/auth/authText";
@@ -10,7 +9,7 @@ export const PCOnboarding = ({
   lang = "ko",
   dark = false,
   initialStep = 0,
-}) => {
+}: any) => {
   const t = AUTH_TEXT[lang];
   const [step, setStep] = useState(initialStep);
   const [purpose, setPurpose] = useState(2);

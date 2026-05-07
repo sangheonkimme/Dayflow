@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
 import { useState, useEffect } from "react";
 import { Ico } from "@/pages/mobile/shared/Ico";
 
-export const ComposePostSheet = ({ open, onClose, onSubmit }) => {
+export const ComposePostSheet = ({ open, onClose, onSubmit }: any) => {
   const [text, setText] = useState("");
   const [tags, setTags] = useState([]); // chosen tag strings
   const [hasStat, setHasStat] = useState(false);

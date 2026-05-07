@@ -1,5 +1,4 @@
-// @ts-nocheck
-export const SectionHeader = ({ title, action, onAction }) => {
+export const SectionHeader = ({ title, action, onAction }: any) => {
   return (
     <div className="dfm-section-h">
       <h3>{title}</h3>

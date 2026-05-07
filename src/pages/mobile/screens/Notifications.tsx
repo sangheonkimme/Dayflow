@@ -1,10 +1,10 @@
-// @ts-nocheck
 import { useState } from "react";
+import { SectionHeader } from "@/pages/mobile/shared/SectionHeader";
 import { Ico } from "@/pages/mobile/shared/Ico";
 import { SubHeader } from "@/pages/mobile/shared/SubHeader";
 import { NotifToggleRow } from "@/pages/mobile/shared/NotifToggleRow";
 
-export const NotificationsScreen = ({ onBack }) => {
+export const NotificationsScreen = ({ onBack }: any) => {
   const [s, setS] = useState({
     push: true,
     daily: true,

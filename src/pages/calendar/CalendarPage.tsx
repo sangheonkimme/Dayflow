@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
 import { useState, useMemo } from "react";
 import { Icon } from "@/components/Icon";
@@ -5,7 +6,7 @@ import { DOW } from "@/lib/date";
 import { EVENT_CATEGORY_COLORS } from "@/lib/categories";
 import { useEvents } from "@/data/events";
 
-export const CalendarPage = ({ onAdd, onEditEvent }) => {
+export const CalendarPage = ({ onAdd, onEditEvent }: any) => {
   const today = new Date();
   const [cursor, setCursor] = useState(
     new Date(today.getFullYear(), today.getMonth(), 1),

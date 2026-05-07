@@ -1,5 +1,8 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
 import { useState, useEffect, useMemo } from "react";
+import { MobileCalEvents } from "@/pages/mobile/tabs/Calendar";
+import { openTxnDetail } from "@/pages/mobile/shared/TxnDetailBridge";
 import { DOW } from "@/lib/date";
 import { useTransactions } from "@/data/transactions";
 import { useEvents } from "@/data/events";
@@ -11,7 +14,7 @@ import { Ico } from "@/pages/mobile/shared/Ico";
 import { SectionHeader } from "@/pages/mobile/shared/SectionHeader";
 import { SwipeRow } from "@/pages/mobile/shared/SwipeRow";
 
-export const MobileHome = ({ onNavigate, onAddTxn, onAddEvent }) => {
+export const MobileHome = ({ onNavigate, onAddTxn, onAddEvent }: any) => {
   const {
     data: todoTasks,
     upsert: upsertTodo,

@@ -1,5 +1,6 @@
-// @ts-nocheck
 import { BrandMark } from "@/pages/auth/BrandMark";
+import { Btn } from "@/pages/auth/Btn";
+import { Field } from "@/pages/auth/Field";
 import { pwdScore } from "@/pages/auth/pwdScore";
 import { useState } from "react";
 import { useAuth } from "@/data/auth";
@@ -9,7 +10,7 @@ import { PCField } from "@/pages/auth/PcField";
 import { PCBtn } from "@/pages/auth/PcBtn";
 import { BrandPanel } from "@/pages/auth/PcBrandPanel";
 
-export const PCForgot = ({ lang = "ko", dark = false, initialStep = 0 }) => {
+export const PCForgot = ({ lang = "ko", dark = false, initialStep = 0 }: any) => {
   const t = AUTH_TEXT[lang];
   const [step, setStep] = useState(initialStep);
   const [email, setEmail] = useState("nabi@dayflow.app");
@@ -61,7 +62,7 @@ export const PCForgot = ({ lang = "ko", dark = false, initialStep = 0 }) => {
       ? ["이메일 입력", "메일 확인", "새 비밀번호", "완료"]
       : ["Enter email", "Check inbox", "New password", "Done"];
 
-  const StepDot = ({ i }) => {
+  const StepDot = ({ i }: any) => {
     const isCurrent = i === step;
     const isDone = i < step;
     return (

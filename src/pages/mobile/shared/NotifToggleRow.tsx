@@ -1,8 +1,7 @@
-// @ts-nocheck
 import { Ico } from "@/pages/mobile/shared/Ico";
 import { DfmSwitch } from "@/pages/mobile/shared/DfmSwitch";
 
-export const NotifToggleRow = ({ ico, title, sub, value, onChange, last }) => {
+export const NotifToggleRow = ({ ico, title, sub, value, onChange, last }: any) => {
   return (
     <div
       style={{

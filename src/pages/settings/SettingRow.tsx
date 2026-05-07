@@ -1,6 +1,5 @@
-// @ts-nocheck
 // 환경설정 한 줄 — 라벨 + 보조설명 + 우측 컨트롤
-export const SettingRow = ({ label, sub, children }) => {
+export const SettingRow = ({ label, sub, children }: any) => {
   return (
     <div className="setting-row">
       <div className="setting-label">

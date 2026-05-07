@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { useState } from "react";
 import { Icon } from "@/components/Icon";
 
@@ -16,7 +15,7 @@ const SampleImg = ({
   muted = false,
   rotated = 0,
   flipped = false,
-}) => (
+}: any) => (
   <div
     style={{
       width: w,

@@ -1,9 +1,8 @@
-// @ts-nocheck
 import { useState, useEffect } from "react";
 import { Ico } from "@/pages/mobile/shared/Ico";
 import { useSubscriptions } from "@/data/subscriptions";
 
-export const AddSubSheet = ({ open, onClose }) => {
+export const AddSubSheet = ({ open, onClose }: any) => {
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [cat, setCat] = useState("엔터");

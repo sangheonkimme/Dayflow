@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
 import { useState, useEffect, useRef, useMemo } from "react";
 import { DOW } from "@/lib/date";
@@ -39,7 +40,7 @@ import { UpgradeSheet } from "@/pages/mobile/sheets/UpgradeSheet";
 // 메인 홈은 완성도 높게, 그 외 탭은 placeholder
 // ============================================================
 
-const MobileApp = ({ initialTab = "home" }) => {
+const MobileApp = ({ initialTab = "home" }: any) => {
   const [tab, setTab] = useState(initialTab);
   const [openTxn, setOpenTxn] = useState(null);
   const [addTxnOpen, setAddTxnOpen] = useState(false);

@@ -1,11 +1,11 @@
-// @ts-nocheck
 import { useState } from "react";
+import { SectionHeader } from "@/pages/mobile/shared/SectionHeader";
 import { Ico } from "@/pages/mobile/shared/Ico";
 import { SubHeader } from "@/pages/mobile/shared/SubHeader";
 import { SwipeRow } from "@/pages/mobile/shared/SwipeRow";
 import { useSubscriptions } from "@/data/subscriptions";
 
-export const SubscriptionsScreen = ({ onBack, onAdd }) => {
+export const SubscriptionsScreen = ({ onBack, onAdd }: any) => {
   const subs = [
     {
       ico: "play",

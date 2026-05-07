@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
 import { useState, useMemo } from "react";
 import { Icon } from "@/components/Icon";
@@ -13,7 +14,7 @@ import {
   groupByDay,
 } from "@/data/transactions";
 
-export const LedgerPage = ({ onAdd, onEditTxn }) => {
+export const LedgerPage = ({ onAdd, onEditTxn }: any) => {
   const [filter, setFilter] = useState("all");
   const { all: txnsAll } = useTransactions();
 

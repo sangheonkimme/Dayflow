@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { useState } from "react";
 import { useAuth } from "@/data/auth";
 import { AUTH_TEXT } from "@/pages/auth/authText";
@@ -14,7 +13,7 @@ export const SignupScreen = ({
   lang = "ko",
   dark = false,
   onSwitch,
-}) => {
+}: any) => {
   const t = AUTH_TEXT[lang];
   const { signUp } = useAuth();
   const [name, setName] = useState("");
@@ -80,7 +79,7 @@ export const SignupScreen = ({
     </div>
   );
 
-  const Check = ({ on, onClick, label, required }) => (
+  const Check = ({ on, onClick, label, required }: any) => (
     <label
       onClick={onClick}
       style={{

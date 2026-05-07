@@ -1,4 +1,3 @@
-// @ts-nocheck
 export const pwdScore = (p) => {
   let s = 0;
   if (p.length >= 8) s++;

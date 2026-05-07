@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { useState, useRef } from "react";
 import { SwipeIcon } from "@/pages/mobile/shared/SwipeIcon";
 
@@ -8,7 +7,7 @@ export const SwipeRow = ({
   actions,
   actionLabel = "삭제",
   revealWidth,
-}) => {
+}: any) => {
   // build actions array
   const acts =
     actions && actions.length

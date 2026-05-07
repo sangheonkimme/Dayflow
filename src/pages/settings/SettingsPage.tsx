@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { useState } from "react";
 import { Icon } from "@/components/Icon";
 import { ProfileSection } from "@/pages/settings/sections/Profile";
@@ -10,7 +9,7 @@ import { SecuritySection } from "@/pages/settings/sections/Security";
 import { DataSection } from "@/pages/settings/sections/Data";
 import { AccountSection } from "@/pages/settings/sections/Account";
 
-export const SettingsPage = ({ tweaks, setTweak }) => {
+export const SettingsPage = ({ tweaks, setTweak }: any) => {
   const [section, setSection] = useState("profile");
   const sections = [
     {

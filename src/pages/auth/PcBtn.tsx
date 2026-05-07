@@ -1,4 +1,3 @@
-// @ts-nocheck
 
 export const PCBtn = ({
   children,
@@ -8,7 +7,7 @@ export const PCBtn = ({
   disabled,
   full = true,
   size = "md",
-}) => {
+}: any) => {
   const styles = {
     primary: {
       background: dark ? "#fff" : "#1a1814",

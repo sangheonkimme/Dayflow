@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { useState } from "react";
 import { useAuth } from "@/data/auth";
 import { AUTH_TEXT } from "@/pages/auth/authText";
@@ -13,7 +12,7 @@ export const LoginScreen = ({
   lang = "ko",
   dark = false,
   onSwitch,
-}) => {
+}: any) => {
   const t = AUTH_TEXT[lang];
   const { signIn } = useAuth();
   const [email, setEmail] = useState("");

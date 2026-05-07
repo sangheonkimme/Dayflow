@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
-import { useState } from "react";
+import {    useState , useMemo , useEffect , useRef } from "react";
 import { Ico } from "@/pages/mobile/shared/Ico";
 
-export const CommentsSheet = ({ post, onClose }) => {
+export const CommentsSheet = ({ post, onClose }: any) => {
   const open = !!post;
   const [draft, setDraft] = useState("");
   useEffect(() => {

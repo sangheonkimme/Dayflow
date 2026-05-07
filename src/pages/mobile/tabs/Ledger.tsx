@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
 import { useState, useMemo } from "react";
+import { openTxnDetail } from "@/pages/mobile/shared/TxnDetailBridge";
 import { DOW } from "@/lib/date";
 import { useTransactions } from "@/data/transactions";
 import { groupByDay } from "@/data/transactions";

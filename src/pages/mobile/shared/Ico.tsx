@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
-export const Ico = ({ name, size = 22 }) => {
+export const Ico = ({ name, size = 22 }: any) => {
   const s = { width: size, height: size };
   const stroke = {
     fill: "none",

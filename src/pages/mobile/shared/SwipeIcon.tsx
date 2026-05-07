@@ -1,5 +1,4 @@
-// @ts-nocheck
-export const SwipeIcon = ({ name }) => {
+export const SwipeIcon = ({ name }: any) => {
   if (name === "edit")
     return (
       <svg width="14" height="14" viewBox="0 0 14 14">

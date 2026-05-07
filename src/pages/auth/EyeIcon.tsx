@@ -1,5 +1,4 @@
-// @ts-nocheck
-export const EyeIcon = ({ on, dark }) => (
+export const EyeIcon = ({ on, dark }: any) => (
   <button
     type="button"
     style={{
