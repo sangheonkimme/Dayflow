@@ -30,6 +30,12 @@ function Sidebar({ active, onSelect }) {
       ],
     },
     {
+      label: "커뮤니티",
+      items: [
+        { id: "community", icon: "users", label: "커뮤니티", sub: "절약 인증 · 챌린지" },
+      ],
+    },
+    {
       label: "도구",
       items: [
         { id: "salary", icon: "coin", label: "연봉 계산기",   sub: "실수령액 계산" },
