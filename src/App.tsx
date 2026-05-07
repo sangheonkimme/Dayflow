@@ -111,9 +111,6 @@ const PageFallback = () => (
   </div>
 );
 
-// TWEAK_DEFAULTS lives in src/data/seeds/lookups.ts so usePreferences can
-// own initial state without re-importing this module.
-
 export default function App() {
   const auth = useAuth();
   const mode = useDataModeStore((s) => s.mode);
