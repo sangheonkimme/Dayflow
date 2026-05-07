@@ -15,6 +15,7 @@
 <link rel="stylesheet" href="flows.css" />
 <link rel="stylesheet" href="flows-extra.css" />
 <link rel="stylesheet" href="mobile.css" />
+<link rel="stylesheet" href="community.css" />
 </head>
 <body>
 <div id="root"></div>
@@ -39,6 +40,7 @@
 <script type="text/babel" src="salary.jsx"></script>
 <script type="text/babel" src="loan-search.jsx"></script>
 <script type="text/babel" src="flows.jsx"></script>
+<script type="text/babel" src="community.jsx"></script>
 
 <script type="text/babel">
 const { useState, useEffect } = React;
@@ -99,6 +101,7 @@ function App() {
   const renderPage = () => {
     if (active === "ledger") return <LedgerPage onAdd={() => openTxn()} onEditTxn={openTxn} />;
     if (active === "calendar") return <CalendarPage onAdd={() => openEvent()} onEditEvent={openEvent} />;
+    if (active === "community") return <CommunityPage />;
     if (active === "memo") return <MemoPage />;
     if (active === "subs") return <SubsPage onAdd={() => openTxn()} />;
     if (active === "crop") return <CropCanvasPage />;

@@ -208,6 +208,18 @@ function MemoPage() {
   const [memos, setMemos] = useState(SEED_MEMOS);
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("updated"); // updated | title | created
+  const [toast, setToast] = useState(null);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
+  const [linkDialog, setLinkDialog] = useState(null); // null | "link" | "image"
+  const [moveDialog, setMoveDialog] = useState(false);
+  const editorRef = React.useRef(null);
+
+  const showToast = (msg) => {
+    setToast(msg);
+    setTimeout(() => setToast(null), 2200);
+  };
 
   const filtered = useMemo(() => {
     let list = memos;
@@ -228,10 +240,105 @@ function MemoPage() {
 
   const active = memos.find(m => m.id === activeId) || filtered[0];
 
-  const toggleStar = (id) => setMemos(memos.map(m => m.id === id ? { ...m, starred: !m.starred } : m));
-  const togglePin = (id) => setMemos(memos.map(m => m.id === id ? { ...m, pinned: !m.pinned } : m));
+  const toggleStar = (id) => {
+    const m = memos.find(x => x.id === id);
+    setMemos(memos.map(m => m.id === id ? { ...m, starred: !m.starred } : m));
+    if (m) showToast(m.starred ? "즐겨찾기에서 해제" : "⭐ 즐겨찾기에 추가");
+  };
+  const togglePin = (id) => {
+    const m = memos.find(x => x.id === id);
+    setMemos(memos.map(m => m.id === id ? { ...m, pinned: !m.pinned } : m));
+    if (m) showToast(m.pinned ? "고정 해제" : "📌 상단에 고정됨");
+  };
   const updateBody = (body) => setMemos(memos.map(m => m.id === active.id ? { ...m, body } : m));
   const updateTitle = (title) => setMemos(memos.map(m => m.id === active.id ? { ...m, title } : m));
+
+  // ---------- markdown insert helpers ----------
+  const wrapSelection = (before, after = before, placeholder = "") => {
+    const ta = editorRef.current;
+    if (!ta || !active) return;
+    const start = ta.selectionStart, end = ta.selectionEnd;
+    const sel = ta.value.slice(start, end) || placeholder;
+    const next = ta.value.slice(0, start) + before + sel + after + ta.value.slice(end);
+    updateBody(next);
+    requestAnimationFrame(() => {
+      ta.focus();
+      ta.setSelectionRange(start + before.length, start + before.length + sel.length);
+    });
+  };
+  const prefixLines = (prefix) => {
+    const ta = editorRef.current;
+    if (!ta || !active) return;
+    const v = ta.value;
+    const start = ta.selectionStart, end = ta.selectionEnd;
+    const lineStart = v.lastIndexOf("\n", start - 1) + 1;
+    const lineEnd = v.indexOf("\n", end);
+    const block = v.slice(lineStart, lineEnd === -1 ? v.length : lineEnd);
+    const transformed = block.split("\n").map(l => prefix + l).join("\n");
+    const next = v.slice(0, lineStart) + transformed + v.slice(lineEnd === -1 ? v.length : lineEnd);
+    updateBody(next);
+    requestAnimationFrame(() => ta.focus());
+  };
+  const insertAt = (text) => {
+    const ta = editorRef.current;
+    if (!ta || !active) return;
+    const start = ta.selectionStart, end = ta.selectionEnd;
+    const next = ta.value.slice(0, start) + text + ta.value.slice(end);
+    updateBody(next);
+    requestAnimationFrame(() => {
+      ta.focus();
+      const pos = start + text.length;
+      ta.setSelectionRange(pos, pos);
+    });
+  };
+  const handleHeading = () => prefixLines("# ");
+  const handleBold = () => wrapSelection("**", "**", "굵게");
+  const handleItalic = () => wrapSelection("*", "*", "기울임");
+  const handleList = () => prefixLines("- ");
+  const handleCheck = () => prefixLines("- [ ] ");
+  const handleQuote = () => prefixLines("> ");
+
+  // ---------- more menu actions ----------
+  const duplicateMemo = () => {
+    const id = Date.now();
+    setMemos([{ ...active, id, title: active.title + " (복사본)", updated: "방금", pinned: false }, ...memos]);
+    setActiveId(id);
+    setMoreOpen(false);
+    showToast("📋 메모가 복제되었습니다");
+  };
+  const deleteMemo = () => {
+    if (!confirm(`"${active.title}" 메모를 삭제할까요?`)) return;
+    const next = memos.filter(m => m.id !== active.id);
+    setMemos(next);
+    setActiveId(next[0]?.id);
+    setMoreOpen(false);
+    showToast("🗑 휴지통으로 이동됨");
+  };
+  const moveToFolder = (id) => {
+    setMemos(memos.map(m => m.id === active.id ? { ...m, folder: id } : m));
+    setMoveDialog(false);
+    setMoreOpen(false);
+    showToast(`📁 "${folderLabel(id)}" 폴더로 이동`);
+  };
+  const exportMd = () => {
+    showToast("⬇️ Markdown 파일로 내보내기 완료");
+    setMoreOpen(false);
+  };
+
+  // ---------- share actions ----------
+  const copyShareLink = () => {
+    showToast("🔗 공유 링크가 복사되었습니다");
+    setShareOpen(false);
+  };
+
+  // ---------- link / image insert ----------
+  const submitLink = (url, label) => {
+    if (!url) { setLinkDialog(null); return; }
+    if (linkDialog === "link") insertAt(`[${label || url}](${url})`);
+    else insertAt(`![${label || "이미지"}](${url})\n`);
+    setLinkDialog(null);
+    showToast(linkDialog === "link" ? "🔗 링크 삽입됨" : "🖼 이미지 삽입됨");
+  };
 
   const newMemo = () => {
     const id = Date.now();
@@ -366,30 +473,115 @@ function MemoPage() {
                   <span className="muted">·</span>
                   <span className="muted">{active.word}자</span>
                 </div>
-                <div className="memo-edit-actions">
-                  <button className="icon-btn" onClick={() => togglePin(active.id)} title="고정">
+                <div className="memo-edit-actions" style={{ position: "relative" }}>
+                  <button className={"icon-btn" + (active.pinned ? " on-yellow" : "")} onClick={() => togglePin(active.id)} title="고정">
                     <Icon name="pin" size={15} />
                   </button>
-                  <button className="icon-btn" onClick={() => toggleStar(active.id)} title="즐겨찾기">
+                  <button className={"icon-btn" + (active.starred ? " on-yellow" : "")} onClick={() => toggleStar(active.id)} title="즐겨찾기">
                     <Icon name="star" size={15} />
                   </button>
-                  <button className="icon-btn" title="기록"><Icon name="history" size={15} /></button>
-                  <button className="icon-btn" title="공유"><Icon name="link" size={15} /></button>
-                  <button className="icon-btn" title="더보기"><Icon name="more" size={15} /></button>
+                  <button className={"icon-btn" + (historyOpen ? " on-ink" : "")} onClick={() => { setHistoryOpen(!historyOpen); setShareOpen(false); setMoreOpen(false); }} title="기록"><Icon name="history" size={15} /></button>
+                  <button className={"icon-btn" + (shareOpen ? " on-ink" : "")} onClick={() => { setShareOpen(!shareOpen); setMoreOpen(false); setHistoryOpen(false); }} title="공유"><Icon name="link" size={15} /></button>
+                  <button className={"icon-btn" + (moreOpen ? " on-ink" : "")} onClick={() => { setMoreOpen(!moreOpen); setShareOpen(false); setHistoryOpen(false); }} title="더보기"><Icon name="more" size={15} /></button>
+
+                  {shareOpen && (
+                    <div className="memo-pop share-pop">
+                      <div className="pop-h">이 메모 공유</div>
+                      <button className="pop-row" onClick={copyShareLink}>
+                        <span className="pop-ico">🔗</span>
+                        <div><b>링크 복사</b><small>읽기 전용 · 누구나 열람</small></div>
+                      </button>
+                      <button className="pop-row" onClick={copyShareLink}>
+                        <span className="pop-ico">✏️</span>
+                        <div><b>편집 가능 링크</b><small>로그인한 사용자만</small></div>
+                      </button>
+                      <div className="pop-sep" />
+                      <button className="pop-row" onClick={() => { showToast("📄 PDF로 내보내기"); setShareOpen(false); }}>
+                        <span className="pop-ico">📄</span>
+                        <div><b>PDF로 내보내기</b><small>인쇄용 레이아웃</small></div>
+                      </button>
+                      <button className="pop-row" onClick={() => { showToast("📧 메일 초안 생성됨"); setShareOpen(false); }}>
+                        <span className="pop-ico">✉️</span>
+                        <div><b>메일로 보내기</b><small>제목+본문 자동 입력</small></div>
+                      </button>
+                      <div className="pop-sep" />
+                      <div className="pop-perm">
+                        <span>🌐 권한</span>
+                        <select defaultValue="read"><option value="read">읽기 전용</option><option value="comment">댓글 가능</option><option value="edit">편집 가능</option></select>
+                      </div>
+                    </div>
+                  )}
+
+                  {moreOpen && (
+                    <div className="memo-pop more-pop">
+                      <button className="pop-row sm" onClick={() => { setMoreOpen(false); editorRef.current?.querySelector?.('.memo-title-in')?.focus?.(); document.querySelector('.memo-title-in')?.focus(); }}>
+                        <span className="pop-ico">✏️</span><div><b>이름 변경</b></div>
+                      </button>
+                      <button className="pop-row sm" onClick={() => setMoveDialog(true)}>
+                        <span className="pop-ico">📁</span><div><b>폴더 이동…</b></div>
+                      </button>
+                      <button className="pop-row sm" onClick={duplicateMemo}>
+                        <span className="pop-ico">📋</span><div><b>복제</b></div>
+                      </button>
+                      <button className="pop-row sm" onClick={exportMd}>
+                        <span className="pop-ico">⬇️</span><div><b>Markdown 내보내기</b></div>
+                      </button>
+                      <div className="pop-sep" />
+                      <button className="pop-row sm" onClick={() => { showToast("🖨 인쇄 미리보기"); setMoreOpen(false); }}>
+                        <span className="pop-ico">🖨</span><div><b>인쇄</b><kbd>⌘P</kbd></div>
+                      </button>
+                      <button className="pop-row sm" onClick={() => { showToast("📌 잠금 설정됨"); setMoreOpen(false); }}>
+                        <span className="pop-ico">🔒</span><div><b>잠금</b></div>
+                      </button>
+                      <div className="pop-sep" />
+                      <button className="pop-row sm danger" onClick={deleteMemo}>
+                        <span className="pop-ico">🗑</span><div><b>삭제</b><kbd>⌫</kbd></div>
+                      </button>
+                    </div>
+                  )}
+
+                  {historyOpen && (
+                    <div className="memo-pop history-pop">
+                      <div className="pop-h">버전 기록 <span className="pop-h-sub">자동 저장 · 30일 보관</span></div>
+                      {[
+                        { t: "오늘 오후 2:14", n: "현재 버전", w: "+12자 · 다음 단계 섹션 추가", cur: true },
+                        { t: "오늘 오전 11:02", n: "v3", w: "+45자 · 다크 모드 단락 보강" },
+                        { t: "어제 오후 6:31", n: "v2", w: "−8자 · 토큰 구조 정리" },
+                        { t: "어제 오전 9:18", n: "v1 · 초안", w: "최초 작성 · 487자" },
+                      ].map((h, i) => (
+                        <div key={i} className={"hist-item" + (h.cur ? " cur" : "")}>
+                          <div className="hist-dot" />
+                          <div className="hist-body">
+                            <div className="hist-row1">
+                              <b>{h.n}</b>
+                              <span className="hist-time">{h.t}</span>
+                            </div>
+                            <div className="hist-msg">{h.w}</div>
+                            {!h.cur && (
+                              <div className="hist-actions">
+                                <button onClick={() => { showToast("⏮ 이 버전으로 되돌렸습니다"); setHistoryOpen(false); }}>이 버전으로 복원</button>
+                                <button className="ghost" onClick={() => showToast("🔍 미리보기")}>미리보기</button>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
 
               <div className="memo-toolbar">
-                <button title="제목"><Icon name="h1" size={14} /></button>
-                <button title="굵게"><Icon name="bold" size={14} /></button>
-                <button title="기울임"><Icon name="italic" size={14} /></button>
+                <ToolbarBtn label="H" tip="제목 (⌘1)" onClick={handleHeading}><Icon name="h1" size={14} /></ToolbarBtn>
+                <ToolbarBtn label="B" tip="굵게 (⌘B)" onClick={handleBold}><Icon name="bold" size={14} /></ToolbarBtn>
+                <ToolbarBtn label="I" tip="기울임 (⌘I)" onClick={handleItalic}><Icon name="italic" size={14} /></ToolbarBtn>
                 <span className="tb-sep" />
-                <button title="목록"><Icon name="list" size={14} /></button>
-                <button title="체크리스트"><Icon name="check" size={14} /></button>
-                <button title="인용"><Icon name="quote" size={14} /></button>
+                <ToolbarBtn tip="목록" onClick={handleList}><Icon name="list" size={14} /></ToolbarBtn>
+                <ToolbarBtn tip="체크리스트" onClick={handleCheck}><Icon name="check" size={14} /></ToolbarBtn>
+                <ToolbarBtn tip="인용" onClick={handleQuote}><Icon name="quote" size={14} /></ToolbarBtn>
                 <span className="tb-sep" />
-                <button title="이미지"><Icon name="image" size={14} /></button>
-                <button title="링크"><Icon name="link" size={14} /></button>
+                <ToolbarBtn tip="이미지 삽입" onClick={() => setLinkDialog("image")}><Icon name="image" size={14} /></ToolbarBtn>
+                <ToolbarBtn tip="링크 삽입" onClick={() => setLinkDialog("link")}><Icon name="link" size={14} /></ToolbarBtn>
                 <span className="tb-sep" />
                 <span className="tb-status">
                   <span className="save-dot" /> 자동 저장됨
@@ -410,9 +602,15 @@ function MemoPage() {
                   <button className="memo-tag-add">+ 태그</button>
                 </div>
                 <textarea
+                  ref={editorRef}
                   className="memo-body"
                   value={active.body}
                   onChange={(e) => updateBody(e.target.value)}
+                  onKeyDown={(e) => {
+                    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "b") { e.preventDefault(); handleBold(); }
+                    else if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "i") { e.preventDefault(); handleItalic(); }
+                    else if ((e.metaKey || e.ctrlKey) && e.key === "1") { e.preventDefault(); handleHeading(); }
+                  }}
                   placeholder="여기에 메모를 적어보세요. 마크다운을 지원합니다 — # 제목, **굵게**, - 목록…"
                   spellCheck={false}
                 />
@@ -431,6 +629,74 @@ function MemoPage() {
             </>
           )}
         </section>
+      </div>
+
+      {linkDialog && (
+        <LinkDialog kind={linkDialog} onClose={() => setLinkDialog(null)} onSubmit={submitLink} />
+      )}
+      {moveDialog && (
+        <div className="memo-modal-bg" onClick={() => setMoveDialog(false)}>
+          <div className="memo-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-h">📁 폴더로 이동</div>
+            <div className="move-list">
+              {FOLDERS.filter(f => !["all","starred","trash"].includes(f.id)).map(f => (
+                <button key={f.id} className={"move-item" + (active?.folder === f.id ? " cur" : "")} onClick={() => moveToFolder(f.id)}>
+                  <span className="move-ico" style={{ background: folderColor(f.id) }}><Icon name={f.icon} size={14} /></span>
+                  <span className="move-label">{f.label}</span>
+                  {active?.folder === f.id && <span className="move-cur">현재</span>}
+                </button>
+              ))}
+            </div>
+            <button className="modal-cancel" onClick={() => setMoveDialog(false)}>취소</button>
+          </div>
+        </div>
+      )}
+      {toast && <div className="memo-toast">{toast}</div>}
+    </div>
+  );
+}
+
+function ToolbarBtn({ children, tip, label, onClick }) {
+  const [flash, setFlash] = React.useState(false);
+  const handle = (e) => {
+    setFlash(true);
+    setTimeout(() => setFlash(false), 220);
+    onClick?.(e);
+  };
+  return (
+    <button
+      className={"tb-btn" + (flash ? " flash" : "")}
+      onClick={handle}
+      data-label={label}
+    >
+      {children}
+      {tip && <span className="tb-tip">{tip}</span>}
+    </button>
+  );
+}
+
+function LinkDialog({ kind, onClose, onSubmit }) {
+  const [url, setUrl] = useState("");
+  const [label, setLabel] = useState("");
+  return (
+    <div className="memo-modal-bg" onClick={onClose}>
+      <div className="memo-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-h">{kind === "link" ? "🔗 링크 삽입" : "🖼 이미지 삽입"}</div>
+        <label className="modal-field">
+          <span>URL</span>
+          <input autoFocus value={url} onChange={(e) => setUrl(e.target.value)} placeholder={kind === "link" ? "https://example.com" : "https://…/image.png"} />
+        </label>
+        <label className="modal-field">
+          <span>{kind === "link" ? "표시 텍스트" : "대체 텍스트"}</span>
+          <input value={label} onChange={(e) => setLabel(e.target.value)} placeholder={kind === "link" ? "여기를 클릭" : "이미지 설명"} />
+        </label>
+        {kind === "image" && url && (
+          <div className="modal-preview"><img src={url} alt="preview" /></div>
+        )}
+        <div className="modal-actions">
+          <button className="modal-cancel" onClick={onClose}>취소</button>
+          <button className="modal-ok" onClick={() => onSubmit(url, label)} disabled={!url}>삽입</button>
+        </div>
       </div>
     </div>
   );
