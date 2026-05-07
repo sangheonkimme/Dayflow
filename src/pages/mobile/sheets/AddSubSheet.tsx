@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { useState, useEffect } from "react";
 import { Ico } from "@/pages/mobile/shared/Ico";
-import { useSubscriptions } from "@/features/subscriptions/hooks/useSubscriptions";
+import { useSubscriptions } from "@/data/subscriptions";
 
 export const AddSubSheet = ({ open, onClose }) => {
   const [name, setName] = useState("");

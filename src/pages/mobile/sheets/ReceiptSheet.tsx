@@ -2,7 +2,7 @@
 import { useEffect } from "react";
 import { DOW } from "@/lib/date";
 import { Ico } from "@/pages/mobile/shared/Ico";
-import { inferIcon } from "@/features/transactions/selectors/derived";
+import { inferIcon } from "@/data/transactions";
 
 export const ReceiptSheet = ({ txn, onClose }) => {
   const open = !!txn;

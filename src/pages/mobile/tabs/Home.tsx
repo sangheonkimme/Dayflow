@@ -1,12 +1,12 @@
 // @ts-nocheck
 import { useState, useEffect, useMemo } from "react";
 import { DOW } from "@/lib/date";
-import { useTransactions } from "@/features/transactions/hooks/useTransactions";
-import { useEvents } from "@/features/events/hooks/useEvents";
-import { useChecklist } from "@/features/checklist/hooks/useChecklist";
-import { recent as selectRecent } from "@/features/transactions/selectors/transactions";
-import { inferIcon } from "@/features/transactions/selectors/derived";
-import { daysWithEventsInMonth } from "@/features/events/selectors/events";
+import { useTransactions } from "@/data/transactions";
+import { useEvents } from "@/data/events";
+import { useChecklist } from "@/data/checklist";
+import { recent as selectRecent } from "@/data/transactions";
+import { inferIcon } from "@/data/transactions";
+import { daysWithEventsInMonth } from "@/data/events";
 import { Ico } from "@/pages/mobile/shared/Ico";
 import { SectionHeader } from "@/pages/mobile/shared/SectionHeader";
 import { SwipeRow } from "@/pages/mobile/shared/SwipeRow";

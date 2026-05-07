@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Ico } from "@/pages/mobile/shared/Ico";
 import { SubHeader } from "@/pages/mobile/shared/SubHeader";
 import { DfmSwitch } from "@/pages/mobile/shared/DfmSwitch";
-import { usePreferences } from "@/features/preferences/hooks/usePreferences";
+import { usePreferences } from "@/data/preferences";
 
 export const ThemeScreen = ({ onBack }) => {
   const [mode, setMode] = useState("auto");        // light | dark | auto

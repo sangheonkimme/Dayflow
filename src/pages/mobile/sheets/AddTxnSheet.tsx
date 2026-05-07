@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { useState, useEffect } from "react";
 import { Ico } from "@/pages/mobile/shared/Ico";
-import { useTransactions } from "@/features/transactions/hooks/useTransactions";
+import { useTransactions } from "@/data/transactions";
 
 export const AddTxnSheet = ({ open, onClose }) => {
   const [type, setType] = useState("out");        // out | in

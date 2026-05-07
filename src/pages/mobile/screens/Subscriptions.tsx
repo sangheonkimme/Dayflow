@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Ico } from "@/pages/mobile/shared/Ico";
 import { SubHeader } from "@/pages/mobile/shared/SubHeader";
 import { SwipeRow } from "@/pages/mobile/shared/SwipeRow";
-import { useSubscriptions } from "@/features/subscriptions/hooks/useSubscriptions";
+import { useSubscriptions } from "@/data/subscriptions";
 
 export const SubscriptionsScreen = ({ onBack, onAdd }) => {
   const subs = [
