@@ -85,16 +85,16 @@ const ForgotScreen = lazy(() =>
   })),
 );
 const PCLogin = lazy(() =>
-  import("@/components/auth-pc").then((m) => ({ default: m.PCLogin })),
+  import("@/pages/auth/pc/login").then((m) => ({ default: m.PCLogin })),
 );
 const PCSignup = lazy(() =>
-  import("@/components/auth-pc").then((m) => ({ default: m.PCSignup })),
+  import("@/pages/auth/pc/signup").then((m) => ({ default: m.PCSignup })),
 );
 const PCForgot = lazy(() =>
   import("@/components/auth-forgot").then((m) => ({ default: m.PCForgot })),
 );
 const PCOnboarding = lazy(() =>
-  import("@/components/auth-pc").then((m) => ({
+  import("@/pages/auth/pc/onboarding").then((m) => ({
     default: m.PCOnboarding,
   })),
 );
