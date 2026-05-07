@@ -238,14 +238,45 @@ export async function createSupabaseSource(
         PinnedMap.toRow(input, userId) as Record<string, unknown>,
       orderBy: { column: "position", ascending: true },
     }),
-    dailyLog: makeRepo<DailyLog, never>(client, dailyStore, {
-      table: "daily_logs",
-      select: "*",
-      toDomain: (r) => DailyMap.toDomain(r as never),
-      toRow: (input) =>
-        DailyMap.toRow(input, userId) as Record<string, unknown>,
-      orderBy: { column: "date", ascending: false },
-    }),
+    // dailyLog — 도메인 id 가 date 라서 onConflict(user_id,date) 로 upsert.
+    // remove 는 도메인 id(date)로 들어와도 user_id+date 매칭으로 삭제.
+    dailyLog: {
+      store: dailyStore,
+      init: async () => {
+        dailyStore.setStatus("loading");
+        const { data, error } = await client
+          .from("daily_logs")
+          .select("*")
+          .order("date", { ascending: false });
+        if (error) {
+          dailyStore.setStatus("error", error as Error);
+          throw error;
+        }
+        dailyStore.setAll((data ?? []).map((r) => DailyMap.toDomain(r)));
+      },
+      upsert: async (input) => {
+        const row = DailyMap.toRow(input, userId);
+        const { data, error } = await client
+          .from("daily_logs")
+          .upsert(row, { onConflict: "user_id,date" })
+          .select("*")
+          .single();
+        if (error) throw error;
+        const item = DailyMap.toDomain(data);
+        dailyStore.upsert(item);
+        return item;
+      },
+      remove: async (id) => {
+        // domain id == date (YYYY-MM-DD)
+        const { error } = await client
+          .from("daily_logs")
+          .delete()
+          .eq("user_id", userId)
+          .eq("date", id as string);
+        if (error) throw error;
+        dailyStore.remove(id);
+      },
+    },
   };
 }
 
