@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { AUTH_TEXT } from "@/pages/auth/shared/AuthText";
+import { EyeIcon } from "@/pages/auth/shared/EyeIcon";
 import { PCField } from "@/pages/auth/pc/Field";
 import { PCBtn } from "@/pages/auth/pc/Btn";
 import { BrandPanel } from "@/pages/auth/pc/BrandPanel";
