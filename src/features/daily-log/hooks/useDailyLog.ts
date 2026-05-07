@@ -1,10 +1,10 @@
 // ============================================================
-// useDailyLog — 1 row per date keyed by YYYY-MM-DD
+// useDailyLog — RQ-based, 1 row per date
 // ============================================================
 
 import { useMemo, useCallback } from 'react';
 import { getDataSource } from '@/shared/data/source';
-import { useRepository } from '@/shared/data/hooks/useRepository';
+import { useRepositoryQuery } from '@/shared/data/hooks/useRepositoryQuery';
 import type { DailyLog, Mood } from '@/shared/data/seeds/types';
 
 function todayId(): string {
@@ -20,8 +20,9 @@ export interface DailyLogView {
 }
 
 export function useDailyLog(date?: string): DailyLogView {
-  const repo = getDataSource().dailyLog;
-  const view = useRepository(repo);
+  const view = useRepositoryQuery(getDataSource().dailyLog, {
+    queryKey: ['dailyLog'],
+  });
   const id = date ?? todayId();
   const entry = useMemo(
     () => view.data.find((e) => e.id === id) ?? null,

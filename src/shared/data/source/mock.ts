@@ -33,7 +33,10 @@ function makeMockRepo<T extends Identifiable>(
   return {
     store,
     init: async () => {
-      store.setAll(seeds);
+      // mock은 idempotent — 한 번 채운 뒤로는 세션 내 변경(upsert/remove)을 보존
+      if (store.getSnapshot().length === 0 && store.getStatus() === 'idle') {
+        store.setAll(seeds);
+      }
     },
     upsert: async (input) => {
       const item = {

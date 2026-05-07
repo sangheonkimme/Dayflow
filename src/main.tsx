@@ -1,5 +1,6 @@
 import { createRoot } from 'react-dom/client';
 import App from '@/App';
+import { Providers } from '@/app/providers';
 
 import '@/styles/styles.css';
 import '@/styles/pages.css';
@@ -16,4 +17,8 @@ import '@/styles/mobile-app.css';
 
 const rootElement = document.getElementById('root');
 if (!rootElement) throw new Error('#root element not found');
-createRoot(rootElement).render(<App />);
+createRoot(rootElement).render(
+  <Providers>
+    <App />
+  </Providers>,
+);
