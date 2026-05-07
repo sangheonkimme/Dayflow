@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Icon } from '@/shared/ui/Icon';
+import { Icon } from '@/components/Icon';
 
 export function Pomodoro() {
   const FOCUS = 25 * 60, BREAK = 5 * 60;

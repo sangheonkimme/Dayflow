@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Icon } from '@/shared/ui/Icon';
+import { Icon } from '@/components/Icon';
 
 export function Stopwatch() {
   const [ms, setMs] = useState(0);

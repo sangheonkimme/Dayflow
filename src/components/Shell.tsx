@@ -1,4 +1,4 @@
-import { Icon } from "@/shared/ui/Icon";
+import { Icon } from "@/components/Icon";
 import { DOW } from "@/lib/date";
 import { useAuth } from "@/data/auth";
 

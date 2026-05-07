@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { Icon } from "@/shared/ui/Icon";
+import { Icon } from "@/components/Icon";
 import { SettingRow } from "@/pages/settings/SettingRow";
 import { ToggleSwitch } from "@/pages/settings/ToggleSwitch";
 

@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { useState, useMemo } from 'react';
-import { Icon } from '@/shared/ui/Icon';
-import { Modal } from '@/shared/ui/Modal';
+import { Icon } from '@/components/Icon';
+import { Modal } from '@/components/Modal';
 import { formatWon } from '@/lib/format';
 import { DOW } from '@/lib/date';
 import { sumBy } from '@/lib/aggregate';

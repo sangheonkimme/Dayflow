@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { useState } from 'react';
-import { Icon } from '@/shared/ui/Icon';
-import { Modal } from '@/shared/ui/Modal';
+import { Icon } from '@/components/Icon';
+import { Modal } from '@/components/Modal';
 
 // ─────────────────────────────────────────────
 // Helper — natural-language quick parse

@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { useState, useMemo } from "react";
-import { Icon } from "@/shared/ui/Icon";
+import { Icon } from "@/components/Icon";
 import { useMemos } from "@/data/memos";
 import { FOLDERS, ALL_TAGS } from "@/data/memos";
 import {

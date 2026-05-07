@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { Icon } from '@/shared/ui/Icon';
+import { Icon } from '@/components/Icon';
 
 export function ToolCard({ icon, title, desc, items, onClick }) {
   return (

@@ -1,5 +1,5 @@
 import { lazy, Suspense, useState, useEffect } from "react";
-import { Sidebar, Topbar } from "@/widgets/Shell";
+import { Sidebar, Topbar } from "@/components/Shell";
 import { StickyNotes } from "@/pages/home/StickyNotes";
 import { Checklist } from "@/pages/home/Checklist";
 import { GeneralTimer } from "@/pages/home/timers/GeneralTimer";
@@ -19,15 +19,15 @@ import {
   TweakSection,
   TweakToggle,
   TweakRadio,
-} from "@/widgets/TweaksPanel";
-import { useMediaQuery } from "@/hooks/useMediaQuery";
+} from "@/components/TweaksPanel";
+import { useMediaQuery } from "@/lib/useMediaQuery";
 import { usePreferences } from "@/data/preferences";
 import { useAuth } from "@/data/auth";
 import { useTransactions } from "@/data/transactions";
 import { useEvents } from "@/data/events";
-import { useDataModeStore } from "@/shared/state/dataMode";
-import { useModalStore } from "@/shared/state/modal";
-import { DemoBanner } from "@/widgets/DemoBanner";
+import { useDataModeStore } from "@/store/dataMode";
+import { useModalStore } from "@/store/modal";
+import { DemoBanner } from "@/components/DemoBanner";
 import { configureDataSource } from "@/data/source";
 import { queryClient } from "@/app/queryClient";
 import type {

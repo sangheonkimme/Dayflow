@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { useState } from "react";
-import { Icon } from "@/shared/ui/Icon";
+import { Icon } from "@/components/Icon";
 import { useChecklist } from "@/data/checklist";
 
 export function Checklist() {

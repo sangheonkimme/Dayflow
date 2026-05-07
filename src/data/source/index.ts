@@ -10,7 +10,7 @@ import type { DataSource } from "@/data/source/types";
 import { createMockSource } from "@/data/source/mock";
 import { createSupabaseSource, disposeSupabaseSource } from "@/data/source/supabase";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
-import type { DataMode } from "@/shared/state/dataMode";
+import type { DataMode } from "@/store/dataMode";
 
 let _instance: DataSource | null = null;
 let _initPromise: Promise<void> | null = null;

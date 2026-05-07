@@ -2,7 +2,7 @@
 // 데모(mock) 모드일 때 화면 상단에 표시되는 배너.
 // "시작하기" 클릭 시 live 모드로 전환 → 인증 화면으로 이동.
 
-import { useDataModeStore } from "@/shared/state/dataMode";
+import { useDataModeStore } from "@/store/dataMode";
 
 export const DemoBanner = () => {
   const mode = useDataModeStore((s) => s.mode);

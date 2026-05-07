@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { useState, useRef, useEffect, useMemo } from "react";
-import { Icon } from "@/shared/ui/Icon";
-import { Modal } from "@/shared/ui/Modal";
+import { Icon } from "@/components/Icon";
+import { Modal } from "@/components/Modal";
 import { useTransactions } from "@/data/transactions";
 import { recent as selectRecent } from "@/data/transactions";
 

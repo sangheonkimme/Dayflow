@@ -5,7 +5,7 @@
 // ============================================================
 
 import type { Tweaks } from '@/types';
-import { usePreferencesStore, type SetPreference } from '@/shared/state/preferences';
+import { usePreferencesStore, type SetPreference } from '@/store/preferences';
 
 export type { SetPreference };
 

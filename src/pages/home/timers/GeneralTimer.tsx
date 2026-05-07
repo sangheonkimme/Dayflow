@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Icon } from '@/shared/ui/Icon';
+import { Icon } from '@/components/Icon';
 import { TIMER_PRESETS } from '@/data/lookups';
 
 export function GeneralTimer() {

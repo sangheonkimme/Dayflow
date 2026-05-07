@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { useEscapeKey } from '@/hooks/useEscapeKey';
+import { useEscapeKey } from '@/lib/useEscapeKey';
 
 interface ModalProps {
   open?: boolean;
