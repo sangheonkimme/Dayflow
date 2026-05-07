@@ -6,15 +6,15 @@
 // - 비어있으면 dev mock (localStorage) — 디자인/스타일 QA 용도.
 // 두 모드 모두 동일한 AuthView 인터페이스를 노출하므로 호출부 변경 불필요.
 
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { supabase, isSupabaseConfigured } from '@/lib/supabase';
+import { useCallback, useEffect, useRef, useState } from "react";
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 
 export interface AuthUser {
   id: string;
   email: string;
 }
 
-export type AuthStatus = 'unknown' | 'authed' | 'guest';
+export type AuthStatus = "unknown" | "authed" | "guest";
 
 export interface AuthView {
   user: AuthUser | null;
@@ -37,10 +37,10 @@ export interface AuthResult {
 // ─────────────────────────────────────────────
 // localStorage mock (dev fallback)
 // ─────────────────────────────────────────────
-const MOCK_KEY = 'dayflow.auth.mock';
+const MOCK_KEY = "dayflow.auth.mock";
 
 function loadMock(): AuthUser | null {
-  if (typeof window === 'undefined') return null;
+  if (typeof window === "undefined") return null;
   try {
     const raw = window.localStorage.getItem(MOCK_KEY);
     return raw ? (JSON.parse(raw) as AuthUser) : null;
@@ -50,7 +50,7 @@ function loadMock(): AuthUser | null {
 }
 
 function saveMock(user: AuthUser | null) {
-  if (typeof window === 'undefined') return;
+  if (typeof window === "undefined") return;
   try {
     if (user) window.localStorage.setItem(MOCK_KEY, JSON.stringify(user));
     else window.localStorage.removeItem(MOCK_KEY);
@@ -64,13 +64,16 @@ function saveMock(user: AuthUser | null) {
 // ─────────────────────────────────────────────
 function translateError(rawMessage: string): string {
   const m = rawMessage.toLowerCase();
-  if (m.includes('invalid login credentials')) return '이메일 또는 비밀번호가 올바르지 않아요.';
-  if (m.includes('email not confirmed')) return '이메일 인증을 먼저 완료해주세요.';
-  if (m.includes('user already registered')) return '이미 가입된 이메일이에요.';
-  if (m.includes('password should be')) return '비밀번호가 너무 짧아요. 6자 이상으로 설정해주세요.';
-  if (m.includes('rate limit')) return '잠시 후 다시 시도해주세요.';
-  if (m.includes('network')) return '네트워크 연결을 확인해주세요.';
-  return rawMessage || '알 수 없는 오류가 발생했어요.';
+  if (m.includes("invalid login credentials"))
+    return "이메일 또는 비밀번호가 올바르지 않아요.";
+  if (m.includes("email not confirmed"))
+    return "이메일 인증을 먼저 완료해주세요.";
+  if (m.includes("user already registered")) return "이미 가입된 이메일이에요.";
+  if (m.includes("password should be"))
+    return "비밀번호가 너무 짧아요. 6자 이상으로 설정해주세요.";
+  if (m.includes("rate limit")) return "잠시 후 다시 시도해주세요.";
+  if (m.includes("network")) return "네트워크 연결을 확인해주세요.";
+  return rawMessage || "알 수 없는 오류가 발생했어요.";
 }
 
 export function useAuth(): AuthView {
@@ -78,7 +81,7 @@ export function useAuth(): AuthView {
     isSupabaseConfigured ? null : loadMock(),
   );
   const [status, setStatus] = useState<AuthStatus>(
-    isSupabaseConfigured ? 'unknown' : loadMock() ? 'authed' : 'guest',
+    isSupabaseConfigured ? "unknown" : loadMock() ? "authed" : "guest",
   );
 
   // 같은 supabase auth 이벤트에 여러 hook 인스턴스가 동시에 반응하지 않도록 가드
@@ -94,9 +97,9 @@ export function useAuth(): AuthView {
       const u = data.session?.user;
       if (u && u.email) {
         setUser({ id: u.id, email: u.email });
-        setStatus('authed');
+        setStatus("authed");
       } else {
-        setStatus('guest');
+        setStatus("guest");
       }
     });
 
@@ -105,10 +108,10 @@ export function useAuth(): AuthView {
       const u = session?.user;
       if (u && u.email) {
         setUser({ id: u.id, email: u.email });
-        setStatus('authed');
+        setStatus("authed");
       } else {
         setUser(null);
-        setStatus('guest');
+        setStatus("guest");
       }
     });
 
@@ -122,15 +125,18 @@ export function useAuth(): AuthView {
   const signIn = useCallback(
     async (email: string, password: string): Promise<AuthResult> => {
       if (supabase) {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
         if (error) return { ok: false, message: translateError(error.message) };
         return { ok: true };
       }
       // mock fallback
-      const next: AuthUser = { id: 'mock-user', email };
+      const next: AuthUser = { id: "mock-user", email };
       saveMock(next);
       setUser(next);
-      setStatus('authed');
+      setStatus("authed");
       return { ok: true };
     },
     [],
@@ -149,10 +155,10 @@ export function useAuth(): AuthView {
         return { ok: true };
       }
       // mock: 즉시 로그인 처리
-      const next: AuthUser = { id: 'mock-user', email };
+      const next: AuthUser = { id: "mock-user", email };
       saveMock(next);
       setUser(next);
-      setStatus('authed');
+      setStatus("authed");
       return { ok: true };
     },
     [],
@@ -162,8 +168,11 @@ export function useAuth(): AuthView {
   const sendPasswordReset = useCallback(
     async (email: string): Promise<AuthResult> => {
       if (supabase) {
-        const redirectTo = typeof window !== 'undefined' ? window.location.origin : undefined;
-        const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo });
+        const redirectTo =
+          typeof window !== "undefined" ? window.location.origin : undefined;
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo,
+        });
         if (error) return { ok: false, message: translateError(error.message) };
         return { ok: true };
       }
@@ -182,7 +191,7 @@ export function useAuth(): AuthView {
     }
     saveMock(null);
     setUser(null);
-    setStatus('guest');
+    setStatus("guest");
   }, []);
 
   return { user, status, signIn, signUp, sendPasswordReset, signOut };
