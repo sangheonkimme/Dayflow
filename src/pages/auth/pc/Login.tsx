@@ -1,10 +1,11 @@
 // @ts-nocheck
 import { useState } from "react";
-import { AUTH_TEXT, GoogleIcon } from "@/components/auth-login";
+import { AUTH_TEXT } from "@/pages/auth/shared/AuthText";
+import { GoogleIcon } from "@/pages/auth/shared/GoogleIcon";
 import { useAuth } from "@/features/auth/hooks/useAuth";
-import { PCField } from "@/pages/auth/pc/field";
-import { PCBtn } from "@/pages/auth/pc/btn";
-import { BrandPanel } from "@/pages/auth/pc/brand-panel";
+import { PCField } from "@/pages/auth/pc/Field";
+import { PCBtn } from "@/pages/auth/pc/Btn";
+import { BrandPanel } from "@/pages/auth/pc/BrandPanel";
 
 export const PCLogin = ({ lang = "ko", dark = false, onSwitch }) => {
   const t = AUTH_TEXT[lang];

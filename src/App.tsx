@@ -65,36 +65,36 @@ const MobileApp = lazy(() =>
   import("@/components/mobile-app").then((m) => ({ default: m.MobileApp })),
 );
 const LoginScreen = lazy(() =>
-  import("@/components/auth-login").then((m) => ({
+  import("@/pages/auth/mobile/Login").then((m) => ({
     default: m.LoginScreen,
   })),
 );
 const SignupScreen = lazy(() =>
-  import("@/components/auth-flows").then((m) => ({
+  import("@/pages/auth/mobile/Signup").then((m) => ({
     default: m.SignupScreen,
   })),
 );
 const OnboardingScreen = lazy(() =>
-  import("@/components/auth-flows").then((m) => ({
+  import("@/pages/auth/mobile/Onboarding").then((m) => ({
     default: m.OnboardingScreen,
   })),
 );
 const ForgotScreen = lazy(() =>
-  import("@/components/auth-forgot").then((m) => ({
+  import("@/pages/auth/mobile/Forgot").then((m) => ({
     default: m.ForgotScreen,
   })),
 );
 const PCLogin = lazy(() =>
-  import("@/pages/auth/pc/login").then((m) => ({ default: m.PCLogin })),
+  import("@/pages/auth/pc/Login").then((m) => ({ default: m.PCLogin })),
 );
 const PCSignup = lazy(() =>
-  import("@/pages/auth/pc/signup").then((m) => ({ default: m.PCSignup })),
+  import("@/pages/auth/pc/Signup").then((m) => ({ default: m.PCSignup })),
 );
 const PCForgot = lazy(() =>
-  import("@/components/auth-forgot").then((m) => ({ default: m.PCForgot })),
+  import("@/pages/auth/pc/Forgot").then((m) => ({ default: m.PCForgot })),
 );
 const PCOnboarding = lazy(() =>
-  import("@/pages/auth/pc/onboarding").then((m) => ({
+  import("@/pages/auth/pc/Onboarding").then((m) => ({
     default: m.PCOnboarding,
   })),
 );
