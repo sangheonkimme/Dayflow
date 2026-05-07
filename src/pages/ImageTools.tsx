@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { useState } from 'react';
-import { Icon } from '@/components/icons';
+import { Icon } from '@/shared/ui/Icon';
 
 // ============================================================
 // IMAGE TOOLS — Crop & PDF detail pages

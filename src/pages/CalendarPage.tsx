@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { useState, useMemo } from "react";
-import { Icon } from "@/components/icons";
+import { Icon } from "@/shared/ui/Icon";
 import { DOW } from "@/lib/date";
 import { EVENT_CATEGORY_COLORS } from "@/lib/categories";
 import { useEvents } from "@/features/events/hooks/useEvents";

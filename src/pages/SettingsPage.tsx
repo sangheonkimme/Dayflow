@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { useState } from "react";
-import { Icon } from "@/components/icons";
+import { Icon } from "@/shared/ui/Icon";
 import { ProfileSection } from "@/pages/settings/sections/Profile";
 import { AppearanceSection } from "@/pages/settings/sections/Appearance";
 import { LedgerSettingsSection } from "@/pages/settings/sections/Ledger";

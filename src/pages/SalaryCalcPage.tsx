@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { useState, useMemo } from "react";
-import { Icon } from "@/components/icons";
+import { Icon } from "@/shared/ui/Icon";
 import { formatWon } from "@/lib/format";
 
 // ============================================================

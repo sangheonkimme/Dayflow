@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { useState, useEffect, useMemo } from 'react';
-import { Icon } from '@/components/icons';
+import { Icon } from '@/shared/ui/Icon';
 
 // ============================================================
 // LOAN CALCULATOR — 대출 이자 계산기

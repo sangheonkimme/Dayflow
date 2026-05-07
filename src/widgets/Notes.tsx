@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { useState } from "react";
-import { Icon } from "@/components/icons";
+import { Icon } from "@/shared/ui/Icon";
 import { useStickyNotes } from "@/features/sticky-notes/hooks/useStickyNotes";
 import { useChecklist } from "@/features/checklist/hooks/useChecklist";
 import { useDailyLog } from "@/features/daily-log/hooks/useDailyLog";
