@@ -15,14 +15,14 @@ import {
   TweakRadio,
 } from "@/widgets/TweaksPanel";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
-import { usePreferences } from "@/features/preferences/hooks/usePreferences";
-import { useAuth } from "@/features/auth/hooks/useAuth";
-import { useTransactions } from "@/features/transactions/hooks/useTransactions";
-import { useEvents } from "@/features/events/hooks/useEvents";
+import { usePreferences } from "@/data/preferences";
+import { useAuth } from "@/data/auth";
+import { useTransactions } from "@/data/transactions";
+import { useEvents } from "@/data/events";
 import { useDataModeStore } from "@/shared/state/dataMode";
 import { useModalStore } from "@/shared/state/modal";
 import { DemoBanner } from "@/widgets/DemoBanner";
-import { configureDataSource } from "@/shared/data/source";
+import { configureDataSource } from "@/data/source";
 import { queryClient } from "@/app/queryClient";
 import type {
   TxnDraft,

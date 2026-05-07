@@ -3,18 +3,18 @@ import { useMemo } from 'react';
 import { Icon } from '@/shared/ui/Icon';
 import { formatWon, formatSignedWon } from '@/lib/format';
 import { DOW } from '@/lib/date';
-import { useTransactions } from '@/features/transactions/hooks/useTransactions';
-import { useEvents } from '@/features/events/hooks/useEvents';
+import { useTransactions } from '@/data/transactions';
+import { useEvents } from '@/data/events';
 import {
   monthlyTotals,
   currentMonthSummary,
   recent as selectRecent,
-} from '@/features/transactions/selectors/transactions';
-import { inferIcon, inferPayday } from '@/features/transactions/selectors/derived';
+} from '@/data/transactions';
+import { inferIcon, inferPayday } from '@/data/transactions';
 import {
   daysWithEventsInMonth,
   upcoming as upcomingEvents,
-} from '@/features/events/selectors/events';
+} from '@/data/events';
 
 // ============================================================
 // MONEY FLOW

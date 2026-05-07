@@ -3,7 +3,7 @@ import { useState, useMemo } from "react";
 import { Icon } from "@/shared/ui/Icon";
 import { DOW } from "@/lib/date";
 import { EVENT_CATEGORY_COLORS } from "@/lib/categories";
-import { useEvents } from "@/features/events/hooks/useEvents";
+import { useEvents } from "@/data/events";
 
 export const CalendarPage = ({ onAdd, onEditEvent }) => {
   const today = new Date();

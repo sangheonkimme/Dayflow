@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { useState, useEffect } from "react";
 import { Ico } from "@/pages/mobile/shared/Ico";
-import { useEvents } from "@/features/events/hooks/useEvents";
+import { useEvents } from "@/data/events";
 
 export const AddEventSheet = ({ open, onClose }) => {
   const [title, setTitle] = useState("");

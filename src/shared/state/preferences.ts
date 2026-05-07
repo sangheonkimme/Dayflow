@@ -8,7 +8,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import type { Tweaks } from '@/types';
-import { TWEAK_DEFAULTS } from '@/shared/data/seeds';
+import { TWEAK_DEFAULTS } from "@/data/lookups";
 
 export type SetPreference = <K extends keyof Tweaks>(
   key: K,

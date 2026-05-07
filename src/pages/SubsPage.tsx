@@ -5,12 +5,12 @@ import { Modal } from '@/shared/ui/Modal';
 import { formatWon } from '@/lib/format';
 import { DOW } from '@/lib/date';
 import { sumBy } from '@/lib/aggregate';
-import { useSubscriptions } from '@/features/subscriptions/hooks/useSubscriptions';
+import { useSubscriptions } from '@/data/subscriptions';
 import {
   subscriptionColor,
   subscriptionInitial,
   formatStarted,
-} from '@/features/subscriptions/selectors/derived';
+} from '@/data/subscriptions';
 
 // ============================================================
 // SUBSCRIPTIONS PAGE — 정기구독 (simplified)

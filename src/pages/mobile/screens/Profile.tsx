@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Ico } from "@/pages/mobile/shared/Ico";
 import { SubHeader } from "@/pages/mobile/shared/SubHeader";
-import { useAuth } from "@/features/auth/hooks/useAuth";
+import { useAuth } from "@/data/auth";
 
 export const ProfileScreen = ({ onBack, onUpgrade }) => {
   const { user, signOut } = useAuth();

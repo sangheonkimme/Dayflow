@@ -1,13 +1,13 @@
 // @ts-nocheck
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { DOW } from '@/lib/date';
-import { useTransactions } from '@/features/transactions/hooks/useTransactions';
-import { useEvents, useEventsByDate } from '@/features/events/hooks/useEvents';
-import { useChecklist } from '@/features/checklist/hooks/useChecklist';
-import { useAuth } from '@/features/auth/hooks/useAuth';
-import { groupByDay, recent as selectRecent } from '@/features/transactions/selectors/transactions';
-import { inferIcon } from '@/features/transactions/selectors/derived';
-import { daysWithEventsInMonth } from '@/features/events/selectors/events';
+import { useTransactions } from '@/data/transactions';
+import { useEvents, useEventsByDate } from '@/data/events';
+import { useChecklist } from '@/data/checklist';
+import { useAuth } from '@/data/auth';
+import { groupByDay, recent as selectRecent } from '@/data/transactions';
+import { inferIcon } from '@/data/transactions';
+import { daysWithEventsInMonth } from '@/data/events';
 
 // 추출된 헬퍼/탭 (Phase 6c-1)
 import { Ico } from '@/pages/mobile/shared/Ico';

@@ -6,7 +6,7 @@
 // 없으면 null 을 반환해서 호출부가 mock 으로 fallback 한다.
 //
 // 추후 generated 타입 도입 시:
-//   import type { Database } from '@/shared/data/source/db.types';
+//   import type { Database } from '@/data/source/db.types';
 //   createClient<Database>(url, key, ...)
 // 로 교체.
 

@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { useState } from "react";
-import { useAuth } from "@/features/auth/hooks/useAuth";
+import { useAuth } from "@/data/auth";
 import { AUTH_TEXT } from "@/pages/auth/shared/AuthText";
 import { EyeIcon } from "@/pages/auth/shared/EyeIcon";
 import { BrandMark } from "@/pages/auth/shared/BrandMark";

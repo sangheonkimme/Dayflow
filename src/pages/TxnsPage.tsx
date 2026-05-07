@@ -5,8 +5,8 @@ import { formatSignedWon } from '@/lib/format';
 import { DOW } from '@/lib/date';
 import { TRANSACTION_CATEGORIES } from '@/lib/categories';
 import { ReceiptUploadModal } from '@/widgets/Flows';
-import { useTransactions } from '@/features/transactions/hooks/useTransactions';
-import { inferIcon } from '@/features/transactions/selectors/derived';
+import { useTransactions } from '@/data/transactions';
+import { inferIcon } from '@/data/transactions';
 
 // ============================================================
 // TRANSACTIONS PAGE — 거래내역 detail

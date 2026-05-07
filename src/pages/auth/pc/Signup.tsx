@@ -4,7 +4,7 @@ import { AUTH_TEXT } from "@/pages/auth/shared/AuthText";
 import { GoogleIcon } from "@/pages/auth/shared/GoogleIcon";
 import { EyeIcon } from "@/pages/auth/shared/EyeIcon";
 import { pwdScore } from "@/pages/auth/shared/PwdScore";
-import { useAuth } from "@/features/auth/hooks/useAuth";
+import { useAuth } from "@/data/auth";
 import { PCField } from "@/pages/auth/pc/Field";
 import { PCBtn } from "@/pages/auth/pc/Btn";
 import { BrandPanel } from "@/pages/auth/pc/BrandPanel";

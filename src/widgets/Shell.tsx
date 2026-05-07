@@ -1,6 +1,6 @@
 import { Icon } from "@/shared/ui/Icon";
 import { DOW } from "@/lib/date";
-import { useAuth } from "@/features/auth/hooks/useAuth";
+import { useAuth } from "@/data/auth";
 
 // ============================================================
 // SIDEBAR

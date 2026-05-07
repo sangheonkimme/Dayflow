@@ -1,9 +1,9 @@
 // @ts-nocheck
 import { useState, useEffect, useMemo } from "react";
 import { Ico } from "@/pages/mobile/shared/Ico";
-import { useTransactions } from "@/features/transactions/hooks/useTransactions";
-import { useEvents } from "@/features/events/hooks/useEvents";
-import { useMemos } from "@/features/memos/hooks/useMemos";
+import { useTransactions } from "@/data/transactions";
+import { useEvents } from "@/data/events";
+import { useMemos } from "@/data/memos";
 
 export const SearchSheet = ({ open, onClose, onJump }) => {
   const [q, setQ] = useState("");

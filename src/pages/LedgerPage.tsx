@@ -4,14 +4,14 @@ import { Icon } from "@/shared/ui/Icon";
 import { formatSignedWon, formatWon } from "@/lib/format";
 import { DOW } from "@/lib/date";
 import { TRANSACTION_CATEGORIES } from "@/lib/categories";
-import { useTransactions } from "@/features/transactions/hooks/useTransactions";
-import { inferIcon } from "@/features/transactions/selectors/derived";
+import { useTransactions } from "@/data/transactions";
+import { inferIcon } from "@/data/transactions";
 import {
   monthlyTotals,
   currentMonthSummary,
   categoryShare,
   groupByDay,
-} from "@/features/transactions/selectors/transactions";
+} from "@/data/transactions";
 
 export const LedgerPage = ({ onAdd, onEditTxn }) => {
   const [filter, setFilter] = useState("all");

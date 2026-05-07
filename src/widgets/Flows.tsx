@@ -2,8 +2,8 @@
 import { useState, useRef, useEffect, useMemo } from "react";
 import { Icon } from "@/shared/ui/Icon";
 import { Modal } from "@/shared/ui/Modal";
-import { useTransactions } from "@/features/transactions/hooks/useTransactions";
-import { recent as selectRecent } from "@/features/transactions/selectors/transactions";
+import { useTransactions } from "@/data/transactions";
+import { recent as selectRecent } from "@/data/transactions";
 
 // ============================================================
 // RECEIPT UPLOAD MODAL — 영수증 첨부 플로우

@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { useState } from "react";
 import { DOW } from "@/lib/date";
-import { useEvents, useEventsByDate } from "@/features/events/hooks/useEvents";
+import { useEvents, useEventsByDate } from "@/data/events";
 import { Ico } from "@/pages/mobile/shared/Ico";
 import { SectionHeader } from "@/pages/mobile/shared/SectionHeader";
 
