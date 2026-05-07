@@ -26,16 +26,3 @@ export const supabase: SupabaseClient | null = isSupabaseConfigured
       },
     })
   : null;
-
-/**
- * 호출부가 client 가 반드시 있다고 단언하고 싶을 때 사용.
- * 예: SupabaseSource adapter 내부.
- */
-export function requireSupabase(): SupabaseClient {
-  if (!supabase) {
-    throw new Error(
-      "Supabase is not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in .env",
-    );
-  }
-  return supabase;
-}

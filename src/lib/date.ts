@@ -20,10 +20,6 @@ export const MONTHS = [
 
 export type DateInput = Date | string | number;
 
-/** "월" / "화" etc. */
-export const getDayOfWeek = (dateInput: DateInput): string =>
-  DOW[new Date(dateInput).getDay()];
-
 /** "MM.DD (요일)" — used for txn day groupings */
 export const formatDateWithDow = (date: DateInput): string => {
   const d = date instanceof Date ? date : new Date(date);
