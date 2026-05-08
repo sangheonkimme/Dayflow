@@ -4,6 +4,7 @@ import { useMemos } from "@/data/memos";
 import { FOLDERS, ALL_TAGS } from "@/data/memos";
 import { memoExcerpt, memoWordCount, memoUpdatedLabel } from "@/data/memos";
 import { useDraftField } from "@/lib/useDraftField";
+import styles from "./MemoPage.module.css";
 
 // ============================================================
 // MEMO PAGE — 장문 메모 detail page
@@ -99,50 +100,50 @@ function MemoPage() {
         </div>
       </div>
 
-      <div className="memo-layout">
+      <div className={styles.memoLayout}>
         {/* COLUMN 1 — Folders + tags */}
-        <aside className="memo-folders">
-          <div className="memo-side-h">폴더</div>
-          <ul className="folder-list">
+        <aside className={styles.memoFolders}>
+          <div className={styles.memoSideH}>폴더</div>
+          <ul className={styles.folderList}>
             {FOLDERS.map((f) => (
               <li
                 key={f.id}
-                className={"folder-item" + (folder === f.id ? " on" : "")}
+                className={`${styles.folderItem}${folder === f.id ? ` ${styles.on}` : ""}`}
                 onClick={() => setFolder(f.id)}
               >
                 <span
-                  className="folder-ico"
+                  className={styles.folderIco}
                   style={f.color ? { color: f.color } : undefined}
                 >
                   <Icon name={f.icon} size={15} />
                 </span>
-                <span className="folder-label">{f.label}</span>
-                <span className="folder-count">{f.count}</span>
+                <span className={styles.folderLabel}>{f.label}</span>
+                <span className={styles.folderCount}>{f.count}</span>
               </li>
             ))}
           </ul>
 
-          <div className="memo-side-h" style={{ marginTop: 22 }}>
+          <div className={styles.memoSideH} style={{ marginTop: 22 }}>
             태그
           </div>
-          <div className="tag-cloud">
+          <div className={styles.tagCloud}>
             {ALL_TAGS.map((t) => (
-              <span key={t} className="tag-pill">
+              <span key={t} className={styles.tagPill}>
                 #{t}
               </span>
             ))}
           </div>
 
-          <div className="memo-quote">
+          <div className={styles.memoQuote}>
             <span className="hand">"</span>
             <p>적어두지 않은 생각은 사라진다. 손이 기억보다 정직하다.</p>
           </div>
         </aside>
 
         {/* COLUMN 2 — Memo list */}
-        <section className="memo-list-col">
-          <div className="memo-list-head">
-            <div className="memo-search">
+        <section className={styles.memoListCol}>
+          <div className={styles.memoListHead}>
+            <div className={styles.memoSearch}>
               <Icon name="search" size={13} />
               <input
                 placeholder="메모 검색…"
@@ -150,14 +151,14 @@ function MemoPage() {
                 onChange={(e) => setSearch(e.target.value)}
               />
             </div>
-            <div className="memo-sort">
+            <div className={styles.memoSort}>
               {[
                 ["updated", "최근순"],
                 ["title", "가나다"],
               ].map(([k, l]) => (
                 <button
                   key={k}
-                  className={sort === k ? "on" : ""}
+                  className={sort === k ? styles.on : ""}
                   onClick={() => setSort(k)}
                 >
                   {l}
@@ -166,9 +167,9 @@ function MemoPage() {
             </div>
           </div>
 
-          <div className="memo-list">
+          <div className={styles.memoList}>
             {filtered.length === 0 && (
-              <div className="memo-empty">
+              <div className={styles.memoEmpty}>
                 <div className="hand" style={{ fontSize: 22, marginBottom: 6 }}>
                   비어있어요
                 </div>
@@ -178,14 +179,14 @@ function MemoPage() {
             {filtered.map((m) => (
               <div
                 key={m.id}
-                className={"memo-card" + (activeId === m.id ? " on" : "")}
+                className={`${styles.memoCard}${activeId === m.id ? ` ${styles.on}` : ""}`}
                 onClick={() => setActiveId(m.id)}
               >
-                <div className="memo-card-head">
+                <div className={styles.memoCardHead}>
                   {m.pinned && <Icon name="pin" size={12} />}
                   <h4>{m.title}</h4>
                   <button
-                    className={"memo-star" + (m.starred ? " starred" : "")}
+                    className={`${styles.memoStar}${m.starred ? ` ${styles.starred}` : ""}`}
                     onClick={(e) => {
                       e.stopPropagation();
                       toggleStar(m.id);
@@ -195,14 +196,14 @@ function MemoPage() {
                     <Icon name="star" size={13} />
                   </button>
                 </div>
-                <p className="memo-excerpt">{memoExcerpt(m)}</p>
-                <div className="memo-meta">
+                <p className={styles.memoExcerpt}>{memoExcerpt(m)}</p>
+                <div className={styles.memoMeta}>
                   <span>{memoUpdatedLabel(m)}</span>
-                  <span className="dot-sep">·</span>
+                  <span className={styles.dotSep}>·</span>
                   <span>{memoWordCount(m)}자</span>
-                  <span className="memo-tag-row">
+                  <span className={styles.memoTagRow}>
                     {m.tags.slice(0, 2).map((t) => (
-                      <span key={t} className="memo-mini-tag">
+                      <span key={t} className={styles.memoMiniTag}>
                         #{t}
                       </span>
                     ))}
@@ -214,9 +215,9 @@ function MemoPage() {
         </section>
 
         {/* COLUMN 3 — Editor */}
-        <section className="memo-editor">
+        <section className={styles.memoEditor}>
           {!active ? (
-            <div className="memo-empty large">
+            <div className={`${styles.memoEmpty} ${styles.large}`}>
               <div className="hand" style={{ fontSize: 28 }}>
                 메모를 골라주세요 →
               </div>
@@ -239,18 +240,22 @@ function MemoPage() {
 
 function folderColor(id: string) {
   return (
-    ({ work: "#fde0e6", personal: "#dbecf5", study: "#dff0d2" } as Record<
-      string,
-      string
-    >)[id] || "var(--bg-paper)"
+    (
+      { work: "#fde0e6", personal: "#dbecf5", study: "#dff0d2" } as Record<
+        string,
+        string
+      >
+    )[id] || "var(--bg-paper)"
   );
 }
 function folderLabel(id: string) {
   return (
-    ({ work: "업무", personal: "개인", study: "공부 · 독서" } as Record<
-      string,
-      string
-    >)[id] || id
+    (
+      { work: "업무", personal: "개인", study: "공부 · 독서" } as Record<
+        string,
+        string
+      >
+    )[id] || id
   );
 }
 
@@ -331,21 +336,19 @@ function MemoEditor({
 
   return (
     <>
-      <div className="memo-edit-head">
-        <div className="memo-edit-meta">
+      <div className={styles.memoEditHead}>
+        <div className={styles.memoEditMeta}>
           <span
-            className="folder-chip"
+            className={styles.folderChip}
             style={{ background: folderColor(active.folder) }}
           >
             {folderLabel(active.folder)}
           </span>
-          <span className="muted">
-            최종 편집 · {memoUpdatedLabel(active)}
-          </span>
+          <span className="muted">최종 편집 · {memoUpdatedLabel(active)}</span>
           <span className="muted">·</span>
           <span className="muted">{memoWordCount(active)}자</span>
         </div>
-        <div className="memo-edit-actions">
+        <div className={styles.memoEditActions}>
           <button
             type="button"
             className={"icon-btn" + (active.pinned ? " on" : "")}
@@ -391,7 +394,7 @@ function MemoEditor({
         </div>
       </div>
 
-      <div className="memo-toolbar">
+      <div className={styles.memoToolbar}>
         <button
           type="button"
           title="제목"
@@ -413,7 +416,7 @@ function MemoEditor({
         >
           <Icon name="italic" size={14} />
         </button>
-        <span className="tb-sep" />
+        <span className={styles.tbSep} />
         <button
           type="button"
           title="목록"
@@ -435,7 +438,7 @@ function MemoEditor({
         >
           <Icon name="quote" size={14} />
         </button>
-        <span className="tb-sep" />
+        <span className={styles.tbSep} />
         <button
           type="button"
           title="이미지"
@@ -450,32 +453,32 @@ function MemoEditor({
         >
           <Icon name="link" size={14} />
         </button>
-        <span className="tb-sep" />
-        <span className="tb-status">
-          <span className="save-dot" /> 자동 저장됨
+        <span className={styles.tbSep} />
+        <span className={styles.tbStatus}>
+          <span className={styles.saveDot} /> 자동 저장됨
         </span>
       </div>
 
-      <div className="memo-paper">
+      <div className={styles.memoPaper}>
         <input
-          className="memo-title-in"
+          className={styles.memoTitleIn}
           value={titleField.value}
           onChange={(e) => titleField.setDraft(e.target.value)}
           onBlur={titleField.commit}
           placeholder="제목을 입력하세요…"
         />
-        <div className="memo-tag-edit">
+        <div className={styles.memoTagEdit}>
           {active.tags.map((t) => (
-            <span key={t} className="memo-tag-chip">
+            <span key={t} className={styles.memoTagChip}>
               #{t}
               <button>×</button>
             </span>
           ))}
-          <button className="memo-tag-add">+ 태그</button>
+          <button className={styles.memoTagAdd}>+ 태그</button>
         </div>
         <textarea
           ref={bodyRef}
-          className="memo-body"
+          className={styles.memoBody}
           value={bodyField.value}
           onChange={(e) => bodyField.setDraft(e.target.value)}
           onBlur={bodyField.commit}
@@ -484,17 +487,17 @@ function MemoEditor({
         />
       </div>
 
-      <div className="memo-foot">
+      <div className={styles.memoFoot}>
         <span className="hand">손글씨처럼, 부담없이.</span>
-        <div className="memo-foot-stats">
+        <div className={styles.memoFootStats}>
           <span>
             <b>{bodyField.value.length}</b>자
           </span>
-          <span className="dot-sep">·</span>
+          <span className={styles.dotSep}>·</span>
           <span>
             <b>{bodyField.value.split(/\s+/).filter(Boolean).length}</b>단어
           </span>
-          <span className="dot-sep">·</span>
+          <span className={styles.dotSep}>·</span>
           <span>
             읽는 시간{" "}
             <b>{Math.max(1, Math.round(bodyField.value.length / 400))}</b>분

@@ -11,6 +11,7 @@ import {
   subscriptionInitial,
   formatStarted,
 } from "@/data/subscriptions";
+import styles from "./SubsPage.module.css";
 
 // ============================================================
 // SUBSCRIPTIONS PAGE — 정기구독 (simplified)
@@ -134,11 +135,11 @@ function SubsPage({ onAdd }: { onAdd?: () => void }) {
       </div>
 
       {/* HERO: monthly total + upcoming 7 days strip */}
-      <div className="subs-hero">
-        <div className="subs-hero-l">
-          <div className="subs-hero-lbl">이번 달 총 결제</div>
-          <div className="subs-hero-val">{fmt(monthlyTotal)}</div>
-          <div className="subs-hero-sub">
+      <div className={styles.subsHero}>
+        <div className={styles.subsHeroL}>
+          <div className={styles.subsHeroLbl}>이번 달 총 결제</div>
+          <div className={styles.subsHeroVal}>{fmt(monthlyTotal)}</div>
+          <div className={styles.subsHeroSub}>
             연 환산 <b>{fmt(annualized)}</b>
             {pausedSubs.length > 0 && (
               <>
@@ -147,29 +148,29 @@ function SubsPage({ onAdd }: { onAdd?: () => void }) {
               </>
             )}
           </div>
-          <span className="subs-hero-stamp">MONTHLY</span>
+          <span className={styles.subsHeroStamp}>MONTHLY</span>
         </div>
-        <div className="subs-hero-r">
-          <div className="subs-hero-lbl" style={{ marginBottom: 10 }}>
+        <div className={styles.subsHeroR}>
+          <div className={styles.subsHeroLbl} style={{ marginBottom: 10 }}>
             다가오는 7일
           </div>
-          <div className="next7">
+          <div className={styles.next7}>
             {next7Days.map((d, i) => (
               <div
                 key={i}
                 className={
-                  "next7-cell" +
-                  (d.isToday ? " today" : "") +
-                  (d.items.length ? " has" : "")
+                  styles.next7Cell +
+                  (d.isToday ? ` ${styles.today}` : "") +
+                  (d.items.length ? ` ${styles.has}` : "")
                 }
               >
-                <div className="next7-dow">{DOW[d.date.getDay()]}</div>
-                <div className="next7-num">{d.day}</div>
-                <div className="next7-pills">
+                <div className={styles.next7Dow}>{DOW[d.date.getDay()]}</div>
+                <div className={styles.next7Num}>{d.day}</div>
+                <div className={styles.next7Pills}>
                   {d.items.slice(0, 3).map((s) => (
                     <span
                       key={s.id}
-                      className="next7-pill"
+                      className={styles.next7Pill}
                       style={{ background: subscriptionColor(s) }}
                       title={`${s.name} ${fmt(s.price)}`}
                     >
@@ -177,7 +178,7 @@ function SubsPage({ onAdd }: { onAdd?: () => void }) {
                     </span>
                   ))}
                   {d.items.length > 3 && (
-                    <span className="next7-more">+{d.items.length - 3}</span>
+                    <span className={styles.next7More}>+{d.items.length - 3}</span>
                   )}
                 </div>
               </div>
@@ -217,7 +218,7 @@ function SubsPage({ onAdd }: { onAdd?: () => void }) {
           </div>
         </div>
 
-        <div className="subs-list">
+        <div className={styles.subsList}>
           {list.map((s) => {
             const sDay = s.day ?? 0;
             const dleft =
@@ -232,18 +233,18 @@ function SubsPage({ onAdd }: { onAdd?: () => void }) {
               <div
                 key={s.id}
                 className={
-                  "sub-card" + (s.status === "paused" ? " paused" : "")
+                  styles.subCard + (s.status === "paused" ? ` ${styles.paused}` : "")
                 }
                 onClick={() => setEditing(s)}
               >
                 <div
-                  className="sub-mark"
+                  className={styles.subMark}
                   style={{ background: subscriptionColor(s) }}
                 >
                   {subscriptionInitial(s)}
                 </div>
-                <div className="sub-main">
-                  <div className="sub-name-row">
+                <div>
+                  <div className={styles.subNameRow}>
                     <h4>{s.name}</h4>
                     {s.status === "paused" && (
                       <span
@@ -265,9 +266,9 @@ function SubsPage({ onAdd }: { onAdd?: () => void }) {
                       </span>
                     )}
                   </div>
-                  <div className="sub-meta">
+                  <div className={styles.subMeta}>
                     <span
-                      className="sub-cat"
+                      className={styles.subCat}
                       style={{ color: CAT_COLORS[s.cat] }}
                     >
                       ● {s.cat}
@@ -280,12 +281,12 @@ function SubsPage({ onAdd }: { onAdd?: () => void }) {
                     <span>가입 {formatStarted(s)}</span>
                   </div>
                 </div>
-                <div className="sub-price">
-                  <div className="sub-price-val">{fmt(s.price)}</div>
-                  <div className="sub-price-cycle">/ {s.cycle}</div>
+                <div className={styles.subPrice}>
+                  <div className={styles.subPriceVal}>{fmt(s.price)}</div>
+                  <div className={styles.subPriceCycle}>/ {s.cycle}</div>
                 </div>
                 <button
-                  className="sub-edit"
+                  className={styles.subEdit}
                   title="설정"
                   onClick={(e) => {
                     e.stopPropagation();
@@ -302,12 +303,12 @@ function SubsPage({ onAdd }: { onAdd?: () => void }) {
 
       {/* INSIGHT — 데모 데이터 — 실제 구독이 하나도 없을 땐 노출 안 함. */}
       {SUBS.length > 0 && (
-      <div className="card card-pad insight-card" style={{ marginTop: 18 }}>
-        <div className="insight-stamp">SAVE TIPS</div>
+      <div className={`card card-pad ${styles.insightCard}`} style={{ marginTop: 18 }}>
+        <div className={styles.insightStamp}>SAVE TIPS</div>
         <h3>새는 돈, 점검해볼까요?</h3>
-        <ul className="insight-list">
+        <ul className={styles.insightList}>
           <li>
-            <span className="i-dot" style={{ background: "#e89aac" }} />
+            <span className={styles.iDot} style={{ background: "#e89aac" }} />
             <div>
               <b>왓챠</b>는 일시정지 중이지만 90일째 사용 안 함.
               <small>
@@ -322,7 +323,7 @@ function SubsPage({ onAdd }: { onAdd?: () => void }) {
             </button>
           </li>
           <li>
-            <span className="i-dot" style={{ background: "#a259ff" }} />
+            <span className={styles.iDot} style={{ background: "#a259ff" }} />
             <div>
               <b>Adobe CC</b>와 <b>Figma Pro</b> — 비슷한 작업에 둘 다 결제 중.
               <small>
@@ -405,9 +406,9 @@ function SubEditModal({ sub, onClose, onAnalyze }) {
         style={{ gap: 14, maxHeight: "70vh", overflowY: "auto" }}
       >
         {/* preview header */}
-        <div className="sub-edit-preview">
+        <div className={styles.subEditPreview}>
           <div
-            className="sub-mark"
+            className={styles.subMark}
             style={{
               background: color,
               width: 56,
@@ -419,8 +420,8 @@ function SubEditModal({ sub, onClose, onAnalyze }) {
             {subscriptionInitial(sub)}
           </div>
           <div style={{ flex: 1 }}>
-            <div className="sub-edit-name">{name || "—"}</div>
-            <div className="sub-edit-price">
+            <div className={styles.subEditName}>{name || "—"}</div>
+            <div className={styles.subEditPrice}>
               <span
                 style={{
                   fontFamily: "var(--mono)",
@@ -494,13 +495,13 @@ function SubEditModal({ sub, onClose, onAnalyze }) {
 
         <div className="field">
           <label>{cycle === "월" ? "결제일 (매월)" : "결제월 (매년)"}</label>
-          <div className="day-picker">
+          <div className={styles.dayPicker}>
             {Array.from({ length: cycle === "월" ? 31 : 12 }).map((_, i) => {
               const v = i + 1;
               return (
                 <button
                   key={v}
-                  className={"day-cell" + (day === v ? " on" : "")}
+                  className={styles.dayCell + (day === v ? " on" : "")}
                   onClick={() => setDay(v)}
                 >
                   {v}
@@ -552,19 +553,19 @@ function SubEditModal({ sub, onClose, onAnalyze }) {
 
         <div className="field">
           <label>상태</label>
-          <div className="status-seg">
+          <div className={styles.statusSeg}>
             <button
               className={status === "active" ? "on" : ""}
               onClick={() => setStatus("active")}
             >
-              <span className="ss-dot" style={{ background: "#4a8d5a" }} /> 활성
+              <span className={styles.ssDot} style={{ background: "#4a8d5a" }} /> 활성
             </button>
             <button
               className={status === "paused" ? "on" : ""}
               onClick={() => setStatus("paused")}
             >
               <span
-                className="ss-dot"
+                className={styles.ssDot}
                 style={{ background: "var(--ink-mute)" }}
               />{" "}
               일시정지
@@ -573,27 +574,27 @@ function SubEditModal({ sub, onClose, onAnalyze }) {
               className={status === "cancelled" ? "on" : ""}
               onClick={() => setStatus("cancelled")}
             >
-              <span className="ss-dot" style={{ background: "var(--red)" }} />{" "}
+              <span className={styles.ssDot} style={{ background: "var(--red)" }} />{" "}
               해지
             </button>
           </div>
           {status === "paused" && (
-            <small className="status-hint">
+            <small className={styles.statusHint}>
               결제는 멈추지만 목록에는 남아있어요.
             </small>
           )}
           {status === "cancelled" && (
-            <small className="status-hint" style={{ color: "var(--red)" }}>
+            <small className={styles.statusHint} style={{ color: "var(--red)" }}>
               연 {fmt(annualSavings)} 절약 — 다시 가입할 때 데이터가 보존돼요.
             </small>
           )}
         </div>
 
         {/* analyze CTA */}
-        <button className="analyze-btn" onClick={onAnalyze}>
+        <button className={styles.analyzeBtn} onClick={onAnalyze}>
           <div>
-            <div className="analyze-ttl">이 구독, 절약 분석</div>
-            <div className="analyze-sub">
+            <div className={styles.analyzeTtl}>이 구독, 절약 분석</div>
+            <div className={styles.analyzeSub}>
               최근 사용 빈도 · 중복 구독 점검 · 절약 시뮬레이션
             </div>
           </div>
@@ -669,12 +670,12 @@ function SaveTipModal({ tip, onClose, subs: SUBS, usage: SUB_USAGE }) {
   const months = ["7월", "8월", "9월", "10월", "11월"];
 
   return (
-    <Modal open={true} onClose={onClose} className="save-tip-modal">
+    <Modal open={true} onClose={onClose} className={styles.saveTipModal}>
       <div className="modal-head">
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <h3>{isOverlap ? "중복 구독 분석" : "해지 검토"}</h3>
-            <span className="badge-savings">💰 SAVE</span>
+            <span className={styles.badgeSavings}>💰 SAVE</span>
           </div>
           <small>
             {sub.name}
@@ -698,56 +699,56 @@ function SaveTipModal({ tip, onClose, subs: SUBS, usage: SUB_USAGE }) {
         style={{ gap: 16, maxHeight: "70vh", overflowY: "auto" }}
       >
         {/* Hero — projected savings */}
-        <div className="savings-hero">
-          <div className="savings-hero-lbl">해지 시 연 절약</div>
-          <div className="savings-hero-val">{fmt(totalSavings)}</div>
-          <div className="savings-hero-sub">
+        <div className={styles.savingsHero}>
+          <div className={styles.savingsHeroLbl}>해지 시 연 절약</div>
+          <div className={styles.savingsHeroVal}>{fmt(totalSavings)}</div>
+          <div className={styles.savingsHeroSub}>
             월{" "}
             {fmt(sub.cycle === "월" ? sub.price : Math.round(sub.price / 12))} ×
             12개월
           </div>
-          <span className="savings-hero-stamp">SAVE</span>
+          <span className={styles.savingsHeroStamp}>SAVE</span>
         </div>
 
         {/* Usage chart */}
-        <div className="usage-block">
-          <div className="block-head">
+        <div className={styles.usageBlock}>
+          <div className={styles.blockHead}>
             <div>
-              <div className="block-ttl">최근 5개월 사용량</div>
-              <div className="block-sub">마지막 사용 · {usage.lastUsed}</div>
+              <div className={styles.blockTtl}>최근 5개월 사용량</div>
+              <div className={styles.blockSub}>마지막 사용 · {usage.lastUsed}</div>
             </div>
-            <div className="block-stat">
-              <div className="block-stat-val">
+            <div>
+              <div className={styles.blockStatVal}>
                 {usage.avgPerWeek}
                 <span>분/주</span>
               </div>
             </div>
           </div>
-          <div className="usage-bars">
+          <div className={styles.usageBars}>
             {usage.monthlyMinutes.map((m, i) => (
-              <div key={i} className="usage-col">
-                <div className="usage-bar-wrap">
+              <div key={i} className={styles.usageCol}>
+                <div className={styles.usageBarWrap}>
                   <div
                     className={
-                      "usage-bar" +
-                      (m === 0 ? " zero" : "") +
-                      (i === 4 ? " now" : "")
+                      styles.usageBar +
+                      (m === 0 ? ` ${styles.zero}` : "") +
+                      (i === 4 ? ` ${styles.now}` : "")
                     }
                     style={{
                       height: m === 0 ? "4px" : `${(m / maxMin) * 100}%`,
                     }}
                   >
-                    <span className="usage-val">
+                    <span className={styles.usageVal}>
                       {m === 0 ? "0" : `${Math.round(m / 60)}h`}
                     </span>
                   </div>
                 </div>
-                <div className="usage-lbl">{months[i]}</div>
+                <div className={styles.usageLbl}>{months[i]}</div>
               </div>
             ))}
           </div>
           {usage.avgPerWeek === 0 && (
-            <div className="usage-warn">
+            <div className={styles.usageWarn}>
               <Icon name="alert" size={14} /> 90일 이상 사용하지 않았어요.
               해지하기 좋은 타이밍이에요.
             </div>
@@ -756,48 +757,48 @@ function SaveTipModal({ tip, onClose, subs: SUBS, usage: SUB_USAGE }) {
 
         {/* Overlap section (only for overlap kind) */}
         {isOverlap && overlapSubs.length > 0 && (
-          <div className="overlap-block">
-            <div className="block-ttl">함께 결제 중인 비슷한 구독</div>
-            <div className="block-sub" style={{ marginBottom: 10 }}>
+          <div className={styles.overlapBlock}>
+            <div className={styles.blockTtl}>함께 결제 중인 비슷한 구독</div>
+            <div className={styles.blockSub} style={{ marginBottom: 10 }}>
               유사한 작업에 쓰이는 도구들이에요
             </div>
-            <div className="overlap-row">
-              <div className="overlap-card">
+            <div className={styles.overlapRow}>
+              <div className={styles.overlapCard}>
                 <div
-                  className="sub-mark"
+                  className={styles.subMark}
                   style={{ background: subscriptionColor(sub) }}
                 >
                   {subscriptionInitial(sub)}
                 </div>
-                <div className="overlap-name">{sub.name}</div>
-                <div className="overlap-price">
+                <div className={styles.overlapName}>{sub.name}</div>
+                <div className={styles.overlapPrice}>
                   {fmt(sub.price)}
                   <span>/{sub.cycle}</span>
                 </div>
-                <div className="overlap-use">주 {usage.avgPerWeek}분 사용</div>
+                <div className={styles.overlapUse}>주 {usage.avgPerWeek}분 사용</div>
               </div>
-              <div className="overlap-vs">VS</div>
+              <div className={styles.overlapVs}>VS</div>
               {overlapSubs.map((o) => {
                 const u = SUB_USAGE[o.id] || { avgPerWeek: 0 };
                 return (
-                  <div key={o.id} className="overlap-card">
+                  <div key={o.id} className={styles.overlapCard}>
                     <div
-                      className="sub-mark"
+                      className={styles.subMark}
                       style={{ background: subscriptionColor(o) }}
                     >
                       {subscriptionInitial(o)}
                     </div>
-                    <div className="overlap-name">{o.name}</div>
-                    <div className="overlap-price">
+                    <div className={styles.overlapName}>{o.name}</div>
+                    <div className={styles.overlapPrice}>
                       {fmt(o.price)}
                       <span>/{o.cycle}</span>
                     </div>
-                    <div className="overlap-use">주 {u.avgPerWeek}분 사용</div>
+                    <div className={styles.overlapUse}>주 {u.avgPerWeek}분 사용</div>
                   </div>
                 );
               })}
             </div>
-            <div className="overlap-rec">
+            <div className={styles.overlapRec}>
               <Icon name="target" size={14} />
               <div>
                 <b>
@@ -813,78 +814,78 @@ function SaveTipModal({ tip, onClose, subs: SUBS, usage: SUB_USAGE }) {
         )}
 
         {/* Action breakdown */}
-        <div className="action-list">
-          <div className="block-ttl" style={{ marginBottom: 8 }}>
+        <div className={styles.actionList}>
+          <div className={styles.blockTtl} style={{ marginBottom: 8 }}>
             이렇게 할 수 있어요
           </div>
 
-          <div className="action-row">
+          <div className={styles.actionRow}>
             <div
-              className="action-icon"
+              className={styles.actionIcon}
               style={{ background: "#f1e9d3", color: "var(--ink)" }}
             >
               ⏸
             </div>
-            <div className="action-main">
-              <div className="action-ttl">일시정지</div>
-              <div className="action-sub">
+            <div>
+              <div className={styles.actionTtl}>일시정지</div>
+              <div className={styles.actionSub}>
                 최대 3개월. 데이터는 그대로 남아있어요.
               </div>
             </div>
-            <div className="action-savings">
-              <div className="action-amt">
+            <div className={styles.actionSavings}>
+              <div className={styles.actionAmt}>
                 {fmt(
                   sub.cycle === "월"
                     ? sub.price * 3
                     : Math.round(sub.price / 4),
                 )}
               </div>
-              <div className="action-amt-sub">3개월 절약</div>
+              <div className={styles.actionAmtSub}>3개월 절약</div>
             </div>
             <button className="timer-btn">선택</button>
           </div>
 
-          <div className="action-row recommended">
+          <div className={`${styles.actionRow} ${styles.recommended}`}>
             <div
-              className="action-icon"
+              className={styles.actionIcon}
               style={{ background: "var(--red)", color: "#fff" }}
             >
               ✕
             </div>
-            <div className="action-main">
-              <div className="action-ttl">
-                해지 <span className="rec-tag">추천</span>
+            <div>
+              <div className={styles.actionTtl}>
+                해지 <span className={styles.recTag}>추천</span>
               </div>
-              <div className="action-sub">
+              <div className={styles.actionSub}>
                 바로 해지. 다음 결제일부터 청구 안 됨.
               </div>
             </div>
-            <div className="action-savings">
-              <div className="action-amt">{fmt(annual)}</div>
-              <div className="action-amt-sub">연 절약</div>
+            <div className={styles.actionSavings}>
+              <div className={styles.actionAmt}>{fmt(annual)}</div>
+              <div className={styles.actionAmtSub}>연 절약</div>
             </div>
             <button className="timer-btn primary">해지하기</button>
           </div>
 
           {!isOverlap && (
-            <div className="action-row">
+            <div className={styles.actionRow}>
               <div
-                className="action-icon"
+                className={styles.actionIcon}
                 style={{ background: "var(--yellow)", color: "var(--ink)" }}
               >
                 ↓
               </div>
-              <div className="action-main">
-                <div className="action-ttl">하위 요금제로 변경</div>
-                <div className="action-sub">
+              <div>
+                <div className={styles.actionTtl}>하위 요금제로 변경</div>
+                <div className={styles.actionSub}>
                   광고 포함 · 화질 제한이 있을 수 있어요.
                 </div>
               </div>
-              <div className="action-savings">
-                <div className="action-amt">
+              <div className={styles.actionSavings}>
+                <div className={styles.actionAmt}>
                   {fmt(Math.round(sub.price * 0.4) * 12)}
                 </div>
-                <div className="action-amt-sub">연 절약 (예상)</div>
+                <div className={styles.actionAmtSub}>연 절약 (예상)</div>
               </div>
               <button className="timer-btn">선택</button>
             </div>

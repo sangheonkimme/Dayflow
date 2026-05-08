@@ -1,6 +1,5 @@
 "use client";
 
-import "@/styles/txns.css";
 import { TxnsPage } from "@/screens/txns/TxnsPage";
 import { useModalStore } from "@/store/modal";
 import type { TxnDraft } from "@/types";

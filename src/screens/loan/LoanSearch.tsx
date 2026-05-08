@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { Icon } from "@/components/Icon";
+import styles from "./LoanSearch.module.css";
 
 // ============================================================
 // LOAN CALCULATOR — 대출 이자 계산기
@@ -131,13 +132,13 @@ function LoanCalcPage() {
       </div>
 
       {/* ===== 대출 조건 ===== */}
-      <div className="card card-pad loan-card">
-        <h3 className="loan-h3">대출 조건</h3>
+      <div className={`card card-pad ${styles.loanCard}`}>
+        <h3 className={styles.loanH3}>대출 조건</h3>
 
-        <div className="loan-grid-2">
-          <div className="loan-field">
+        <div className={styles.loanGrid2}>
+          <div className={styles.loanField}>
             <label>대출 금액</label>
-            <div className="loan-input-wrap">
+            <div className={styles.loanInputWrap}>
               <input
                 type="text"
                 inputMode="numeric"
@@ -147,13 +148,13 @@ function LoanCalcPage() {
                   setPrincipal(isNaN(v) ? 0 : v);
                 }}
               />
-              <span className="loan-suffix">원</span>
+              <span className={styles.loanSuffix}>원</span>
             </div>
           </div>
 
-          <div className="loan-field">
+          <div className={styles.loanField}>
             <label>연이자율</label>
-            <div className="loan-input-wrap">
+            <div className={styles.loanInputWrap}>
               <input
                 type="number"
                 step="0.1"
@@ -162,15 +163,15 @@ function LoanCalcPage() {
                 value={rate}
                 onChange={(e) => setRate(parseFloat(e.target.value) || 0)}
               />
-              <span className="loan-suffix">%</span>
+              <span className={styles.loanSuffix}>%</span>
             </div>
           </div>
         </div>
 
-        <div className="loan-grid-3">
-          <div className="loan-field">
+        <div className={styles.loanGrid3}>
+          <div className={styles.loanField}>
             <label>기간 (년)</label>
-            <div className="loan-input-wrap">
+            <div className={styles.loanInputWrap}>
               <input
                 type="number"
                 min="0"
@@ -180,7 +181,7 @@ function LoanCalcPage() {
                   setYears(Math.max(0, parseInt(e.target.value) || 0))
                 }
               />
-              <div className="loan-spinner">
+              <div className={styles.loanSpinner}>
                 <button type="button" onClick={() => setYears(years + 1)}>
                   ▲
                 </button>
@@ -194,9 +195,9 @@ function LoanCalcPage() {
             </div>
           </div>
 
-          <div className="loan-field">
+          <div className={styles.loanField}>
             <label>기간 (개월)</label>
-            <div className="loan-input-wrap">
+            <div className={styles.loanInputWrap}>
               <input
                 type="number"
                 min="0"
@@ -206,7 +207,7 @@ function LoanCalcPage() {
                   setExtraMonths(Math.max(0, parseInt(e.target.value) || 0))
                 }
               />
-              <div className="loan-spinner">
+              <div className={styles.loanSpinner}>
                 <button
                   type="button"
                   onClick={() => setExtraMonths(Math.min(11, extraMonths + 1))}
@@ -223,9 +224,9 @@ function LoanCalcPage() {
             </div>
           </div>
 
-          <div className="loan-field">
+          <div className={styles.loanField}>
             <label>거치기간 (개월)</label>
-            <div className="loan-input-wrap">
+            <div className={styles.loanInputWrap}>
               <input
                 type="number"
                 min="0"
@@ -234,7 +235,7 @@ function LoanCalcPage() {
                   setGrace(Math.max(0, parseInt(e.target.value) || 0))
                 }
               />
-              <div className="loan-spinner">
+              <div className={styles.loanSpinner}>
                 <button type="button" onClick={() => setGrace(grace + 1)}>
                   ▲
                 </button>
@@ -246,11 +247,11 @@ function LoanCalcPage() {
                 </button>
               </div>
             </div>
-            <small className="loan-hint">거치기간 동안에는 이자만 납부</small>
+            <small className={styles.loanHint}>거치기간 동안에는 이자만 납부</small>
           </div>
         </div>
 
-        <div className="loan-type-tabs">
+        <div className={styles.loanTypeTabs}>
           {[
             ["equal-payment", "원리금균등"],
             ["equal-principal", "원금균등"],
@@ -258,7 +259,9 @@ function LoanCalcPage() {
           ].map(([k, l]) => (
             <button
               key={k}
-              className={"loan-tab" + (type === k ? " on" : "")}
+              className={
+                styles.loanTab + (type === k ? " " + styles.loanTabOn : "")
+              }
               onClick={() => setType(k)}
             >
               {l}
@@ -268,14 +271,17 @@ function LoanCalcPage() {
       </div>
 
       {/* ===== 상환 요약 ===== */}
-      <div className="card card-pad loan-card" style={{ marginTop: 18 }}>
-        <h3 className="loan-h3">상환 요약</h3>
+      <div
+        className={`card card-pad ${styles.loanCard}`}
+        style={{ marginTop: 18 }}
+      >
+        <h3 className={styles.loanH3}>상환 요약</h3>
 
-        <div className="loan-summary-grid">
-          <div className="loan-stat">
-            <div className="ls-lbl">월 납입금</div>
-            <div className="ls-val">{_won(r.fixedPay)}</div>
-            <div className="ls-sub">
+        <div className={styles.loanSummaryGrid}>
+          <div className={styles.loanStat}>
+            <div className={styles.lsLbl}>월 납입금</div>
+            <div className={styles.lsVal}>{_won(r.fixedPay)}</div>
+            <div className={styles.lsSub}>
               {type === "equal-principal"
                 ? "첫 회 납입액"
                 : type === "balloon"
@@ -283,55 +289,60 @@ function LoanCalcPage() {
                   : "거치 종료 후 고정 납입액"}
             </div>
           </div>
-          <div className="loan-stat">
-            <div className="ls-lbl">총 이자</div>
-            <div className="ls-val">{_won(r.totalInterest)}</div>
-            <div className="ls-sub">전체 기간 동안 납부할 이자 합계</div>
+          <div className={styles.loanStat}>
+            <div className={styles.lsLbl}>총 이자</div>
+            <div className={styles.lsVal}>{_won(r.totalInterest)}</div>
+            <div className={styles.lsSub}>전체 기간 동안 납부할 이자 합계</div>
           </div>
-          <div className="loan-stat">
-            <div className="ls-lbl">총 상환액</div>
-            <div className="ls-val">{_won(r.totalPay)}</div>
-            <div className="ls-sub">원금 + 이자</div>
+          <div className={styles.loanStat}>
+            <div className={styles.lsLbl}>총 상환액</div>
+            <div className={styles.lsVal}>{_won(r.totalPay)}</div>
+            <div className={styles.lsSub}>원금 + 이자</div>
           </div>
-          <div className="loan-stat">
-            <div className="ls-lbl">월 평균 납입금</div>
-            <div className="ls-val">{_won(r.monthlyAvg)}</div>
-            <div className="ls-sub">총 상환액 ÷ 전체 개월 수</div>
+          <div className={styles.loanStat}>
+            <div className={styles.lsLbl}>월 평균 납입금</div>
+            <div className={styles.lsVal}>{_won(r.monthlyAvg)}</div>
+            <div className={styles.lsSub}>총 상환액 ÷ 전체 개월 수</div>
           </div>
         </div>
 
-        <div className="loan-chips">
-          <span className="loan-chip">연이율 {rate}%</span>
-          <span className="loan-chip">총 {totalMonths}개월</span>
-          {grace > 0 && <span className="loan-chip">거치 {grace}개월</span>}
+        <div className={styles.loanChips}>
+          <span className={styles.loanChip}>연이율 {rate}%</span>
+          <span className={styles.loanChip}>총 {totalMonths}개월</span>
+          {grace > 0 && (
+            <span className={styles.loanChip}>거치 {grace}개월</span>
+          )}
         </div>
-        <p className="loan-disclaimer">
+        <p className={styles.loanDisclaimer}>
           실제 금융기관 조건과 차이가 있을 수 있으며 참고용으로만 사용해주세요.
         </p>
       </div>
 
       {/* ===== 월별 상환 일정 ===== */}
-      <div className="card card-pad loan-card" style={{ marginTop: 18 }}>
-        <div className="loan-schedule-head">
+      <div
+        className={`card card-pad ${styles.loanCard}`}
+        style={{ marginTop: 18 }}
+      >
+        <div className={styles.loanScheduleHead}>
           <div>
-            <h3 className="loan-h3" style={{ marginBottom: 4 }}>
+            <h3 className={styles.loanH3} style={{ marginBottom: 4 }}>
               월별 상환 일정
             </h3>
-            <small className="loan-hint">
+            <small className={styles.loanHint}>
               모든 금액은 반올림된 값이며 마지막 회차는 소폭 차이가 날 수
               있습니다.
             </small>
           </div>
           <button
-            className="loan-toggle-all"
+            className={styles.loanToggleAll}
             onClick={() => setShowAll(!showAll)}
           >
             {showAll ? "처음 8개월만 보기" : `총 ${totalMonths}개월 모두 보기`}
           </button>
         </div>
 
-        <div className="loan-table-wrap">
-          <table className="loan-table">
+        <div className={styles.loanTableWrap}>
+          <table className={styles.loanTable}>
             <thead>
               <tr>
                 <th style={{ width: 60 }}>회차</th>
@@ -344,13 +355,17 @@ function LoanCalcPage() {
             <tbody>
               {visibleRows.map((row) => (
                 <tr key={row.no}>
-                  <td className="loan-no">#{row.no}</td>
-                  <td className="loan-num">
+                  <td className={styles.loanNo}>#{row.no}</td>
+                  <td className={styles.loanNum}>
                     <b>{_won(row.pay)}</b>
                   </td>
-                  <td className="loan-num">{_won(row.principalPart)}</td>
-                  <td className="loan-num orange">{_won(row.interest)}</td>
-                  <td className="loan-num muted">{_won(row.balance)}</td>
+                  <td className={styles.loanNum}>{_won(row.principalPart)}</td>
+                  <td className={`${styles.loanNum} ${styles.loanNumOrange}`}>
+                    {_won(row.interest)}
+                  </td>
+                  <td className={`${styles.loanNum} ${styles.loanNumMuted}`}>
+                    {_won(row.balance)}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -552,9 +567,9 @@ function SearchOverlay({ open, onClose, onNavigate }) {
   };
 
   return (
-    <div className="search-overlay" onClick={onClose}>
-      <div className="search-modal" onClick={(e) => e.stopPropagation()}>
-        <div className="search-input-wrap">
+    <div className={styles.searchOverlay} onClick={onClose}>
+      <div className={styles.searchModal} onClick={(e) => e.stopPropagation()}>
+        <div className={styles.searchInputWrap}>
           <Icon name="search" size={18} />
           <input
             autoFocus
@@ -565,10 +580,10 @@ function SearchOverlay({ open, onClose, onNavigate }) {
           <kbd>ESC</kbd>
         </div>
 
-        <div className="search-results">
+        <div className={styles.searchResults}>
           {filtered.length === 0 && (
-            <div className="search-empty">
-              <div className="search-empty-mark">🔍</div>
+            <div className={styles.searchEmpty}>
+              <div className={styles.searchEmptyMark}>🔍</div>
               <b>검색 결과가 없어요</b>
               <small>다른 키워드로 시도해보세요</small>
             </div>
@@ -577,27 +592,27 @@ function SearchOverlay({ open, onClose, onNavigate }) {
           {groupOrder.map(
             (g) =>
               groups[g] && (
-                <div key={g} className="search-group">
-                  <div className="search-group-label">
+                <div key={g} className={styles.searchGroup}>
+                  <div className={styles.searchGroupLabel}>
                     {ql ? groupLabels[g] : "바로가기"}
                   </div>
                   {groups[g].map((it, i) => (
                     <div
                       key={i}
-                      className="search-item"
+                      className={styles.searchItem}
                       onClick={() => handlePick(it)}
                     >
-                      <div className="search-item-ico">
+                      <div className={styles.searchItemIco}>
                         <Icon name={it.icon} size={14} />
                       </div>
-                      <div className="search-item-body">
+                      <div className={styles.searchItemBody}>
                         <b>{it.label}</b>
                         <small>{it.sub}</small>
                       </div>
-                      <span className="search-item-type">
+                      <span className={styles.searchItemType}>
                         {groupLabels[it.type]}
                       </span>
-                      <span className="search-item-arrow">↵</span>
+                      <span className={styles.searchItemArrow}>↵</span>
                     </div>
                   ))}
                 </div>
@@ -605,14 +620,14 @@ function SearchOverlay({ open, onClose, onNavigate }) {
           )}
         </div>
 
-        <div className="search-foot">
+        <div className={styles.searchFoot}>
           <span>
             <kbd>↵</kbd> 이동
           </span>
           <span>
             <kbd>ESC</kbd> 닫기
           </span>
-          <span className="search-foot-tip">⌘K로 다시 열기</span>
+          <span className={styles.searchFootTip}>⌘K로 다시 열기</span>
         </div>
       </div>
     </div>

@@ -1,6 +1,6 @@
-/* ===== MEMO PAGE — paper-desk styled ===== */
+/* ===== MEMO PAGE — paper-desk styled (CSS Module) ===== */
 
-.memo-layout {
+.memoLayout {
   display: grid;
   grid-template-columns: 240px 320px 1fr;
   gap: 18px;
@@ -9,7 +9,7 @@
 }
 
 /* ---------- COLUMN 1 — folders ---------- */
-.memo-folders {
+.memoFolders {
   background: var(--bg-paper);
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
@@ -17,7 +17,7 @@
   position: sticky;
   top: 24px;
 }
-.memo-side-h {
+.memoSideH {
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.12em;
@@ -25,7 +25,7 @@
   color: var(--ink-mute);
   padding: 0 6px 8px;
 }
-.folder-list {
+.folderList {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -33,7 +33,7 @@
   flex-direction: column;
   gap: 2px;
 }
-.folder-item {
+.folderItem {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -47,32 +47,32 @@
     background 0.12s,
     color 0.12s;
 }
-.folder-item:hover {
+.folderItem:hover {
   background: rgba(255, 255, 255, 0.55);
   color: var(--ink);
 }
-.folder-item.on {
+.folderItem.on {
   background: var(--ink);
   color: var(--yellow);
 }
-.folder-item.on .folder-count {
+.folderItem.on .folderCount {
   background: rgba(255, 226, 122, 0.2);
   color: var(--yellow);
 }
-.folder-item.on .folder-ico {
+.folderItem.on .folderIco {
   color: var(--yellow) !important;
 }
-.folder-ico {
+.folderIco {
   width: 18px;
   height: 18px;
   display: grid;
   place-items: center;
   flex-shrink: 0;
 }
-.folder-label {
+.folderLabel {
   flex: 1;
 }
-.folder-count {
+.folderCount {
   font-family: var(--mono);
   font-size: 10px;
   font-weight: 700;
@@ -83,13 +83,13 @@
   color: var(--ink-mute);
 }
 
-.tag-cloud {
+.tagCloud {
   display: flex;
   flex-wrap: wrap;
   gap: 5px;
   padding: 0 6px;
 }
-.tag-pill {
+.tagPill {
   font-size: 11px;
   padding: 3px 9px;
   background: var(--card);
@@ -100,13 +100,13 @@
   transition: all 0.12s;
   font-family: var(--mono);
 }
-.tag-pill:hover {
+.tagPill:hover {
   background: var(--ink);
   color: var(--yellow);
   border-color: var(--ink);
 }
 
-.memo-quote {
+.memoQuote {
   margin-top: 22px;
   padding: 14px 14px 14px 18px;
   background: var(--card);
@@ -114,7 +114,7 @@
   border-radius: 10px;
   position: relative;
 }
-.memo-quote .hand {
+.memoQuote :global(.hand) {
   position: absolute;
   top: -6px;
   left: 8px;
@@ -123,7 +123,7 @@
   color: var(--line-strong);
   line-height: 1;
 }
-.memo-quote p {
+.memoQuote p {
   margin: 0;
   font-family: var(--hand);
   font-size: 16px;
@@ -132,7 +132,7 @@
 }
 
 /* ---------- COLUMN 2 — list ---------- */
-.memo-list-col {
+.memoListCol {
   background: var(--card);
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
@@ -143,13 +143,13 @@
   top: 24px;
   max-height: calc(100vh - 200px);
 }
-.memo-list-head {
+.memoListHead {
   display: flex;
   gap: 8px;
   align-items: center;
   margin-bottom: 12px;
 }
-.memo-search {
+.memoSearch {
   flex: 1;
   display: flex;
   align-items: center;
@@ -161,7 +161,7 @@
   background: var(--bg-paper);
   color: var(--ink-mute);
 }
-.memo-search input {
+.memoSearch input {
   border: none;
   outline: none;
   background: transparent;
@@ -170,11 +170,11 @@
   flex: 1;
   color: var(--ink);
 }
-.memo-sort {
+.memoSort {
   display: flex;
   gap: 2px;
 }
-.memo-sort button {
+.memoSort button {
   height: 32px;
   padding: 0 10px;
   background: transparent;
@@ -186,13 +186,13 @@
   color: var(--ink-soft);
   cursor: pointer;
 }
-.memo-sort button.on {
+.memoSort button.on {
   background: var(--ink);
   color: var(--yellow);
   border-color: var(--ink);
 }
 
-.memo-list {
+.memoList {
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -200,7 +200,7 @@
   padding-right: 4px;
   margin-right: -4px;
 }
-.memo-card {
+.memoCard {
   padding: 12px 14px;
   border: 1px solid var(--line);
   border-radius: 10px;
@@ -209,11 +209,11 @@
   transition: all 0.12s ease;
   position: relative;
 }
-.memo-card:hover {
+.memoCard:hover {
   border-color: var(--line-strong);
   transform: translateX(2px);
 }
-.memo-card.on {
+.memoCard.on {
   background: var(--card-elev);
   border-color: var(--ink);
   box-shadow:
@@ -221,13 +221,13 @@
     0 4px 12px rgba(40, 30, 10, 0.06);
   transform: translateX(2px);
 }
-.memo-card-head {
+.memoCardHead {
   display: flex;
   align-items: flex-start;
   gap: 6px;
   margin-bottom: 5px;
 }
-.memo-card-head h4 {
+.memoCardHead h4 {
   margin: 0;
   flex: 1;
   font-size: 13.5px;
@@ -240,13 +240,13 @@
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
 }
-.memo-card-head svg {
+.memoCardHead svg {
   color: var(--ink-soft);
   flex-shrink: 0;
   margin-top: 2px;
 }
 
-.memo-star {
+.memoStar {
   background: transparent;
   border: none;
   cursor: pointer;
@@ -255,10 +255,10 @@
   position: relative;
   flex-shrink: 0;
 }
-.memo-star:hover {
+.memoStar:hover {
   color: var(--ink);
 }
-.memo-star .star-fill {
+.memoStar .starFill {
   position: absolute;
   inset: 2px;
   background: var(--yellow);
@@ -266,17 +266,17 @@
   mask-image: linear-gradient(#000, #000);
   display: none;
 }
-.memo-card .memo-star:has(.star-fill),
-.memo-list .memo-card .memo-star {
+.memoCard .memoStar:has(.starFill),
+.memoList .memoCard .memoStar {
   /* no-op fallback */
 }
 
 /* render filled-star color: keep it simple — color the whole star yellow when filled */
-.memo-card-head .memo-star {
+.memoCardHead .memoStar {
   color: var(--ink-mute);
 }
 
-.memo-excerpt {
+.memoExcerpt {
   margin: 0 0 8px;
   font-size: 12px;
   color: var(--ink-soft);
@@ -286,7 +286,7 @@
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
 }
-.memo-meta {
+.memoMeta {
   display: flex;
   align-items: center;
   gap: 5px;
@@ -294,15 +294,15 @@
   color: var(--ink-mute);
   font-family: var(--mono);
 }
-.dot-sep {
+.dotSep {
   opacity: 0.5;
 }
-.memo-tag-row {
+.memoTagRow {
   display: flex;
   gap: 4px;
   margin-left: auto;
 }
-.memo-mini-tag {
+.memoMiniTag {
   font-family: var(--mono);
   font-size: 10px;
   padding: 1px 6px;
@@ -313,23 +313,23 @@
 }
 
 /* show filled star when starred */
-.memo-card .memo-star.starred,
-.memo-card-head .memo-star.starred {
+.memoCard .memoStar.starred,
+.memoCardHead .memoStar.starred {
   color: #e8b820;
 }
 
-.memo-empty {
+.memoEmpty {
   padding: 40px 20px;
   text-align: center;
   color: var(--ink-mute);
   font-size: 13px;
 }
-.memo-empty.large {
+.memoEmpty.large {
   padding: 80px 20px;
 }
 
 /* ---------- COLUMN 3 — editor ---------- */
-.memo-editor {
+.memoEditor {
   background: var(--card);
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
@@ -339,21 +339,21 @@
   position: relative;
   overflow: hidden;
 }
-.memo-edit-head {
+.memoEditHead {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 14px 20px;
   border-bottom: 1px solid var(--line);
 }
-.memo-edit-meta {
+.memoEditMeta {
   display: flex;
   align-items: center;
   gap: 10px;
   font-size: 12px;
   color: var(--ink-mute);
 }
-.folder-chip {
+.folderChip {
   font-size: 11px;
   font-weight: 700;
   padding: 3px 10px;
@@ -361,16 +361,16 @@
   color: var(--ink);
   letter-spacing: 0.02em;
 }
-.memo-edit-actions {
+.memoEditActions {
   display: flex;
   gap: 4px;
 }
-.memo-edit-actions .icon-btn {
+.memoEditActions :global(.icon-btn) {
   width: 32px;
   height: 32px;
 }
 
-.memo-toolbar {
+.memoToolbar {
   display: flex;
   align-items: center;
   gap: 2px;
@@ -378,7 +378,7 @@
   background: var(--bg-paper);
   border-bottom: 1px dashed var(--line);
 }
-.memo-toolbar button {
+.memoToolbar button {
   width: 30px;
   height: 30px;
   border: none;
@@ -392,17 +392,17 @@
     background 0.12s,
     color 0.12s;
 }
-.memo-toolbar button:hover {
+.memoToolbar button:hover {
   background: var(--card-elev);
   color: var(--ink);
 }
-.tb-sep {
+.tbSep {
   width: 1px;
   height: 18px;
   background: var(--line);
   margin: 0 6px;
 }
-.tb-status {
+.tbStatus {
   margin-left: auto;
   display: flex;
   align-items: center;
@@ -411,7 +411,7 @@
   color: var(--ink-mute);
   font-family: var(--mono);
 }
-.save-dot {
+.saveDot {
   width: 7px;
   height: 7px;
   border-radius: 50%;
@@ -419,7 +419,7 @@
   box-shadow: 0 0 0 3px rgba(74, 141, 90, 0.18);
 }
 
-.memo-paper {
+.memoPaper {
   flex: 1;
   padding: 36px 56px 24px;
   background:
@@ -435,7 +435,7 @@
   flex-direction: column;
   min-height: 0;
 }
-.memo-paper::before {
+.memoPaper::before {
   content: "";
   position: absolute;
   left: 38px;
@@ -445,7 +445,7 @@
   background: rgba(220, 90, 90, 0.3);
 }
 
-.memo-title-in {
+.memoTitleIn {
   width: 100%;
   background: transparent;
   border: none;
@@ -459,12 +459,12 @@
   margin-bottom: 6px;
   line-height: 1.2;
 }
-.memo-title-in::placeholder {
+.memoTitleIn::placeholder {
   color: var(--ink-mute);
   font-weight: 600;
 }
 
-.memo-tag-edit {
+.memoTagEdit {
   display: flex;
   flex-wrap: wrap;
   gap: 5px;
@@ -472,7 +472,7 @@
   padding-bottom: 10px;
   border-bottom: 1px dashed var(--line);
 }
-.memo-tag-chip {
+.memoTagChip {
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -485,7 +485,7 @@
   color: var(--ink);
   font-weight: 600;
 }
-.memo-tag-chip button {
+.memoTagChip button {
   background: transparent;
   border: none;
   cursor: pointer;
@@ -499,11 +499,11 @@
   padding: 0;
   line-height: 1;
 }
-.memo-tag-chip button:hover {
+.memoTagChip button:hover {
   background: rgba(0, 0, 0, 0.1);
   color: var(--ink);
 }
-.memo-tag-add {
+.memoTagAdd {
   font-family: inherit;
   font-size: 11px;
   font-weight: 600;
@@ -514,13 +514,13 @@
   color: var(--ink-mute);
   cursor: pointer;
 }
-.memo-tag-add:hover {
+.memoTagAdd:hover {
   border-style: solid;
   color: var(--ink);
   border-color: var(--ink);
 }
 
-.memo-body {
+.memoBody {
   flex: 1;
   background: transparent;
   border: none;
@@ -535,12 +535,12 @@
   padding: 0;
   min-height: 240px;
 }
-.memo-body::placeholder {
+.memoBody::placeholder {
   color: var(--ink-mute);
   font-style: italic;
 }
 
-.memo-foot {
+.memoFoot {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -550,38 +550,38 @@
   font-size: 12px;
   color: var(--ink-mute);
 }
-.memo-foot .hand {
+.memoFoot :global(.hand) {
   font-family: var(--hand);
   font-size: 16px;
   color: var(--ink-soft);
 }
-.memo-foot-stats {
+.memoFootStats {
   display: flex;
   gap: 6px;
   align-items: center;
   font-family: var(--mono);
   font-size: 11px;
 }
-.memo-foot-stats b {
+.memoFootStats b {
   color: var(--ink);
   font-weight: 700;
 }
 
 @media (max-width: 1280px) {
-  .memo-layout {
+  .memoLayout {
     grid-template-columns: 200px 280px 1fr;
   }
-  .memo-paper {
+  .memoPaper {
     padding: 28px 38px 20px;
   }
 }
 @media (max-width: 1100px) {
-  .memo-layout {
+  .memoLayout {
     grid-template-columns: 1fr;
   }
-  .memo-folders,
-  .memo-list-col,
-  .memo-editor {
+  .memoFolders,
+  .memoListCol,
+  .memoEditor {
     position: static;
     max-height: none;
   }

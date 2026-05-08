@@ -1,40 +1,40 @@
-/* ===== SUBSCRIPTIONS PAGE ===== */
+/* ===== SUBSCRIPTIONS PAGE (CSS Module) ===== */
 
 /* Hero — monthly total + upcoming 7 days */
-.subs-hero {
+.subsHero {
   display: grid;
   grid-template-columns: 320px 1fr;
   gap: 14px;
 }
-.subs-hero-l,
-.subs-hero-r {
+.subsHeroL,
+.subsHeroR {
   border-radius: var(--radius-md);
   padding: 18px 22px;
   position: relative;
   overflow: hidden;
 }
-.subs-hero-l {
+.subsHeroL {
   background: linear-gradient(165deg, #fff7d6 0%, var(--yellow) 100%);
   border: 1px solid var(--yellow-edge);
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
-.subs-hero-r {
+.subsHeroR {
   background: var(--card);
   border: 1px solid var(--line);
 }
-.subs-hero-lbl {
+.subsHeroLbl {
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--ink-mute);
 }
-.subs-hero-l .subs-hero-lbl {
+.subsHeroL .subsHeroLbl {
   color: rgba(0, 0, 0, 0.55);
 }
-.subs-hero-val {
+.subsHeroVal {
   font-family: var(--mono);
   font-size: 36px;
   font-weight: 800;
@@ -43,15 +43,15 @@
   color: var(--ink);
   line-height: 1.05;
 }
-.subs-hero-sub {
+.subsHeroSub {
   margin-top: 8px;
   font-size: 12px;
   color: rgba(0, 0, 0, 0.6);
 }
-.subs-hero-sub b {
+.subsHeroSub b {
   font-family: var(--mono);
 }
-.subs-hero-stamp {
+.subsHeroStamp {
   position: absolute;
   top: 14px;
   right: 16px;
@@ -73,7 +73,7 @@
   grid-template-columns: repeat(7, 1fr);
   gap: 6px;
 }
-.next7-cell {
+.next7Cell {
   background: var(--bg-paper);
   border: 1px solid var(--line);
   border-radius: 10px;
@@ -84,24 +84,24 @@
   min-height: 86px;
   position: relative;
 }
-.next7-cell.has {
+.next7Cell.has {
   background: var(--card-elev);
 }
-.next7-cell.today {
+.next7Cell.today {
   background: var(--yellow);
   border-color: var(--yellow-edge);
   box-shadow: 0 4px 12px rgba(232, 200, 74, 0.35);
 }
-.next7-dow {
+.next7Dow {
   font-size: 10px;
   font-weight: 700;
   color: var(--ink-mute);
   letter-spacing: 0.06em;
 }
-.next7-cell.today .next7-dow {
+.next7Cell.today .next7Dow {
   color: rgba(0, 0, 0, 0.65);
 }
-.next7-num {
+.next7Num {
   font-family: var(--mono);
   font-size: 18px;
   font-weight: 800;
@@ -109,7 +109,7 @@
   letter-spacing: -0.03em;
   margin-top: 2px;
 }
-.next7-pills {
+.next7Pills {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -117,7 +117,7 @@
   margin-top: auto;
   padding-top: 6px;
 }
-.next7-pill {
+.next7Pill {
   width: 20px;
   height: 20px;
   border-radius: 5px;
@@ -130,7 +130,7 @@
   letter-spacing: -0.02em;
   border: 1px solid rgba(0, 0, 0, 0.06);
 }
-.next7-more {
+.next7More {
   font-size: 9px;
   font-weight: 700;
   padding: 2px 5px;
@@ -140,12 +140,12 @@
 }
 
 /* Subs list */
-.subs-list {
+.subsList {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
-.sub-card {
+.subCard {
   display: grid;
   grid-template-columns: 44px 1fr auto auto;
   align-items: center;
@@ -156,15 +156,15 @@
   border-radius: 10px;
   transition: all 0.12s;
 }
-.sub-card:hover {
+.subCard:hover {
   background: #fff;
   border-color: var(--line-strong);
   transform: translateX(2px);
 }
-.sub-card.paused {
+.subCard.paused {
   opacity: 0.55;
 }
-.sub-mark {
+.subMark {
   width: 44px;
   height: 44px;
   border-radius: 11px;
@@ -177,18 +177,18 @@
   font-family: var(--sans);
   box-shadow: var(--shadow-sm);
 }
-.sub-name-row {
+.subNameRow {
   display: flex;
   align-items: center;
   gap: 8px;
 }
-.sub-name-row h4 {
+.subNameRow h4 {
   margin: 0;
   font-size: 14px;
   font-weight: 700;
   letter-spacing: -0.01em;
 }
-.sub-meta {
+.subMeta {
   display: flex;
   gap: 6px;
   align-items: center;
@@ -196,25 +196,25 @@
   color: var(--ink-mute);
   margin-top: 3px;
 }
-.sub-cat {
+.subCat {
   font-size: 11px;
   font-weight: 600;
 }
-.sub-price {
+.subPrice {
   text-align: right;
   min-width: 90px;
 }
-.sub-price-val {
+.subPriceVal {
   font-family: var(--mono);
   font-size: 14px;
   font-weight: 800;
   letter-spacing: -0.02em;
 }
-.sub-price-cycle {
+.subPriceCycle {
   font-size: 10px;
   color: var(--ink-mute);
 }
-.sub-edit {
+.subEdit {
   width: 30px;
   height: 30px;
   border: 1px solid var(--line);
@@ -226,19 +226,19 @@
   color: var(--ink-soft);
   transition: all 0.12s;
 }
-.sub-edit:hover {
+.subEdit:hover {
   background: var(--ink);
   color: var(--yellow);
   border-color: var(--ink);
 }
 
 /* Insight card */
-.insight-card {
+.insightCard {
   background: linear-gradient(180deg, #fffdf6 0%, #fff5e3 100%);
   border-color: var(--line-strong);
   position: relative;
 }
-.insight-stamp {
+.insightStamp {
   position: absolute;
   top: 14px;
   right: 18px;
@@ -252,13 +252,13 @@
   transform: rotate(-3deg);
   letter-spacing: 0.12em;
 }
-.insight-card h3 {
+.insightCard h3 {
   margin: 0 0 14px;
   font-size: 18px;
   font-weight: 800;
   letter-spacing: -0.02em;
 }
-.insight-list {
+.insightList {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -266,7 +266,7 @@
   flex-direction: column;
   gap: 10px;
 }
-.insight-list li {
+.insightList li {
   display: grid;
   grid-template-columns: 10px 1fr auto;
   gap: 12px;
@@ -276,29 +276,29 @@
   border: 1px solid var(--line);
   border-radius: 10px;
 }
-.i-dot {
+.iDot {
   width: 10px;
   height: 10px;
   border-radius: 50%;
   margin-top: 2px;
 }
-.insight-list li > div {
+.insightList li > div {
   font-size: 13px;
 }
-.insight-list li small {
+.insightList li small {
   display: block;
   font-size: 11px;
   color: var(--ink-mute);
   margin-top: 2px;
 }
-.insight-list li small b {
+.insightList li small b {
   font-family: var(--mono);
   color: var(--ink);
   font-weight: 700;
 }
 
 /* ============== SUB EDIT MODAL ============== */
-.sub-edit-preview {
+.subEditPreview {
   display: flex;
   align-items: center;
   gap: 14px;
@@ -307,24 +307,24 @@
   border: 1px solid var(--line);
   border-radius: 12px;
 }
-.sub-edit-name {
+.subEditName {
   font-size: 15px;
   font-weight: 700;
   letter-spacing: -0.01em;
 }
-.sub-edit-price {
+.subEditPrice {
   margin-top: 2px;
   display: flex;
   align-items: baseline;
 }
 
 /* Day picker (1..31 or 1..12) */
-.day-picker {
+.dayPicker {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 4px;
 }
-.day-picker .day-cell {
+.dayPicker .dayCell {
   aspect-ratio: 1;
   border: 1px solid var(--line);
   background: var(--bg-paper);
@@ -336,22 +336,22 @@
   color: var(--ink);
   transition: all 0.1s;
 }
-.day-picker .day-cell:hover {
+.dayPicker .dayCell:hover {
   border-color: var(--ink);
 }
-.day-picker .day-cell.on {
+.dayPicker .dayCell:global(.on) {
   background: var(--ink);
   color: var(--yellow);
   border-color: var(--ink);
 }
 
 /* Status segmented control */
-.status-seg {
+.statusSeg {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 6px;
 }
-.status-seg button {
+.statusSeg button {
   height: 40px;
   border: 1px solid var(--line);
   background: var(--bg-paper);
@@ -366,20 +366,20 @@
   color: var(--ink-soft);
   transition: all 0.1s;
 }
-.status-seg button:hover {
+.statusSeg button:hover {
   border-color: var(--ink-soft);
 }
-.status-seg button.on {
+.statusSeg button:global(.on) {
   background: var(--ink);
   color: var(--yellow);
   border-color: var(--ink);
 }
-.ss-dot {
+.ssDot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
 }
-.status-hint {
+.statusHint {
   display: block;
   margin-top: 6px;
   font-size: 11px;
@@ -387,7 +387,7 @@
 }
 
 /* Analyze CTA */
-.analyze-btn {
+.analyzeBtn {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -401,29 +401,29 @@
   font-family: inherit;
   transition: all 0.12s;
 }
-.analyze-btn:hover {
+.analyzeBtn:hover {
   border-color: var(--ink);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(232, 200, 74, 0.25);
 }
-.analyze-ttl {
+.analyzeTtl {
   font-size: 13px;
   font-weight: 800;
   letter-spacing: -0.01em;
   color: var(--ink);
 }
-.analyze-sub {
+.analyzeSub {
   font-size: 11px;
   color: var(--ink-mute);
   margin-top: 2px;
 }
 
 /* ============== SAVE TIP MODAL ============== */
-.save-tip-modal {
+.saveTipModal {
   max-width: 540px;
 }
 
-.badge-savings {
+.badgeSavings {
   display: inline-block;
   padding: 3px 8px;
   font-size: 10px;
@@ -435,7 +435,7 @@
 }
 
 /* Hero */
-.savings-hero {
+.savingsHero {
   background: linear-gradient(165deg, #fff7d6 0%, var(--yellow) 100%);
   border: 1px solid var(--yellow-edge);
   border-radius: 12px;
@@ -443,14 +443,14 @@
   position: relative;
   overflow: hidden;
 }
-.savings-hero-lbl {
+.savingsHeroLbl {
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: rgba(0, 0, 0, 0.55);
 }
-.savings-hero-val {
+.savingsHeroVal {
   font-family: var(--mono);
   font-size: 32px;
   font-weight: 800;
@@ -458,12 +458,12 @@
   margin-top: 4px;
   color: var(--ink);
 }
-.savings-hero-sub {
+.savingsHeroSub {
   margin-top: 4px;
   font-size: 12px;
   color: rgba(0, 0, 0, 0.6);
 }
-.savings-hero-stamp {
+.savingsHeroStamp {
   position: absolute;
   top: 14px;
   right: 16px;
@@ -480,24 +480,24 @@
 }
 
 /* Block heads */
-.block-head {
+.blockHead {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   margin-bottom: 12px;
 }
-.block-ttl {
+.blockTtl {
   font-size: 13px;
   font-weight: 800;
   letter-spacing: -0.01em;
   color: var(--ink);
 }
-.block-sub {
+.blockSub {
   font-size: 11px;
   color: var(--ink-mute);
   margin-top: 2px;
 }
-.block-stat-val {
+.blockStatVal {
   font-family: var(--mono);
   font-size: 22px;
   font-weight: 800;
@@ -505,7 +505,7 @@
   color: var(--ink);
   text-align: right;
 }
-.block-stat-val span {
+.blockStatVal span {
   font-size: 11px;
   font-weight: 600;
   color: var(--ink-mute);
@@ -514,32 +514,32 @@
 }
 
 /* Usage chart */
-.usage-block {
+.usageBlock {
   background: var(--bg-paper);
   border: 1px solid var(--line);
   border-radius: 12px;
   padding: 14px 16px;
 }
-.usage-bars {
+.usageBars {
   display: flex;
   align-items: flex-end;
   gap: 8px;
   height: 110px;
   padding-top: 18px;
 }
-.usage-col {
+.usageCol {
   flex: 1;
   display: flex;
   flex-direction: column;
   height: 100%;
 }
-.usage-bar-wrap {
+.usageBarWrap {
   flex: 1;
   display: flex;
   align-items: flex-end;
   position: relative;
 }
-.usage-bar {
+.usageBar {
   width: 100%;
   background: var(--ink-soft);
   border-radius: 5px 5px 0 0;
@@ -547,15 +547,15 @@
   min-height: 4px;
   opacity: 0.55;
 }
-.usage-bar.zero {
+.usageBar.zero {
   background: var(--line);
   opacity: 1;
 }
-.usage-bar.now {
+.usageBar.now {
   background: var(--red);
   opacity: 1;
 }
-.usage-val {
+.usageVal {
   position: absolute;
   top: -16px;
   left: 50%;
@@ -565,18 +565,18 @@
   font-weight: 700;
   color: var(--ink-soft);
 }
-.usage-bar.now .usage-val {
+.usageBar.now .usageVal {
   color: var(--red);
   font-weight: 800;
 }
-.usage-lbl {
+.usageLbl {
   text-align: center;
   margin-top: 6px;
   font-size: 10px;
   color: var(--ink-mute);
   font-family: var(--mono);
 }
-.usage-warn {
+.usageWarn {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -591,19 +591,19 @@
 }
 
 /* Overlap section */
-.overlap-block {
+.overlapBlock {
   background: var(--card);
   border: 1px solid var(--line);
   border-radius: 12px;
   padding: 14px 16px;
 }
-.overlap-row {
+.overlapRow {
   display: flex;
   align-items: stretch;
   gap: 8px;
   margin-top: 4px;
 }
-.overlap-card {
+.overlapCard {
   flex: 1;
   background: var(--bg-paper);
   border: 1px solid var(--line);
@@ -615,32 +615,32 @@
   text-align: center;
   gap: 6px;
 }
-.overlap-card .sub-mark {
+.overlapCard .subMark {
   width: 36px;
   height: 36px;
   font-size: 13px;
   border-radius: 9px;
 }
-.overlap-name {
+.overlapName {
   font-size: 12px;
   font-weight: 700;
 }
-.overlap-price {
+.overlapPrice {
   font-family: var(--mono);
   font-size: 13px;
   font-weight: 800;
 }
-.overlap-price span {
+.overlapPrice span {
   font-size: 10px;
   font-weight: 500;
   color: var(--ink-mute);
 }
-.overlap-use {
+.overlapUse {
   font-size: 10px;
   color: var(--ink-mute);
   font-family: var(--mono);
 }
-.overlap-vs {
+.overlapVs {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -651,7 +651,7 @@
   letter-spacing: 0.1em;
   padding: 0 4px;
 }
-.overlap-rec {
+.overlapRec {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -662,17 +662,17 @@
   border-radius: 8px;
   font-size: 12px;
 }
-.overlap-rec b {
+.overlapRec b {
   font-weight: 800;
 }
 
 /* Action list */
-.action-list {
+.actionList {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
-.action-row {
+.actionRow {
   display: grid;
   grid-template-columns: 36px 1fr auto auto;
   align-items: center;
@@ -682,12 +682,12 @@
   border: 1px solid var(--line);
   border-radius: 10px;
 }
-.action-row.recommended {
+.actionRow.recommended {
   background: #fff5f3;
   border-color: var(--red);
   box-shadow: 0 2px 8px rgba(196, 74, 61, 0.12);
 }
-.action-icon {
+.actionIcon {
   width: 36px;
   height: 36px;
   border-radius: 9px;
@@ -696,7 +696,7 @@
   font-size: 16px;
   font-weight: 800;
 }
-.action-ttl {
+.actionTtl {
   font-size: 13px;
   font-weight: 700;
   letter-spacing: -0.01em;
@@ -704,7 +704,7 @@
   align-items: center;
   gap: 6px;
 }
-.rec-tag {
+.recTag {
   font-size: 9px;
   font-weight: 800;
   background: var(--red);
@@ -713,29 +713,29 @@
   border-radius: 3px;
   letter-spacing: 0.04em;
 }
-.action-sub {
+.actionSub {
   font-size: 11px;
   color: var(--ink-mute);
   margin-top: 2px;
 }
-.action-savings {
+.actionSavings {
   text-align: right;
 }
-.action-amt {
+.actionAmt {
   font-family: var(--mono);
   font-size: 13px;
   font-weight: 800;
   color: var(--ink);
   letter-spacing: -0.02em;
 }
-.action-amt-sub {
+.actionAmtSub {
   font-size: 10px;
   color: var(--ink-mute);
   margin-top: 1px;
 }
 
 @media (max-width: 1100px) {
-  .subs-hero {
+  .subsHero {
     grid-template-columns: 1fr;
   }
   .next7 {

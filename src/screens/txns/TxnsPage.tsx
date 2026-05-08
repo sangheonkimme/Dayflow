@@ -7,6 +7,7 @@ import { ReceiptUploadModal } from "@/screens/ledger/ReceiptUploadModal";
 import { useTransactions } from "@/data/transactions";
 import { inferIcon } from "@/data/transactions";
 import type { Txn } from "@/types";
+import styles from "./TxnsPage.module.css";
 
 // ============================================================
 // TRANSACTIONS PAGE — 거래내역 detail
@@ -114,7 +115,7 @@ function TxnsPage({ onAdd, onEditTxn }) {
       </div>
 
       {/* Big search bar */}
-      <div className="txn-search-bar">
+      <div className={styles.txnSearchBar}>
         <Icon name="search" size={18} />
         <input
           placeholder="가게 이름, 메모, 카테고리, 결제수단 검색…"
@@ -122,26 +123,26 @@ function TxnsPage({ onAdd, onEditTxn }) {
           onChange={(e) => setQ(e.target.value)}
         />
         {q && (
-          <button className="txn-clear" onClick={() => setQ("")}>
+          <button className={styles.txnClear} onClick={() => setQ("")}>
             <Icon name="x" size={14} />
           </button>
         )}
-        <div className="txn-search-stats">
+        <div className={styles.txnSearchStats}>
           <span className="row" style={{ gap: 6 }}>
-            <span className="ts-dot in" />
+            <span className={`${styles.tsDot} ${styles.in}`} />
             수입 <b>{fmt(sumIn)}</b>
           </span>
           <span className="row" style={{ gap: 6 }}>
-            <span className="ts-dot out" />
+            <span className={`${styles.tsDot} ${styles.out}`} />
             지출 <b>-{fmt(sumOut).replace("₩", "₩")}</b>
           </span>
         </div>
       </div>
 
       {/* Filter chips */}
-      <div className="txn-filters">
-        <div className="txn-filter-group">
-          <span className="txn-filter-label">유형</span>
+      <div className={styles.txnFilters}>
+        <div className={styles.txnFilterGroup}>
+          <span className={styles.txnFilterLabel}>유형</span>
           {[
             ["all", "전체"],
             ["in", "수입"],
@@ -156,8 +157,8 @@ function TxnsPage({ onAdd, onEditTxn }) {
             </span>
           ))}
         </div>
-        <div className="txn-filter-group">
-          <span className="txn-filter-label">기간</span>
+        <div className={styles.txnFilterGroup}>
+          <span className={styles.txnFilterLabel}>기간</span>
           {[
             ["week", "이번 주"],
             ["month", "이번 달"],
@@ -173,8 +174,8 @@ function TxnsPage({ onAdd, onEditTxn }) {
             </span>
           ))}
         </div>
-        <div className="txn-filter-group">
-          <span className="txn-filter-label">카테고리</span>
+        <div className={styles.txnFilterGroup}>
+          <span className={styles.txnFilterLabel}>카테고리</span>
           <span
             className={"cat-chip" + (cat === "all" ? " on" : "")}
             onClick={() => setCat("all")}
@@ -196,8 +197,8 @@ function TxnsPage({ onAdd, onEditTxn }) {
             </span>
           ))}
         </div>
-        <div className="txn-filter-group">
-          <span className="txn-filter-label">결제</span>
+        <div className={styles.txnFilterGroup}>
+          <span className={styles.txnFilterLabel}>결제</span>
           <span
             className={"cat-chip" + (pay === "all" ? " on" : "")}
             onClick={() => setPay("all")}
@@ -217,15 +218,15 @@ function TxnsPage({ onAdd, onEditTxn }) {
       </div>
 
       {/* Two-pane layout */}
-      <div className="txn-detail-layout">
+      <div className={styles.txnDetailLayout}>
         {/* List */}
-        <div className="txn-list-card">
-          <div className="txn-list-head">
-            <div className="thl-col date">날짜 · 시간</div>
-            <div className="thl-col label">내역</div>
-            <div className="thl-col cat">카테고리</div>
-            <div className="thl-col pay">결제</div>
-            <div className="thl-col amt">금액</div>
+        <div className={styles.txnListCard}>
+          <div className={styles.txnListHead}>
+            <div className={styles.thlCol}>날짜 · 시간</div>
+            <div className={`${styles.thlCol} ${styles.label}`}>내역</div>
+            <div className={styles.thlCol}>카테고리</div>
+            <div className={`${styles.thlCol} ${styles.pay}`}>결제</div>
+            <div className={`${styles.thlCol} ${styles.amt}`}>금액</div>
           </div>
 
           {grouped.length === 0 && (
@@ -245,15 +246,15 @@ function TxnsPage({ onAdd, onEditTxn }) {
               .filter((t) => t.type === "out")
               .reduce((a, t) => a + Math.abs(t.amount), 0);
             return (
-              <div key={date} className="txn-day">
-                <div className="txn-day-head">
-                  <div className="txn-day-label">{dateLabel(date)}</div>
-                  <div className="txn-day-sums">
+              <div key={date} className={styles.txnDay}>
+                <div className={styles.txnDayHead}>
+                  <div className={styles.txnDayLabel}>{dateLabel(date)}</div>
+                  <div className={styles.txnDaySums}>
                     {dayIn > 0 && (
-                      <span className="td-in">+₩{dayIn.toLocaleString()}</span>
+                      <span className={styles.tdIn}>+₩{dayIn.toLocaleString()}</span>
                     )}
                     {dayOut > 0 && (
-                      <span className="td-out">
+                      <span className={styles.tdOut}>
                         -₩{dayOut.toLocaleString()}
                       </span>
                     )}
@@ -262,24 +263,28 @@ function TxnsPage({ onAdd, onEditTxn }) {
                 {items.map((t) => (
                   <div
                     key={t.id}
-                    className={"txn-row" + (activeId === t.id ? " on" : "")}
+                    className={
+                      activeId === t.id
+                        ? `${styles.txnRow} ${styles.on}`
+                        : styles.txnRow
+                    }
                     onClick={() => setActiveId(t.id)}
                   >
-                    <div className="thl-col date">
+                    <div className={styles.thlCol}>
                       <div className="tr-time">{t.time}</div>
                     </div>
-                    <div className="thl-col label">
-                      <div className="tr-ico">
+                    <div className={`${styles.thlCol} ${styles.label}`}>
+                      <div className={styles.trIco}>
                         <Icon name={inferIcon(t)} size={14} />
                       </div>
-                      <div className="tr-text">
-                        <div className="tr-label">{t.label}</div>
-                        <div className="tr-note">{t.note}</div>
+                      <div className={styles.trText}>
+                        <div className={styles.trLabel}>{t.label}</div>
+                        <div className={styles.trNote}>{t.note}</div>
                       </div>
                     </div>
-                    <div className="thl-col cat">
+                    <div className={styles.thlCol}>
                       <span
-                        className="tr-cat-tag"
+                        className={styles.trCatTag}
                         style={{
                           background:
                             (t.cat && (TRANSACTION_CATEGORIES as Record<string, string>)[t.cat]) ||
@@ -289,8 +294,12 @@ function TxnsPage({ onAdd, onEditTxn }) {
                         {t.cat}
                       </span>
                     </div>
-                    <div className="thl-col pay">{t.pay}</div>
-                    <div className={"thl-col amt " + t.type}>
+                    <div className={`${styles.thlCol} ${styles.pay}`}>{t.pay}</div>
+                    <div
+                      className={`${styles.thlCol} ${styles.amt} ${
+                        t.type === "in" ? styles.in : styles.out
+                      }`}
+                    >
                       {fmt(t.amount)}
                     </div>
                   </div>
@@ -299,26 +308,30 @@ function TxnsPage({ onAdd, onEditTxn }) {
             );
           })}
 
-          <div className="txn-list-foot">
+          <div className={styles.txnListFoot}>
             <span>{filtered.length}건 표시 · 더 불러오려면 스크롤</span>
             <button className="timer-btn">더 보기</button>
           </div>
         </div>
 
         {/* Detail panel */}
-        <aside className="txn-detail">
+        <aside className={styles.txnDetail}>
           {!active ? (
             <div className="memo-empty large">
               <div className="hand">거래를 선택하세요 →</div>
             </div>
           ) : (
             <>
-              <div className="txn-detail-head">
-                <div className={"txn-detail-amt " + active.type}>
+              <div className={styles.txnDetailHead}>
+                <div
+                  className={`${styles.txnDetailAmt} ${
+                    active.type === "in" ? styles.in : styles.out
+                  }`}
+                >
                   {fmt(active.amount)}
                 </div>
-                <div className="txn-detail-name">{active.label}</div>
-                <div className="txn-detail-note">{active.note}</div>
+                <div className={styles.txnDetailName}>{active.label}</div>
+                <div className={styles.txnDetailNote}>{active.note}</div>
                 <span
                   className="folder-chip"
                   style={{
@@ -331,7 +344,7 @@ function TxnsPage({ onAdd, onEditTxn }) {
                 </span>
               </div>
 
-              <ul className="txn-detail-rows">
+              <ul className={styles.txnDetailRows}>
                 <li>
                   <span>일시</span>
                   <b>
@@ -356,7 +369,7 @@ function TxnsPage({ onAdd, onEditTxn }) {
                 </li>
               </ul>
 
-              <div className="txn-memo-block">
+              <div className={styles.txnMemoBlock}>
                 <div className="qs-label">메모</div>
                 <textarea
                   className="memo-body"
@@ -374,28 +387,28 @@ function TxnsPage({ onAdd, onEditTxn }) {
                 />
               </div>
 
-              <div className="txn-receipt">
-                <div className="receipt-tape" />
-                <div className="receipt-h">RECEIPT</div>
-                <div className="receipt-row">
+              <div className={styles.txnReceipt}>
+                <div className={styles.receiptTape} />
+                <div className={styles.receiptH}>RECEIPT</div>
+                <div className={styles.receiptRow}>
                   <span>{active.label}</span>
                   <b>{fmt(active.amount).replace("+", "")}</b>
                 </div>
-                <div className="receipt-row small">
+                <div className={`${styles.receiptRow} ${styles.small}`}>
                   <span>{active.note}</span>
                 </div>
-                <div className="receipt-divider">
+                <div className={styles.receiptDivider}>
                   - - - - - - - - - - - - - - - - - - - -
                 </div>
-                <div className="receipt-row">
+                <div className={styles.receiptRow}>
                   <span>합계</span>
                   <b>{fmt(active.amount).replace("+", "")}</b>
                 </div>
-                <div className="receipt-row small">
+                <div className={`${styles.receiptRow} ${styles.small}`}>
                   <span>{active.pay}</span>
                   <span>{active.time}</span>
                 </div>
-                <div className="receipt-foot">
+                <div className={styles.receiptFoot}>
                   <button
                     className="receipt-attach-btn"
                     onClick={() => setReceiptOpen(true)}
@@ -405,7 +418,7 @@ function TxnsPage({ onAdd, onEditTxn }) {
                 </div>
               </div>
 
-              <div className="txn-detail-actions">
+              <div className={styles.txnDetailActions}>
                 <button
                   className="timer-btn"
                   onClick={() =>
