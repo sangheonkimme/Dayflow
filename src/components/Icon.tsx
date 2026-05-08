@@ -1,4 +1,4 @@
-// (no hooks needed)
+import type { ReactElement } from "react";
 
 // ============================================================
 // ICONS — minimal stroked set
@@ -22,7 +22,7 @@ const Icon = ({ name, size = 18 }: IconProps) => {
     strokeLinecap: "round" as const,
     strokeLinejoin: "round" as const,
   };
-  const paths: Record<string, JSX.Element> = {
+  const paths: Record<string, ReactElement> = {
     home: (
       <>
         <path d="M3 11l9-8 9 8" />

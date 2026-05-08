@@ -1,12 +1,12 @@
 import { lazy, Suspense, useState, useEffect } from "react";
 import { Sidebar } from "@/components/Shell";
-import { HomePage } from "@/pages/home/HomePage";
-import { LedgerPage } from "@/pages/ledger/LedgerPage";
-import { CalendarPage } from "@/pages/calendar/CalendarPage";
-import { SettingsPage } from "@/pages/settings/SettingsPage";
-import { TxnsPage } from "@/pages/txns/TxnsPage";
-import { TxnModal } from "@/pages/ledger/TxnModal";
-import { EventModal } from "@/pages/calendar/EventModal";
+import { HomePage } from "@/screens/home/HomePage";
+import { LedgerPage } from "@/screens/ledger/LedgerPage";
+import { CalendarPage } from "@/screens/calendar/CalendarPage";
+import { SettingsPage } from "@/screens/settings/SettingsPage";
+import { TxnsPage } from "@/screens/txns/TxnsPage";
+import { TxnModal } from "@/screens/ledger/TxnModal";
+import { EventModal } from "@/screens/calendar/EventModal";
 import {
   TweaksPanel,
   TweakSection,
@@ -22,80 +22,80 @@ import { useDataModeStore } from "@/store/dataMode";
 import { useModalStore } from "@/store/modal";
 import { DemoBanner } from "@/components/DemoBanner";
 import { configureDataSource, getReadyPromise } from "@/data/source";
-import { queryClient } from "@/app/queryClient";
+import { queryClient } from "@/shared/query/queryClient";
 import { useSpaPath, spaLinkClick } from "@/lib/spa-nav";
 import type { TxnDraft, AccentColor, AuthPreviewView } from "@/types";
 
 const MemoPage = lazy(() =>
-  import("@/pages/memo/MemoPage").then((m) => ({ default: m.MemoPage })),
+  import("@/screens/memo/MemoPage").then((m) => ({ default: m.MemoPage })),
 );
 const SubsPage = lazy(() =>
-  import("@/pages/subs/SubsPage").then((m) => ({ default: m.SubsPage })),
+  import("@/screens/subs/SubsPage").then((m) => ({ default: m.SubsPage })),
 );
 const SalaryCalcPage = lazy(() =>
-  import("@/pages/salary/SalaryCalcPage").then((m) => ({
+  import("@/screens/salary/SalaryCalcPage").then((m) => ({
     default: m.SalaryCalcPage,
   })),
 );
 const LoanCalcPage = lazy(() =>
-  import("@/pages/loan/LoanSearch").then((m) => ({
+  import("@/screens/loan/LoanSearch").then((m) => ({
     default: m.LoanCalcPage,
   })),
 );
 const SearchOverlay = lazy(() =>
-  import("@/pages/loan/LoanSearch").then((m) => ({
+  import("@/screens/loan/LoanSearch").then((m) => ({
     default: m.SearchOverlay,
   })),
 );
 const CropCanvasPage = lazy(() =>
-  import("@/pages/tools/ImageTools").then((m) => ({
+  import("@/screens/tools/ImageTools").then((m) => ({
     default: m.CropCanvasPage,
   })),
 );
 const PdfCanvasPage = lazy(() =>
-  import("@/pages/tools/ImageTools").then((m) => ({
+  import("@/screens/tools/ImageTools").then((m) => ({
     default: m.PdfCanvasPage,
   })),
 );
 const MobileApp = lazy(() =>
-  import("@/pages/mobile/MobileApp").then((m) => ({ default: m.MobileApp })),
+  import("@/screens/mobile/MobileApp").then((m) => ({ default: m.MobileApp })),
 );
 const LoginScreen = lazy(() =>
-  import("@/pages/auth/MobileLogin").then((m) => ({
+  import("@/screens/auth/MobileLogin").then((m) => ({
     default: m.LoginScreen,
   })),
 );
 const SignupScreen = lazy(() =>
-  import("@/pages/auth/MobileSignup").then((m) => ({
+  import("@/screens/auth/MobileSignup").then((m) => ({
     default: m.SignupScreen,
   })),
 );
 const OnboardingScreen = lazy(() =>
-  import("@/pages/auth/MobileOnboarding").then((m) => ({
+  import("@/screens/auth/MobileOnboarding").then((m) => ({
     default: m.OnboardingScreen,
   })),
 );
 const ForgotScreen = lazy(() =>
-  import("@/pages/auth/MobileForgot").then((m) => ({
+  import("@/screens/auth/MobileForgot").then((m) => ({
     default: m.ForgotScreen,
   })),
 );
 const PCLogin = lazy(() =>
-  import("@/pages/auth/PcLogin").then((m) => ({ default: m.PCLogin })),
+  import("@/screens/auth/PcLogin").then((m) => ({ default: m.PCLogin })),
 );
 const PCSignup = lazy(() =>
-  import("@/pages/auth/PcSignup").then((m) => ({ default: m.PCSignup })),
+  import("@/screens/auth/PcSignup").then((m) => ({ default: m.PCSignup })),
 );
 const PCForgot = lazy(() =>
-  import("@/pages/auth/PcForgot").then((m) => ({ default: m.PCForgot })),
+  import("@/screens/auth/PcForgot").then((m) => ({ default: m.PCForgot })),
 );
 const PCOnboarding = lazy(() =>
-  import("@/pages/auth/PcOnboarding").then((m) => ({
+  import("@/screens/auth/PcOnboarding").then((m) => ({
     default: m.PCOnboarding,
   })),
 );
 const LandingPage = lazy(() =>
-  import("@/pages/landing/LandingPage").then((m) => ({
+  import("@/screens/landing/LandingPage").then((m) => ({
     default: m.LandingPage,
   })),
 );
