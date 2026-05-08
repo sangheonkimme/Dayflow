@@ -1,0 +1,87 @@
+/* 공개 도구 셸 — Phase 4b 파일럿 CSS Module.
+   기존 .public-tool-* 글로벌이 여기로 이전. 클래스명이 빌드 시 해시되어
+   글로벌 leak 위험 0. 토큰 (var(--bg) 등) 은 그대로 참조. */
+
+.shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--ink);
+}
+
+.bar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 12px 24px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(247, 241, 227, 0.92);
+  backdrop-filter: blur(8px);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: inherit;
+  font-weight: 700;
+}
+
+.mark {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--ink);
+  color: var(--yellow);
+  display: grid;
+  place-items: center;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.name {
+  font-size: 14px;
+  letter-spacing: -0.01em;
+}
+
+.nav {
+  display: flex;
+  gap: 12px;
+  margin-left: 8px;
+}
+.nav a {
+  text-decoration: none;
+  color: var(--ink-soft);
+  font-size: 13px;
+  padding: 6px 10px;
+  border-radius: 8px;
+}
+.nav a.on,
+.nav a:hover {
+  background: var(--card);
+  color: var(--ink);
+}
+
+.cta {
+  margin-left: auto;
+  text-decoration: none;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: var(--yellow);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 0;
+}
