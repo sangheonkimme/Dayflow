@@ -154,20 +154,20 @@ function Topbar({ dark, onToggleDark, onSearch }: TopbarProps) {
   const today = new Date();
   const weekday = DOW[today.getDay()];
   return (
-    <div className="topbar">
+    <div className={s.topbar}>
       <div>
         <h1>
           좋은 아침이에요, 나비{" "}
           <span className="hand">— let's get it done</span>
         </h1>
-        <div className="topbar-sub">
+        <div className={s.topbarSub}>
           {today.getFullYear()}년 {today.getMonth() + 1}월 {today.getDate()}일 (
           {weekday}) · 오늘은 4개의 일정과 1개의 포모도로 세션이 예약되어
           있어요.
         </div>
       </div>
-      <div className="topbar-actions">
-        <div className="search search-trigger" onClick={onSearch}>
+      <div className={s.topbarActions}>
+        <div className={s.search} onClick={onSearch}>
           <Icon name="search" size={14} />
           <input placeholder="검색하기..." readOnly />
           <kbd>⌘K</kbd>
