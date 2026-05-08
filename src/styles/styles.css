@@ -617,7 +617,8 @@ body {
   flex-direction: column;
 }
 .sticky:hover {
-  transform: translateY(-3px) rotate(var(--rot, 0deg)) scale(1.02);
+  /* transform: rotate를 부모에 적용하면 Chromium에서 한글 IME가 깨지므로 회전 제거 */
+  transform: translateY(-3px) scale(1.02);
   box-shadow: var(--shadow-lift);
   z-index: 5;
 }
@@ -691,6 +692,20 @@ body {
 }
 .sticky-title-emoji {
   font-size: 18px;
+}
+.sticky-title-input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  outline: none;
+  font: inherit;
+  color: inherit;
+  padding: 0;
+  letter-spacing: inherit;
+}
+.sticky-title-input::placeholder {
+  color: rgba(0, 0, 0, 0.3);
 }
 .sticky textarea::placeholder {
   color: rgba(0, 0, 0, 0.3);

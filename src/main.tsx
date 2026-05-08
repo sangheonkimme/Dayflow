@@ -14,6 +14,7 @@ import "@/styles/flows.css";
 import "@/styles/flows-extra.css";
 import "@/styles/mobile.css";
 import "@/styles/mobile-app.css";
+import "@/styles/landing.css";
 
 const rootElement = document.getElementById("root");
 if (!rootElement) throw new Error("#root element not found");

@@ -31,9 +31,11 @@ export function StickyNotes() {
     });
   };
 
-  const updateNote = (id, text) => {
+  const patchNote = (id, patch) => {
     const n = notes.find((x) => x.id === id);
-    if (n && n.text !== text) upsert({ ...n, text });
+    if (!n) return;
+    const hasChange = Object.entries(patch).some(([k, v]) => n[k] !== v);
+    if (hasChange) upsert({ ...n, ...patch });
   };
 
   const removeNote = (id) => {
@@ -82,7 +84,7 @@ export function StickyNotes() {
             key={n.id}
             note={n}
             onRemove={removeNote}
-            onCommit={updateNote}
+            onPatch={patchNote}
           />
         ))}
         {notes.length < 3 && (
@@ -107,10 +109,14 @@ export function StickyNotes() {
 }
 
 // 입력 중에는 로컬 draft만 갱신하고 blur 시점에 1회 commit. (IME 안전)
-function StickyCard({ note, onRemove, onCommit }) {
-  const { value, setDraft, commit } = useDraftField<string>({
+function StickyCard({ note, onRemove, onPatch }) {
+  const titleField = useDraftField<string>({
+    value: note.title ?? "",
+    onCommit: (next) => onPatch(note.id, { title: next }),
+  });
+  const textField = useDraftField<string>({
     value: note.text,
-    onCommit: (next) => onCommit(note.id, next),
+    onCommit: (next) => onPatch(note.id, { text: next }),
   });
 
   return (
@@ -120,12 +126,18 @@ function StickyCard({ note, onRemove, onCommit }) {
       </button>
       <div className="sticky-title">
         <span className="sticky-title-emoji">{note.emoji}</span>
-        {note.title}
+        <input
+          className="sticky-title-input"
+          value={titleField.value}
+          onChange={(e) => titleField.setDraft(e.target.value)}
+          onBlur={titleField.commit}
+          placeholder="제목"
+        />
       </div>
       <textarea
-        value={value}
-        onChange={(e) => setDraft(e.target.value)}
-        onBlur={commit}
+        value={textField.value}
+        onChange={(e) => textField.setDraft(e.target.value)}
+        onBlur={textField.commit}
         placeholder="메모를 입력하세요..."
       />
       <div className="sticky-foot">

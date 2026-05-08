@@ -80,10 +80,18 @@ export function EventModal({ onClose, editing, onDelete, onSave }) {
         />
       )}
       {mode === "quick" && (
-        <EventQuick onClose={onClose} onDetailed={() => setMode("detailed")} />
+        <EventQuick
+          onClose={onClose}
+          onSave={onSave}
+          onDetailed={() => setMode("detailed")}
+        />
       )}
       {mode === "detailed" && (
-        <EventDetailed onClose={onClose} onBack={() => setMode("quick")} />
+        <EventDetailed
+          onClose={onClose}
+          onSave={onSave}
+          onBack={() => setMode("quick")}
+        />
       )}
     </Modal>
   );
@@ -288,9 +296,24 @@ function EventEdit({ onClose, editing, onDelete, onSave }) {
   );
 }
 
-function EventQuick({ onClose, onDetailed }) {
+function EventQuick({ onClose, onSave, onDetailed }) {
   const [val, setVal] = useState("");
   const parsed = val.trim() ? parseEvent(val) : null;
+
+  const save = () => {
+    if (!parsed) return;
+    const date = parsed.date as Date;
+    const yyyyMmDd = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+    const startTime = `${String(parsed.hour).padStart(2, "0")}:${String(parsed.min).padStart(2, "0")}`;
+    onSave &&
+      onSave({
+        title: parsed.title,
+        date: yyyyMmDd,
+        startTime,
+        cat: parsed.cat,
+      });
+    onClose();
+  };
 
   const examples = [
     { label: "내일 오후 3시 팀 스탠드업", desc: "내일 일정" },
@@ -323,7 +346,7 @@ function EventQuick({ onClose, onDetailed }) {
           onChange={(e) => setVal(e.target.value)}
           placeholder="예: 내일 오후 3시 팀 미팅"
           autoFocus
-          onKeyDown={(e) => e.key === "Enter" && val.trim() && onClose()}
+          onKeyDown={(e) => e.key === "Enter" && val.trim() && save()}
         />
 
         {parsed && (
@@ -377,7 +400,7 @@ function EventQuick({ onClose, onDetailed }) {
         </button>
         <button
           className="timer-btn primary"
-          onClick={onClose}
+          onClick={save}
           disabled={!val.trim()}
         >
           저장 (Enter)
@@ -387,7 +410,7 @@ function EventQuick({ onClose, onDetailed }) {
   );
 }
 
-function EventDetailed({ onClose, onBack }) {
+function EventDetailed({ onClose, onSave, onBack }) {
   const [step, setStep] = useState(0);
   const [title, setTitle] = useState("");
   const [dateIdx, setDateIdx] = useState(1);
@@ -407,6 +430,35 @@ function EventDetailed({ onClose, onBack }) {
     };
   });
   const durations = ["30분", "1시간", "1.5시간", "2시간"];
+
+  const save = () => {
+    if (!title.trim()) return;
+    const sel = new Date(today);
+    sel.setDate(sel.getDate() + dateIdx);
+    const yyyyMmDd = `${sel.getFullYear()}-${String(sel.getMonth() + 1).padStart(2, "0")}-${String(sel.getDate()).padStart(2, "0")}`;
+    const startTime = `${String(startHour).padStart(2, "0")}:00`;
+    const durMin =
+      duration === "30분"
+        ? 30
+        : duration === "1시간"
+          ? 60
+          : duration === "1.5시간"
+            ? 90
+            : 120;
+    const endHour = Math.min(23, startHour + Math.floor((0 + durMin) / 60));
+    const endMin = durMin % 60;
+    const endTime = `${String(endHour).padStart(2, "0")}:${String(endMin).padStart(2, "0")}`;
+    onSave &&
+      onSave({
+        title,
+        date: yyyyMmDd,
+        startTime,
+        endTime,
+        cat: cat || "개인",
+        color,
+      });
+    onClose();
+  };
 
   const next = () => {
     if (step === 0 && !title.trim()) return;
@@ -614,7 +666,7 @@ function EventDetailed({ onClose, onBack }) {
             다음 →
           </button>
         ) : (
-          <button className="timer-btn primary" onClick={onClose}>
+          <button className="timer-btn primary" onClick={save}>
             저장하기
           </button>
         )}

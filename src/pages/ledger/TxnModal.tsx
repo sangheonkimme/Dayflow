@@ -44,10 +44,18 @@ export function TxnModal({ onClose, editing, onDelete, onSave }) {
         />
       )}
       {mode === "quick" && (
-        <TxnQuick onClose={onClose} onDetailed={() => setMode("detailed")} />
+        <TxnQuick
+          onClose={onClose}
+          onSave={onSave}
+          onDetailed={() => setMode("detailed")}
+        />
       )}
       {mode === "detailed" && (
-        <TxnDetailed onClose={onClose} onBack={() => setMode("quick")} />
+        <TxnDetailed
+          onClose={onClose}
+          onSave={onSave}
+          onBack={() => setMode("quick")}
+        />
       )}
     </Modal>
   );
@@ -222,10 +230,24 @@ function TxnEdit({ onClose, editing, onDelete, onSave }) {
   );
 }
 
-function TxnQuick({ onClose, onDetailed }) {
+function TxnQuick({ onClose, onSave, onDetailed }) {
   const [type, setType] = useState("out");
   const [val, setVal] = useState("");
   const parsed = parseTxn(val, type);
+
+  const today = new Date().toISOString().slice(0, 10);
+  const save = () => {
+    if (!val.trim()) return;
+    onSave &&
+      onSave({
+        type,
+        amount: type === "out" ? -parsed.amount : parsed.amount,
+        cat: parsed.cat,
+        label: parsed.memo === "—" ? parsed.cat : parsed.memo,
+        date: today,
+      });
+    onClose();
+  };
   const recent =
     type === "in"
       ? [
@@ -282,7 +304,7 @@ function TxnQuick({ onClose, onDetailed }) {
             type === "in" ? "예: 월급 3200000" : "예: 점심 8000 식비"
           }
           autoFocus
-          onKeyDown={(e) => e.key === "Enter" && val.trim() && onClose()}
+          onKeyDown={(e) => e.key === "Enter" && val.trim() && save()}
         />
 
         {val.trim() && (
@@ -328,7 +350,7 @@ function TxnQuick({ onClose, onDetailed }) {
         </button>
         <button
           className="timer-btn primary"
-          onClick={onClose}
+          onClick={save}
           disabled={!val.trim()}
         >
           저장 (Enter)
@@ -338,12 +360,26 @@ function TxnQuick({ onClose, onDetailed }) {
   );
 }
 
-function TxnDetailed({ onClose, onBack }) {
+function TxnDetailed({ onClose, onSave, onBack }) {
   const [step, setStep] = useState(0);
   const [type, setType] = useState("out");
   const [amt, setAmt] = useState("0");
   const [cat, setCat] = useState("");
   const [memo, setMemo] = useState("");
+
+  const save = () => {
+    const numeric = parseInt(amt, 10) || 0;
+    if (numeric === 0 || !cat) return;
+    onSave &&
+      onSave({
+        type,
+        amount: type === "out" ? -numeric : numeric,
+        cat,
+        label: memo || cat,
+        date: new Date().toISOString().slice(0, 10),
+      });
+    onClose();
+  };
   const cats =
     type === "in"
       ? ["월급", "보너스", "부수입", "환급", "기타"]
@@ -519,7 +555,7 @@ function TxnDetailed({ onClose, onBack }) {
             다음 →
           </button>
         ) : (
-          <button className="timer-btn primary" onClick={onClose}>
+          <button className="timer-btn primary" onClick={save}>
             저장하기
           </button>
         )}
