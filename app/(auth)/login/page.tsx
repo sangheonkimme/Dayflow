@@ -1,10 +1,12 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useMediaQuery } from "@/lib/useMediaQuery";
 import { PCLogin } from "@/screens/auth/PcLogin";
 import { LoginScreen } from "@/screens/auth/MobileLogin";
 import { usePreferences } from "@/data/preferences";
+import { useAuth } from "@/data/auth";
 
 type AuthView = "login" | "signup" | "onboarding" | "forgot";
 const ROUTE: Record<AuthView, string> = {
@@ -16,9 +18,18 @@ const ROUTE: Record<AuthView, string> = {
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const isMobile = useMediaQuery("(max-width: 768px)");
   const [tweaks] = usePreferences();
   const dark = !!tweaks.dark;
+  const auth = useAuth();
+
+  useEffect(() => {
+    if (auth.status === "authed") {
+      const next = searchParams.get("next") || "/dashboard";
+      router.replace(next);
+    }
+  }, [auth.status, router, searchParams]);
 
   const onSwitch = (v: AuthView) => router.push(ROUTE[v]);
 
