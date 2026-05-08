@@ -50,11 +50,11 @@
 
 목표: Next 옮기기 전에 이식 친화적 형태로 만들어 두기. **Next 부트스트랩 PR 전에 모두 머지.**
 
-- [ ] `App.tsx` 의 `renderPage()` switch 를 라우트 단위로 모듈화. `pages.tsx` 의 다중 export(`LedgerPage`, `CalendarPage`, `SettingsPage`) → 1파일 1컴포넌트로 분리.
-- [ ] hash routing(`#/tools/crop` 등) 전부 정리. 잠시 `react-router-dom` 끼워서 path 기반으로 통일 → Next 라우팅에 그대로 매핑.
-- [ ] **글로벌 CSS 셀렉터 전수 감사**. `.nav`, `.card`, `.btn`, `.section` 처럼 흔한 이름 namespacing. (실제 사고: 사이드바 `.nav` 가 랜딩 `.nav` 까지 column flex 강제.)
-- [ ] `@ts-nocheck` 파일 목록화 + 타입 회복 우선순위 매기기. (`LandingPage.tsx` 가 가장 위험.)
-- [ ] `WLD (4)/` 시안은 그대로 무시 (tsconfig/eslint exclude 유지).
+- [x] `App.tsx` 의 `renderPage()` switch 를 라우트 단위로 모듈화. → 데스크탑 페이지는 이미 1파일 1컴포넌트(`LedgerPage`, `CalendarPage`, `MemoPage`, `SubsPage`, `TxnsPage`, `SettingsPage`, `SalaryCalcPage`, `LoanCalcPage`, `CropCanvasPage`, `PdfCanvasPage`)로 분리되어 있었음. 인라인이던 home 분기를 `pages/home/HomePage.tsx` 로 추출하여 모든 라우트가 동일한 패턴(컴포넌트 + props 인터페이스)을 따르도록 정리. App.tsx 라인수 약 100줄 감소.
+- [x] hash routing(`#/tools/crop` 등) 전부 정리. → `react-router-dom` 도입 없이 `src/lib/spa-nav.ts` (32줄, History API + 커스텀 이벤트) 로 자체 처리. 공개 도구는 `/tools/crop`, `/tools/pdf` 로 path 기반. 랜딩 내부 링크(`#features`, `#demo` 등)는 동일 페이지 anchor 라 그대로 유지. **주의**: 프로덕션 호스팅은 SPA fallback(rewrite all → index.html) 필요 — Phase 1 Next.js 도입과 함께 자연 해소되므로 Vite 단계에서는 dev 동작만 보장.
+- [x] **글로벌 CSS 셀렉터 전수 감사**. → `docs/css-global-audit.md`. leak 후보 5건(`.nav`, `.brand-mark`, `.brand-mark::after`, `.brand-name`, `.swatch`) 모두 `.app`/`.sidebar` 스코프로 격리. 흔한 이름(`.card`, `.btn` 등)은 Phase 4에서 CSS Modules 로 자연 해소.
+- [x] `@ts-nocheck` 파일 목록화 + 타입 회복 우선순위 매기기. → `docs/ts-nocheck-inventory.md` (27개, P0~P4 분류)
+- [x] `WLD (4)/` 시안은 그대로 무시. → `tsconfig.json` exclude + `.eslintrc.cjs` ignorePatterns 양쪽 반영 확인
 
 ### Phase 1 — Next.js 셸 부트스트랩
 

@@ -181,7 +181,9 @@ body {
   padding: 4px 6px 14px;
   border-bottom: 1px dashed var(--line-strong);
 }
-.brand-mark {
+/* 주의: .brand-mark / .brand-name 는 랜딩(.landing-root)도 같은 클래스명을 쓰므로
+   반드시 .app 으로 스코프해 글로벌 leak 차단. */
+.app .brand-mark {
   width: 38px;
   height: 38px;
   border-radius: 10px;
@@ -196,7 +198,7 @@ body {
   box-shadow: var(--shadow-sm);
   position: relative;
 }
-.brand-mark::after {
+.app .brand-mark::after {
   content: "";
   position: absolute;
   inset: auto -6px -4px auto;
@@ -206,7 +208,7 @@ body {
   border-radius: 50%;
   border: 2px solid var(--ink);
 }
-.brand-name {
+.app .brand-name {
   font-family: var(--hand);
   font-size: 26px;
   font-weight: 700;
@@ -638,7 +640,8 @@ body {
   border-radius: 10px;
   border: 1px solid var(--line);
 }
-.swatch {
+/* .swatch — 색상 피커. 랜딩에도 같은 이름 후보가 있어 .app 스코프. */
+.app .swatch {
   width: 22px;
   height: 22px;
   border-radius: 6px;
@@ -647,10 +650,10 @@ body {
   transition: transform 0.12s;
   position: relative;
 }
-.swatch:hover {
+.app .swatch:hover {
   transform: scale(1.1);
 }
-.swatch.active {
+.app .swatch.active {
   box-shadow: 0 0 0 2px var(--ink);
 }
 
