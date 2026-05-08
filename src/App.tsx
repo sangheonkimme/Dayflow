@@ -23,6 +23,7 @@ import { useModalStore } from "@/store/modal";
 import { DemoBanner } from "@/components/DemoBanner";
 import { configureDataSource, getReadyPromise } from "@/data/source";
 import { queryClient } from "@/app/queryClient";
+import { useSpaPath, spaLinkClick } from "@/lib/spa-nav";
 import type { TxnDraft, AccentColor, AuthPreviewView } from "@/types";
 
 const MemoPage = lazy(() =>
@@ -106,15 +107,15 @@ const PageFallback = () => (
 );
 
 // ─────────────────────────────────────────────
-// Public hash routes (auth gate 우회) — /#/tools/crop, /#/tools/pdf
+// Public path routes (auth gate 우회) — /tools/crop, /tools/pdf
 // 로그인 없이 외부에서 직접 접근 가능한 공개 도구 페이지.
+// History API 기반 — 프로덕션 호스팅은 SPA fallback(rewrite to index.html) 필요.
+// Next.js 마이그레이션 시 app/tools/<slug>/page.tsx 로 1:1 매핑.
 // ─────────────────────────────────────────────
 type PublicRoute = "crop" | "pdf" | null;
-function parsePublicRoute(hash: string): PublicRoute {
-  if (!hash) return null;
-  const normalized = hash.replace(/^#\/?/, "/");
-  if (normalized.startsWith("/tools/crop")) return "crop";
-  if (normalized.startsWith("/tools/pdf")) return "pdf";
+function parsePublicRoute(pathname: string): PublicRoute {
+  if (pathname.startsWith("/tools/crop")) return "crop";
+  if (pathname.startsWith("/tools/pdf")) return "pdf";
   return null;
 }
 
@@ -123,19 +124,36 @@ function PublicToolShell({ route }: { route: Exclude<PublicRoute, null> }) {
   return (
     <div className="public-tool-shell">
       <header className="public-tool-bar">
-        <a href="#/" className="public-tool-brand" aria-label="Dayflow 홈">
+        <a
+          href="/"
+          className="public-tool-brand"
+          aria-label="Dayflow 홈"
+          onClick={(e) => spaLinkClick(e, "/")}
+        >
           <span className="public-tool-mark">D</span>
           <span className="public-tool-name">Dayflow</span>
         </a>
         <nav className="public-tool-nav">
-          <a href="#/tools/crop" className={route === "crop" ? "on" : ""}>
+          <a
+            href="/tools/crop"
+            className={route === "crop" ? "on" : ""}
+            onClick={(e) => spaLinkClick(e, "/tools/crop")}
+          >
             이미지 자르기
           </a>
-          <a href="#/tools/pdf" className={route === "pdf" ? "on" : ""}>
+          <a
+            href="/tools/pdf"
+            className={route === "pdf" ? "on" : ""}
+            onClick={(e) => spaLinkClick(e, "/tools/pdf")}
+          >
             이미지 → PDF
           </a>
         </nav>
-        <a href="#/" className="public-tool-cta">
+        <a
+          href="/"
+          className="public-tool-cta"
+          onClick={(e) => spaLinkClick(e, "/")}
+        >
           전체 앱 둘러보기 →
         </a>
       </header>
@@ -192,16 +210,8 @@ function AppShell() {
   const closeModal = useModalStore((s) => s.close);
   const [searchOpen, setSearchOpen] = useState(false);
   const [showLanding, setShowLanding] = useState(true);
-  const [publicRoute, setPublicRoute] = useState<PublicRoute>(() =>
-    parsePublicRoute(window.location.hash),
-  );
-
-  useEffect(() => {
-    const onHash = () =>
-      setPublicRoute(parsePublicRoute(window.location.hash));
-    window.addEventListener("hashchange", onHash);
-    return () => window.removeEventListener("hashchange", onHash);
-  }, []);
+  const spaPath = useSpaPath();
+  const publicRoute = parsePublicRoute(spaPath);
   const isNarrowViewport = useMediaQuery("(max-width: 768px)");
   const isMobile = tweaks.forceMobile || isNarrowViewport;
 
