@@ -1,8 +1,7 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
 import { useState } from "react";
 import { Icon } from "@/components/Icon";
 import { useDraftField } from "@/lib/useDraftField";
+import type { StickyColor } from "@/types";
 import {
   useStickyNotes,
   stickyDateLabel,
@@ -17,7 +16,7 @@ import { MOODS, emojiToMood, moodToEmoji } from "@/data/lookups";
 // ============================================================
 export function StickyNotes() {
   const { data: notes, upsert, remove } = useStickyNotes();
-  const [activeColor, setActiveColor] = useState("yellow");
+  const [activeColor, setActiveColor] = useState<StickyColor>("yellow");
 
   const addNote = () => {
     upsert({
@@ -51,7 +50,7 @@ export function StickyNotes() {
         </div>
         <div className="notes-controls">
           <div className="color-pick" title="새 메모 색상">
-            {["yellow", "pink", "blue"].map((c) => (
+            {(["yellow", "pink", "blue"] as const).map((c) => (
               <div
                 key={c}
                 className={"swatch" + (activeColor === c ? " active" : "")}
@@ -202,7 +201,7 @@ function DeskPile() {
               onChange={(e) => setJournalDraft(e.target.value)}
               onBlur={commitJournal}
               placeholder="오늘 어땠어요? 한 줄로 남겨보세요…"
-              rows="2"
+              rows={2}
             />
           </div>
           <div className="journal-foot">

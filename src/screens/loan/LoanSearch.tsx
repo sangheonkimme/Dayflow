@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
 import { useState, useEffect, useMemo } from "react";
 import { Icon } from "@/components/Icon";
 
@@ -13,7 +11,7 @@ function calcLoan({ principal, annualRate, months, graceMonths, type }) {
   const n = months;
   const g = Math.min(graceMonths, n);
   const payMonths = n - g;
-  const schedule = [];
+  const schedule: { no: number; pay: number; principalPart: number; interest: number; balance: number }[] = [];
 
   if (principal <= 0 || n <= 0) {
     return {
