@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
 import { useState, useMemo } from "react";
 import { Icon } from "@/components/Icon";
 import { formatSignedWon, formatWon } from "@/lib/format";
@@ -7,6 +5,7 @@ import { DOW } from "@/lib/date";
 import { TRANSACTION_CATEGORIES } from "@/lib/categories";
 import { useTransactions } from "@/data/transactions";
 import { inferIcon } from "@/data/transactions";
+import type { Txn } from "@/types";
 import {
   monthlyTotals,
   currentMonthSummary,
@@ -65,7 +64,7 @@ export const LedgerPage = ({ onAdd, onEditTxn }: any) => {
 
   // Transform grouped Map → array shape used by render below.
   const txns = useMemo(() => {
-    const out = [];
+    const out: { d: string; items: Txn[] }[] = [];
     for (const [date, items] of grouped) {
       const md = date.slice(5).replace("-", ".");
       const dt = new Date(date);

@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
 import { useState, useMemo } from "react";
 import { Icon } from "@/components/Icon";
 import { DOW } from "@/lib/date";
@@ -25,7 +23,7 @@ export const CalendarPage = ({ onAdd, onEditEvent }: any) => {
   const daysInMonth = new Date(yr, mo + 1, 0).getDate();
   const daysPrev = new Date(yr, mo, 0).getDate();
 
-  const cells = [];
+  const cells: { d: number; mo: number; muted?: boolean }[] = [];
   for (let i = firstDay - 1; i >= 0; i--)
     cells.push({ d: daysPrev - i, muted: true, mo: mo - 1 });
   for (let i = 1; i <= daysInMonth; i++) cells.push({ d: i, mo });

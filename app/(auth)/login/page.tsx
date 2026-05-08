@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMediaQuery } from "@/lib/useMediaQuery";
 import { PCLogin } from "@/screens/auth/PcLogin";
@@ -17,6 +17,15 @@ const ROUTE: Record<AuthView, string> = {
 };
 
 export default function LoginPage() {
+  // useSearchParams 가 prerender 시 CSR bailout 을 트리거하므로 Suspense 로 감쌈.
+  return (
+    <Suspense fallback={null}>
+      <LoginInner />
+    </Suspense>
+  );
+}
+
+function LoginInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const isMobile = useMediaQuery("(max-width: 768px)");

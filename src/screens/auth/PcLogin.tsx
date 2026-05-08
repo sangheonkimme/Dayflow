@@ -39,6 +39,11 @@ export const PCLogin = ({ lang = "ko", dark = false, onSwitch }: any) => {
       } else {
         setErrorMsg(r.message || "로그인에 실패했어요.");
       }
+    } catch (e) {
+      console.error("[login] signIn threw", e);
+      setErrorMsg(
+        e instanceof Error ? e.message : "로그인 처리 중 오류가 발생했어요.",
+      );
     } finally {
       setSubmitting(false);
     }

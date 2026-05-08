@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
 import { useState, useMemo } from "react";
 import { Icon } from "@/components/Icon";
 import { useMemos } from "@/data/memos";
@@ -112,7 +110,7 @@ function MemoPage() {
               >
                 <span
                   className="folder-ico"
-                  style={f.color ? { color: f.color } : null}
+                  style={f.color ? { color: f.color } : undefined}
                 >
                   <Icon name={f.icon} size={15} />
                 </span>

@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
 import { useState, useMemo } from "react";
 import { Icon } from "@/components/Icon";
 import { formatSignedWon } from "@/lib/format";
@@ -8,6 +6,7 @@ import { TRANSACTION_CATEGORIES } from "@/lib/categories";
 import { ReceiptUploadModal } from "@/screens/ledger/ReceiptUploadModal";
 import { useTransactions } from "@/data/transactions";
 import { inferIcon } from "@/data/transactions";
+import type { Txn } from "@/types";
 
 // ============================================================
 // TRANSACTIONS PAGE — 거래내역 detail
@@ -21,15 +20,21 @@ function TxnsPage({ onAdd, onEditTxn }) {
   const [cat, setCat] = useState("all");
   const [pay, setPay] = useState("all");
   const [range, setRange] = useState("month"); // week | month | 3m
-  const [activeId, setActiveId] = useState(1);
+  const [activeId, setActiveId] = useState<string | number>(1);
   const [receiptOpen, setReceiptOpen] = useState(false);
 
   const allCats = useMemo(
-    () => Array.from(new Set(TXN_DATA.map((t) => t.cat))),
+    () =>
+      Array.from(
+        new Set(TXN_DATA.map((t) => t.cat).filter((c): c is string => !!c)),
+      ),
     [TXN_DATA],
   );
   const allPays = useMemo(
-    () => Array.from(new Set(TXN_DATA.map((t) => t.pay))),
+    () =>
+      Array.from(
+        new Set(TXN_DATA.map((t) => t.pay).filter((p): p is string => !!p)),
+      ),
     [TXN_DATA],
   );
 
@@ -56,7 +61,7 @@ function TxnsPage({ onAdd, onEditTxn }) {
 
   // Group by date
   const grouped = useMemo(() => {
-    const map = {};
+    const map: Record<string, Txn[]> = {};
     filtered.forEach((t) => {
       (map[t.date] ||= []).push(t);
     });
@@ -183,8 +188,8 @@ function TxnsPage({ onAdd, onEditTxn }) {
               onClick={() => setCat(c)}
               style={
                 cat === c
-                  ? null
-                  : { borderLeft: `3px solid ${TRANSACTION_CATEGORIES[c]}` }
+                  ? undefined
+                  : { borderLeft: `3px solid ${(TRANSACTION_CATEGORIES as Record<string, string>)[c]}` }
               }
             >
               {c}
@@ -277,7 +282,8 @@ function TxnsPage({ onAdd, onEditTxn }) {
                         className="tr-cat-tag"
                         style={{
                           background:
-                            TRANSACTION_CATEGORIES[t.cat] || "var(--ink-soft)",
+                            (t.cat && (TRANSACTION_CATEGORIES as Record<string, string>)[t.cat]) ||
+                            "var(--ink-soft)",
                         }}
                       >
                         {t.cat}
@@ -316,7 +322,7 @@ function TxnsPage({ onAdd, onEditTxn }) {
                 <span
                   className="folder-chip"
                   style={{
-                    background: TRANSACTION_CATEGORIES[active.cat],
+                    background: active.cat ? (TRANSACTION_CATEGORIES as Record<string, string>)[active.cat] : undefined,
                     color: "#fff",
                     marginTop: 10,
                   }}
