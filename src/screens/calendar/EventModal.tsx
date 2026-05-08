@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
 import { useState } from "react";
 import { Icon } from "@/components/Icon";
 import { Modal } from "@/components/Modal";
@@ -233,7 +231,7 @@ function EventEdit({ onClose, editing, onDelete, onSave }) {
         <div className="field">
           <label>메모</label>
           <textarea
-            rows="2"
+            rows={2}
             defaultValue={editing?.memo || ""}
             placeholder="자료 / 준비물 / 참고사항"
           />
@@ -612,7 +610,7 @@ function EventDetailed({ onClose, onSave, onBack }) {
         <div className="step-content" style={{ paddingBottom: 20 }}>
           <div className="field">
             <label>메모</label>
-            <textarea rows="3" placeholder="자료 / 준비물 / 참고사항" />
+            <textarea rows={3} placeholder="자료 / 준비물 / 참고사항" />
           </div>
           <div className="field" style={{ marginTop: 14 }}>
             <label>알림</label>

@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
 import { useState, useRef, useEffect, useMemo } from "react";
 import { Icon } from "@/components/Icon";
 import { Modal } from "@/components/Modal";
@@ -9,13 +7,20 @@ import { recent as selectRecent } from "@/data/transactions";
 // ============================================================
 // RECEIPT UPLOAD MODAL — 영수증 첨부 플로우
 // ============================================================
-function ReceiptUploadModal({ open, onClose, onAttach }) {
+interface ReceiptFile {
+  id: number;
+  name: string;
+  size: number;
+  type: string;
+  url: string | null;
+}
+function ReceiptUploadModal({ open, onClose, onAttach }: any) {
   const [stage, setStage] = useState("pick"); // pick / preview / scanning / done
-  const [files, setFiles] = useState([]);
+  const [files, setFiles] = useState<ReceiptFile[]>([]);
   const [scanProgress, setScanProgress] = useState(0);
-  const [linkTxn, setLinkTxn] = useState(null);
-  const inputRef = useRef(null);
-  const dragRef = useRef(null);
+  const [linkTxn, setLinkTxn] = useState<string | number | "new" | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const dragRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
 
   const { all: allTxns } = useTransactions();
@@ -58,8 +63,8 @@ function ReceiptUploadModal({ open, onClose, onAttach }) {
     return () => clearInterval(id);
   }, [stage]);
 
-  const handleFiles = (list) => {
-    const arr = Array.from(list)
+  const handleFiles = (list: FileList | File[]) => {
+    const arr: ReceiptFile[] = Array.from(list)
       .slice(0, 5)
       .map((f, i) => ({
         id: Date.now() + i,
@@ -157,7 +162,7 @@ function ReceiptUploadModal({ open, onClose, onAttach }) {
                 accept="image/*,.pdf"
                 multiple
                 hidden
-                onChange={(e) => handleFiles(e.target.files)}
+                onChange={(e) => e.target.files && handleFiles(e.target.files)}
               />
             </div>
 
@@ -249,7 +254,7 @@ function ReceiptUploadModal({ open, onClose, onAttach }) {
                 multiple
                 hidden
                 onChange={(e) =>
-                  handleFiles([...files.map((f) => f), ...e.target.files])
+                  e.target.files && handleFiles(e.target.files)
                 }
               />
             </div>
