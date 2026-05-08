@@ -4,11 +4,12 @@ import path from "node:path";
 
 const r = (p: string) => path.resolve(__dirname, p);
 
+// Vitest 설정 — Next 앱 빌드와 무관. JSX 변환을 위해 @vitejs/plugin-react
+// 만 의존. tsconfig 와 paths 동기화.
 export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: [
-      { find: "@/app", replacement: r("./src/app") },
       { find: "@/screens", replacement: r("./src/screens") },
       { find: "@/widgets", replacement: r("./src/widgets") },
       { find: "@/features", replacement: r("./src/features") },
@@ -16,7 +17,6 @@ export default defineConfig({
       { find: "@", replacement: r("./src") },
     ],
   },
-  server: { port: 5173 },
   test: {
     environment: "jsdom",
     globals: true,

@@ -1,6 +1,7 @@
 import { Icon } from "@/components/Icon";
 import { DOW } from "@/lib/date";
 import { useAuth } from "@/data/auth";
+import s from "@/components/Shell.module.css";
 
 // ============================================================
 // SIDEBAR
@@ -73,30 +74,30 @@ function Sidebar({ active, onSelect }: SidebarProps) {
   ];
 
   return (
-    <aside className="sidebar">
-      <div className="brand">
-        <div className="brand-mark">D</div>
+    <aside className={s.sidebar}>
+      <div className={s.brand}>
+        <div className={s.brandMark}>D</div>
         <div>
-          <div className="brand-name">Dayflow</div>
-          <div className="brand-tag">Dashboard · 2026</div>
+          <div className={s.brandName}>Dayflow</div>
+          <div className={s.brandTag}>Dashboard · 2026</div>
         </div>
       </div>
 
-      <nav className="nav">
+      <nav className={s.nav}>
         {groups.map((g, gi) => (
           <div
             key={g.label}
-            className={"nav-group" + (gi === 0 ? " first" : "")}
+            className={`${s.navGroup}${gi === 0 ? ` ${s.first}` : ""}`}
           >
-            <div className="side-section-label">{g.label}</div>
+            <div className={s.sectionLabel}>{g.label}</div>
             {g.items.map((it) => (
               <div
                 key={it.id}
-                className={"nav-item" + (active === it.id ? " active" : "")}
+                className={`${s.navItem}${active === it.id ? ` ${s.active}` : ""}`}
                 onClick={() => onSelect(it.id)}
               >
                 <Icon name={it.icon} size={18} />
-                <div className="label-wrap">
+                <div className={s.labelWrap}>
                   <span>{it.label}</span>
                   <small>{it.sub}</small>
                 </div>
@@ -106,15 +107,17 @@ function Sidebar({ active, onSelect }: SidebarProps) {
         ))}
       </nav>
 
-      <div className="side-foot-wrap">
-        <div className={"side-foot" + (active === "settings" ? " active" : "")}>
-          <div className="avatar">{avatarChar}</div>
-          <div className="side-foot-meta">
+      <div className={s.footWrap}>
+        <div
+          className={`${s.foot}${active === "settings" ? ` ${s.active}` : ""}`}
+        >
+          <div className={s.avatar}>{avatarChar}</div>
+          <div className={s.footMeta}>
             <b>{displayName}</b>
             <span>{user ? "무료 플랜" : "로그인 필요"}</span>
           </div>
           <button
-            className="side-foot-settings"
+            className={s.footSettings}
             onClick={() => onSelect("settings")}
             title="환경설정"
             aria-label="환경설정"
@@ -125,7 +128,7 @@ function Sidebar({ active, onSelect }: SidebarProps) {
         {user && (
           <button
             type="button"
-            className="side-foot-logout"
+            className={s.logout}
             onClick={() => signOut()}
             aria-label="로그아웃"
           >

@@ -1,0 +1,260 @@
+/* Sidebar + Topbar — Phase 4b CSS Module 이전. styles.css 의 .sidebar/.brand/
+   .nav-* / .side-foot-* / .topbar / .icon-btn / .search 글로벌 → 여기로 격리. */
+
+/* ============== SIDEBAR ============== */
+.sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  background: var(--bg-paper);
+  border-right: 1px solid var(--line);
+  padding: 22px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-height: 0;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 6px 14px;
+  border-bottom: 1px dashed var(--line-strong);
+  flex-shrink: 0;
+}
+
+.brandMark {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: var(--ink);
+  color: var(--yellow);
+  display: grid;
+  place-items: center;
+  font-family: var(--hand);
+  font-weight: 700;
+  font-size: 22px;
+  transform: rotate(-4deg);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+}
+.brandMark::after {
+  content: "";
+  position: absolute;
+  inset: auto -6px -4px auto;
+  width: 14px;
+  height: 14px;
+  background: var(--yellow);
+  border-radius: 50%;
+  border: 2px solid var(--ink);
+}
+.brandName {
+  font-family: var(--hand);
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+.brandTag {
+  font-size: 11px;
+  color: var(--ink-mute);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.sectionLabel {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 800;
+  color: var(--ink-mute);
+  padding: 0 8px 6px;
+  margin-bottom: 2px;
+  border-bottom: 1px dashed var(--line);
+  position: relative;
+}
+.sectionLabel::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 22px;
+  height: 2px;
+  background: var(--ink);
+  border-radius: 99px;
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  margin-right: -18px;
+  padding-right: 12px;
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+  transition: scrollbar-color 0.2s ease;
+}
+.sidebar:hover .nav,
+.nav:focus-within {
+  scrollbar-color: var(--line-strong) transparent;
+}
+.nav::-webkit-scrollbar {
+  width: 6px;
+}
+.nav::-webkit-scrollbar-track {
+  background: transparent;
+}
+.nav::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 3px;
+  transition: background 0.2s ease;
+}
+.sidebar:hover .nav::-webkit-scrollbar-thumb,
+.nav:focus-within::-webkit-scrollbar-thumb {
+  background: var(--line-strong);
+}
+.nav::-webkit-scrollbar-thumb:hover {
+  background: var(--ink-soft);
+}
+
+.navGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-top: 14px;
+}
+.navGroup.first {
+  padding-top: 0;
+}
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  color: var(--ink-soft);
+  font-size: 14px;
+  font-weight: 500;
+  user-select: none;
+  transition: all 0.12s ease;
+}
+.navItem:hover {
+  background: rgba(255, 255, 255, 0.5);
+  color: var(--ink);
+}
+.navItem.active {
+  background: var(--ink);
+  color: var(--yellow);
+  border-color: var(--ink);
+}
+.navItem small {
+  display: block;
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--ink-mute);
+  margin-top: 1px;
+}
+.navItem.active small {
+  color: rgba(255, 226, 122, 0.65);
+}
+.labelWrap {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+  min-width: 0;
+}
+
+.footWrap {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-top: 1px dashed var(--line-strong);
+  padding-top: 10px;
+}
+.foot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 8px;
+}
+.logout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--bg-paper);
+  color: var(--ink-mute);
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+.logout:hover {
+  color: var(--red);
+  border-color: var(--red);
+  background: var(--bg);
+}
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--pink);
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--ink);
+  border: 2px solid #fff;
+  box-shadow: var(--shadow-sm);
+}
+.footMeta {
+  font-size: 12px;
+  line-height: 1.3;
+  flex: 1;
+  min-width: 0;
+}
+.footMeta b {
+  display: block;
+  font-weight: 600;
+}
+.footMeta span {
+  color: var(--ink-mute);
+}
+.footSettings {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--bg-paper);
+  color: var(--ink-mute);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: transform 0.15s ease, color 0.15s ease, border-color 0.15s ease,
+    background 0.15s ease;
+  flex-shrink: 0;
+}
+.footSettings:hover {
+  color: var(--ink);
+  border-color: var(--ink);
+  background: var(--bg);
+}
+.foot.active .footSettings {
+  background: var(--ink);
+  color: var(--yellow);
+  border-color: var(--ink);
+}
