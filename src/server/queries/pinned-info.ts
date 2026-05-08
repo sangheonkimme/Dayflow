@@ -1,13 +1,10 @@
 import { cache } from "react";
-import { createClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "./_session";
 import * as PinnedMap from "@/data/source/mappers/pinned-info";
 import type { PinnedInfo } from "@/data/pinned-info";
 
 export const fetchPinnedInfo = cache(async (): Promise<PinnedInfo[]> => {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getCurrentUser();
   if (!user) return [];
 
   const { data, error } = await supabase

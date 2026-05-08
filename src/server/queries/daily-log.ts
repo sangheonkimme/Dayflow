@@ -1,13 +1,10 @@
 import { cache } from "react";
-import { createClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "./_session";
 import * as DailyMap from "@/data/source/mappers/daily-log";
 import type { DailyLog } from "@/data/daily-log";
 
 export const fetchDailyLog = cache(async (): Promise<DailyLog[]> => {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getCurrentUser();
   if (!user) return [];
 
   const { data, error } = await supabase

@@ -1,13 +1,10 @@
 import { cache } from "react";
-import { createClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "./_session";
 import * as MemoMap from "@/data/source/mappers/memos";
 import type { MemoDoc } from "@/types";
 
 export const fetchMemos = cache(async (): Promise<MemoDoc[]> => {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getCurrentUser();
   if (!user) return [];
 
   const { data, error } = await supabase

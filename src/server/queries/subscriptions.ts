@@ -1,13 +1,10 @@
 import { cache } from "react";
-import { createClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "./_session";
 import * as SubMap from "@/data/source/mappers/subscriptions";
 import type { Subscription } from "@/types";
 
 export const fetchSubscriptions = cache(async (): Promise<Subscription[]> => {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getCurrentUser();
   if (!user) return [];
 
   const { data, error } = await supabase

@@ -1,13 +1,10 @@
 import { cache } from "react";
-import { createClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "./_session";
 import * as EventMap from "@/data/source/mappers/events";
 import type { CalendarEvent } from "@/types";
 
 export const fetchEvents = cache(async (): Promise<CalendarEvent[]> => {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getCurrentUser();
   if (!user) return [];
 
   const { data, error } = await supabase
