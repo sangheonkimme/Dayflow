@@ -1,9 +1,13 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
+"use client";
 import { useState, useEffect, useRef, Fragment } from "react";
+import Link from "next/link";
 
 // ============================================================
 // LANDING PAGE — Dayflow marketing site (WLD (4) 시안 이식)
+// Phase 2: Next.js App Router 의 / 라우트로 이식. 인터랙션이 많아 통째로 클라
+// 컴포넌트로 다룸. 추후(Phase 4) 정적 섹션을 RSC 로 분리해 hydration 비용 줄임.
 // ============================================================
 
 interface LandingProps {
@@ -45,7 +49,7 @@ function Nav({ onGoToAuth }: { onGoToAuth?: () => void }) {
           <a href="#features">기능</a>
           <a href="#demo">데모</a>
           <a href="#gallery">스크린샷</a>
-          <a href="/tools/crop">무료 도구</a>
+          <Link href="/tools/crop">무료 도구</Link>
           <a href="#faq">FAQ</a>
         </div>
         <div className="nav-cta">
