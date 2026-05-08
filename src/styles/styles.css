@@ -1,5 +1,84 @@
 /* ===== Dayflow Dashboard — paper desk aesthetic ===== */
 
+/* Public tool shell — 로그인 없이 접근하는 도구 페이지 외곽 */
+.public-tool-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--ink);
+}
+.public-tool-bar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 12px 24px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(247, 241, 227, 0.92);
+  backdrop-filter: blur(8px);
+}
+.public-tool-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: inherit;
+  font-weight: 700;
+}
+.public-tool-mark {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--ink);
+  color: var(--yellow);
+  display: grid;
+  place-items: center;
+  font-size: 14px;
+  font-weight: 800;
+}
+.public-tool-name {
+  font-size: 14px;
+  letter-spacing: -0.01em;
+}
+.public-tool-nav {
+  display: flex;
+  gap: 12px;
+  margin-left: 8px;
+}
+.public-tool-nav a {
+  text-decoration: none;
+  color: var(--ink-soft);
+  font-size: 13px;
+  padding: 6px 10px;
+  border-radius: 8px;
+}
+.public-tool-nav a.on,
+.public-tool-nav a:hover {
+  background: var(--card);
+  color: var(--ink);
+}
+.public-tool-cta {
+  margin-left: auto;
+  text-decoration: none;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: var(--yellow);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+.public-tool-body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 0;
+}
+
+
 @import url("https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Gaegu:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap");
 
 :root {

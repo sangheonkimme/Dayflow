@@ -112,6 +112,47 @@ const PageFallback = () => (
   </div>
 );
 
+// ─────────────────────────────────────────────
+// Public hash routes (auth gate 우회) — /#/tools/crop, /#/tools/pdf
+// 로그인 없이 외부에서 직접 접근 가능한 공개 도구 페이지.
+// ─────────────────────────────────────────────
+type PublicRoute = "crop" | "pdf" | null;
+function parsePublicRoute(hash: string): PublicRoute {
+  if (!hash) return null;
+  const normalized = hash.replace(/^#\/?/, "/");
+  if (normalized.startsWith("/tools/crop")) return "crop";
+  if (normalized.startsWith("/tools/pdf")) return "pdf";
+  return null;
+}
+
+function PublicToolShell({ route }: { route: Exclude<PublicRoute, null> }) {
+  const Tool = route === "crop" ? CropCanvasPage : PdfCanvasPage;
+  return (
+    <div className="public-tool-shell">
+      <header className="public-tool-bar">
+        <a href="#/" className="public-tool-brand" aria-label="Dayflow 홈">
+          <span className="public-tool-mark">D</span>
+          <span className="public-tool-name">Dayflow</span>
+        </a>
+        <nav className="public-tool-nav">
+          <a href="#/tools/crop" className={route === "crop" ? "on" : ""}>
+            이미지 자르기
+          </a>
+          <a href="#/tools/pdf" className={route === "pdf" ? "on" : ""}>
+            이미지 → PDF
+          </a>
+        </nav>
+        <a href="#/" className="public-tool-cta">
+          전체 앱 둘러보기 →
+        </a>
+      </header>
+      <div className="public-tool-body">
+        <Tool />
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
   const auth = useAuth();
   const mode = useDataModeStore((s) => s.mode);
@@ -158,6 +199,16 @@ function AppShell() {
   const closeModal = useModalStore((s) => s.close);
   const [searchOpen, setSearchOpen] = useState(false);
   const [showLanding, setShowLanding] = useState(true);
+  const [publicRoute, setPublicRoute] = useState<PublicRoute>(() =>
+    parsePublicRoute(window.location.hash),
+  );
+
+  useEffect(() => {
+    const onHash = () =>
+      setPublicRoute(parsePublicRoute(window.location.hash));
+    window.addEventListener("hashchange", onHash);
+    return () => window.removeEventListener("hashchange", onHash);
+  }, []);
   const [quickMemo, setQuickMemo] = useState("");
   const [memos, setMemos] = useState<string[]>([
     "헬스장 가는 길에 빵집 들르기",
@@ -201,6 +252,17 @@ function AppShell() {
     setMemos([quickMemo, ...memos].slice(0, 3));
     setQuickMemo("");
   };
+
+  // ─────────────────────────────────────────────
+  // 공개 도구 라우트 — auth gate보다 먼저 처리해서 로그인 없이 접근 가능.
+  // ─────────────────────────────────────────────
+  if (publicRoute) {
+    return (
+      <Suspense fallback={<PageFallback />}>
+        <PublicToolShell route={publicRoute} />
+      </Suspense>
+    );
+  }
 
   // ─────────────────────────────────────────────
   // 인증 게이트 — 실 세션 기반 (useAuth)

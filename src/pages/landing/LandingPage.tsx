@@ -45,6 +45,7 @@ function Nav({ onGoToAuth }: { onGoToAuth?: () => void }) {
           <a href="#features">기능</a>
           <a href="#demo">데모</a>
           <a href="#gallery">스크린샷</a>
+          <a href="#/tools/crop">무료 도구</a>
           <a href="#faq">FAQ</a>
         </div>
         <div className="nav-cta">
