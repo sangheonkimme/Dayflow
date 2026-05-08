@@ -73,38 +73,44 @@
 - `src/App.tsx` 와 `src/screens/*` 는 Next 라우트로 미연결 상태. Phase 2 에서 라우트별 이식.
 - `pageExtensions` 옵션 안 씀 — Phase 2 완료 후에도 src/screens/ 가 남아있으면 명시적 제거 또는 폴더 이전.
 
-### Phase 2 — 라우트 이식
+### Phase 2 — 라우트 이식 ✅
 
-페이지별 PR. 우선순위 순.
+페이지별 커밋. 17 라우트 모두 `app/` 으로 이식.
 
-1. **`/` (랜딩)** — `app/page.tsx`, RSC + 정적. `metadata`, OG 이미지 (`opengraph-image.tsx`). 내부 인터랙션(스크롤 애니메이션 등)은 클라 컴포넌트로 격리.
-2. **`/login`, `/signup`, `/forgot`** — `app/(auth)/<x>/page.tsx`. 폼은 Server Action(`'use server'`).
-3. **`/tools/crop` 등 공개 도구** — `app/tools/<slug>/page.tsx`. 그대로 클라 컴포넌트로 옮김.
-4. **`/dashboard/*`** — 인증 가드(layout 에서). RSC 에서 초기 데이터 prefetch → `HydrationBoundary` 로 TanStack Query 캐시에 hydrate.
-5. **모바일 대시보드** — 동일 라우트, `useMediaQuery` 또는 CSS 분기로 처리. 별도 라우트 만들지 않음.
+- [x] **`/` 랜딩** — `app/page.tsx` + 'use client' LandingPage. authed/mock 시 `/dashboard` redirect.
+- [x] **`/login` `/signup` `/forgot` `/onboarding`** — `app/(auth)/*/page.tsx`. PC/Mobile useMediaQuery 분기. (Server Action 은 Phase 5 후속)
+- [x] **`/tools/crop` `/tools/pdf`** — `app/tools/<slug>/page.tsx` + 공유 layout.
+- [x] **`/dashboard/*` 9개** — Sidebar(usePathname) + 모달 + 검색 + Tweaks.
+- [x] **모바일** — 별도 라우트 없이 layout 에서 MobileApp 단일 진입.
+- [x] `src/App.tsx`, `src/lib/spa-nav.ts` 제거.
 
-### Phase 3 — 데이터 레이어 재구성
+### Phase 3 — 데이터 레이어 재구성 ✅
 
-- [ ] **DataSource 추상은 유지** — 그게 마이그레이션의 핵심 자산. `getDataSource()` 의 시그니처/repo 인터페이스는 그대로.
-- [ ] 서버: RSC 안에서 Supabase 쿼리 직접 호출 → `cache()` + `revalidateTag` 로 캐시 제어.
-- [ ] 클라: TanStack Query 가 RSC hydrate 캐시를 이어받아 mutation 처리.
-- [ ] **mock 모드는 클라 전용**으로 한정. RSC 에선 항상 live (비로그인 시 빈 결과). `NEXT_PUBLIC_DATA_MODE` 같은 환경 분기 도입 안 함.
+- [x] DataSource 추상 유지. `getDataSource()` 그대로.
+- [x] `src/server/queries/` 8개 도메인 fetcher (`cache()` + `@supabase/ssr`).
+- [x] 6개 dashboard 라우트 RSC prefetch + HydrationBoundary (ƒ Dynamic).
+- [x] mock 모드 클라 전용. RSC 항상 Supabase, 미인증 시 빈 배열.
+- [x] middleware `/dashboard/*` 미인증 → `/login?next=...` redirect.
 
-### Phase 4 — 스타일 마이그레이션
+### Phase 4 — 스타일 마이그레이션 (4a 완료)
 
-- [ ] 페이지 단위로 `*.module.css` 또는 Tailwind 로 점진 이식.
-- [ ] 글로벌 `src/styles/styles.css` 는 디자인 토큰(`:root --bg --ink --yellow ...`)과 reset 만 남기고 컴포넌트 스타일은 전부 컴포넌트 옆 모듈로 이동.
-- [ ] **shadcn/ui 도입** — 버튼/모달/입력/툴팁 표준화.
-- [ ] 폰트 → `next/font` (Google Fonts `@import` 위치 깨짐 사고 영구 차단).
-- [ ] 이미지 → `next/image`.
+**4a (완료)**
+- [x] Tailwind v3 도입 — `tailwind.config.ts` 토큰과 `:root` 변수 1:1 매핑, preflight off.
+- [x] `next/font` (Plus_Jakarta_Sans, Gaegu, JetBrains_Mono) — Google Fonts `@import` 사고 영구 차단.
+
+**4b (별도 세션 권장 — 페이지별 시각 회귀 검토 필수)**
+- [ ] 페이지별 `*.module.css` 로 점진 이전.
+- [ ] 글로벌 `src/styles/styles.css` 를 토큰 + reset (~200줄) 로 축소 + preflight 활성화.
+- [ ] shadcn/ui 도입 (시안 매핑 비용 검토 후).
+- [ ] `next/image` 로 이미지 최적화.
 
 ### Phase 5 — 정리·배포
 
-- [ ] 이전 `src/styles/*.css` 잔해 삭제.
-- [ ] `react-router-dom` 같은 마이그레이션 잔재 패키지 제거.
-- [ ] `@ts-nocheck` 전부 제거.
-- [ ] 배포 — Vercel(무료 티어 충분) 또는 self-host(Node 런타임).
-- [ ] `feat/nextjs` → `main` 일괄 머지.
+- [x] **main 머지 완료 (2026-05-09)** — Phase 1~4a 본체 + origin PR #19 dead code 정리 통합. main 푸시 완료.
+- [ ] vitest 4 rolldown 파서 호환 fix (현재 테스트 깨짐) 또는 vitest 3 다운그레이드.
+- [ ] `@ts-nocheck` 전부 제거 (27개, `docs/ts-nocheck-inventory.md` P0~P4 순서).
+- [ ] 글로벌 CSS 잔해 삭제 — Phase 4b 와 동시 진행.
+- [ ] 배포 — Vercel(권장) 또는 self-host. `.env.production` 의 `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` 설정.
 
 ---
 
