@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
 import { useState, useEffect, useMemo } from "react";
 import { MobileCalEvents } from "@/screens/mobile/tabs/Calendar";
 import { openTxnDetail } from "@/screens/mobile/shared/TxnDetailBridge";
@@ -50,9 +48,9 @@ export const MobileHome = ({ onNavigate, onAddTxn, onAddEvent }: any) => {
     const id = txns[i]?.id;
     if (id != null) removeTxnById(id);
   };
-  const editTxn = (i) => {
+  const editTxn = (i: number) => {
     const t = txnsAll.find((x) => x.id === txns[i]?.id);
-    if (t) _openTxnRef?.(t);
+    if (t) openTxnDetail(t);
   };
   const [newTodo, setNewTodo] = useState("");
   const toggle = (i) => {
@@ -87,7 +85,7 @@ export const MobileHome = ({ onNavigate, onAddTxn, onAddEvent }: any) => {
     [monthEvents, todayDate],
   );
   const eventDays = useMemo(() => [...eventDaySet], [eventDaySet]);
-  const cells = [];
+  const cells: { d: number; muted?: boolean }[] = [];
   // 1일이 수요일이라 가정 → 앞에 muted 2칸
   for (let i = 0; i < 2; i++) cells.push({ d: 28 + i, muted: true });
   for (let i = 1; i <= 31; i++) cells.push({ d: i });

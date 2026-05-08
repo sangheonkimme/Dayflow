@@ -1,10 +1,10 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
 import { useState } from "react";
 import { EditProfileSheet } from "@/screens/mobile/sheets/EditProfileSheet";
+import { ChangePasswordSheet } from "@/screens/mobile/sheets/ChangePasswordSheet";
 import { SectionHeader } from "@/screens/mobile/shared/SectionHeader";
 import { Ico } from "@/screens/mobile/shared/Ico";
 import { SubHeader } from "@/screens/mobile/shared/SubHeader";
+import { DfmSwitch } from "@/screens/mobile/shared/DfmSwitch";
 import { useAuth } from "@/data/auth";
 
 export const ProfileScreen = ({ onBack, onUpgrade }: any) => {

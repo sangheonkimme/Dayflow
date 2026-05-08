@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
 import {    useState , useMemo , useEffect , useRef } from "react";
 import { DOW } from "@/lib/date";
 import { useEvents, useEventsByDate } from "@/data/events";
@@ -30,7 +28,7 @@ export const MobileCalEvents = () => {
           </span>
           <div
             className="pill"
-            style={ev.color ? { borderLeftColor: ev.color } : null}
+            style={ev.color ? { borderLeftColor: ev.color } : undefined}
           >
             {ev.title}
             {(ev.place || ev.endTime) && (

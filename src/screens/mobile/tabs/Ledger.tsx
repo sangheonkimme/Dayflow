@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
 import { useState, useMemo } from "react";
 import { openTxnDetail } from "@/screens/mobile/shared/TxnDetailBridge";
 import { DOW } from "@/lib/date";
@@ -60,7 +58,8 @@ export const MobileLedger = () => {
   const { all: ledgerTxns } = useTransactions();
   const days = useMemo(() => {
     const grouped = groupByDay(ledgerTxns);
-    const out = [];
+    type DayItem = { ico: string; name: string; sub: string; amt: number; cat: string; income: boolean };
+    const out: { date: string; dow: string; total: number; items: DayItem[] }[] = [];
     const todayKey = (() => {
       const d = new Date();
       return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
