@@ -53,8 +53,8 @@
 - [ ] `App.tsx` 의 `renderPage()` switch 를 라우트 단위로 모듈화. `pages.tsx` 의 다중 export(`LedgerPage`, `CalendarPage`, `SettingsPage`) → 1파일 1컴포넌트로 분리.
 - [ ] hash routing(`#/tools/crop` 등) 전부 정리. 잠시 `react-router-dom` 끼워서 path 기반으로 통일 → Next 라우팅에 그대로 매핑.
 - [ ] **글로벌 CSS 셀렉터 전수 감사**. `.nav`, `.card`, `.btn`, `.section` 처럼 흔한 이름 namespacing. (실제 사고: 사이드바 `.nav` 가 랜딩 `.nav` 까지 column flex 강제.)
-- [ ] `@ts-nocheck` 파일 목록화 + 타입 회복 우선순위 매기기. (`LandingPage.tsx` 가 가장 위험.)
-- [ ] `WLD (4)/` 시안은 그대로 무시 (tsconfig/eslint exclude 유지).
+- [x] `@ts-nocheck` 파일 목록화 + 타입 회복 우선순위 매기기. → `docs/ts-nocheck-inventory.md` (27개, P0~P4 분류)
+- [x] `WLD (4)/` 시안은 그대로 무시. → `tsconfig.json` exclude + `.eslintrc.cjs` ignorePatterns 양쪽 반영 확인
 
 ### Phase 1 — Next.js 셸 부트스트랩
 
