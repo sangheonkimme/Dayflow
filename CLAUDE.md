@@ -2,77 +2,136 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Stack snapshot (2026-05-09)
+
+**Next.js 15 (App Router) + React 19 + TypeScript + Supabase (`@supabase/ssr`) + TanStack Query + Zustand + Tailwind v3 (preflight off, 점진 도입).**
+
+Vite SPA 시절의 잔재가 일부 남아있다 — `vitest.config.ts` (vitest 가 vite plugin 의존), 글로벌 `src/styles/styles.css` chrome 일부. 마이그레이션은 `docs/nextjs-migration-plan.md` Phase 0~5 로 추적.
+
 ## Commands
 
-- `npm run dev` — Vite dev server on port 5173.
-- `npm run build` — `tsc -b && vite build`. Type errors fail the build.
-- `npm run typecheck` — `tsc --noEmit` (use this for fast type validation).
-- `npm run lint` — ESLint with `--max-warnings 0`; warnings fail.
-- `npm run preview` — serve the production build locally.
+- `npm run dev` — Next.js dev server (`next dev -p 5173`).
+- `npm run build` — `next build`. Type errors fail the build.
+- `npm run start` — production 서버 (`next start -p 5173`).
+- `npm run typecheck` — `tsc --noEmit`. ts-nocheck 신규 추가는 ESLint 가 차단.
+- `npm run lint` — ESLint (`--max-warnings 0`).
+- `npm test` / `npm run test:watch` — vitest 3 + jsdom + Testing Library.
 
-There is no test runner configured.
-
-Path alias `@/*` → `src/*` is set in both `tsconfig.json` and `vite.config.ts`; always import via `@/...`, not relative paths.
+Path alias `@/*` → `src/*`. tsconfig 와 vitest.config 양쪽 동기화 필요. `app/`, `lib/`, `middleware.ts` 는 레포 루트에 위치하고 별도 alias 없이 상대/절대 import.
 
 ## Environment
 
-`.env` provides `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`. Both empty → app falls back to a localStorage-backed mock data source and a guest auth session. Both filled → real Supabase auth + data. The toggle is checked at runtime via `isSupabaseConfigured` in `src/lib/supabase.ts`.
+`.env`:
 
-The directory `WLD (4)/` at the repo root is a **design mockup (시안) only** — not part of the build, excluded from `tsconfig` and ESLint. **Do not read, edit, scan, or grep it.** Skip it in any directory traversal or codebase exploration.
+- `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` — 정식 (Phase 1+).
+- `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` — 레거시 fallback (`src/lib/supabase.ts` 가 둘 다 읽음).
+
+미설정 시: middleware 는 통과, 클라 `useAuth` 는 'guest', mock 모드(`useDataModeStore`) 토글 시 in-memory 시드로 동작.
+
+`WLD (4)/` 디렉토리는 시안 모음 — `tsconfig` exclude + `.eslintrc.cjs` ignorePatterns. **읽거나 grep 하지 말 것.**
 
 ## Architecture
 
-The app is a single-page React 18 + TypeScript dashboard ("Dayflow") that renders **three top-level surfaces** chosen by `App.tsx` based on auth state and viewport:
-
-1. **Auth screens** (`auth-login.tsx`, `auth-flows.tsx`, `auth-forgot.tsx`, `auth-pc.tsx`) — shown when `useAuth()` returns `status === 'guest'`. Mobile vs PC variants are picked by `useMediaQuery('(max-width: 768px)')` (override-able by the `forceMobile` tweak).
-2. **Mobile dashboard** (`mobile-app.tsx`).
-3. **Desktop dashboard** — `Sidebar` + `main` with a router-by-`active`-string switch in `App.renderPage()` (no react-router). Heavy pages (memo, subs, salary, loan, image tools, mobile, all auth screens) are `React.lazy()`-loaded.
-
-A floating `TweaksPanel` is always mounted; its state lives in the `preferences` repository and drives runtime CSS variables (`--yellow` accent, `dark` body class).
-
-### Data layer (`src/shared/data/` + `src/features/<domain>/`)
-
-The data layer follows the Bulletproof React lite layout (Phase 1, 2026-05). Domain-agnostic infrastructure lives in `shared/data/`; per-domain hooks/selectors/seeds live under `features/<domain>/`. It is a **three-tier abstraction designed so the mock → Supabase swap is one line**:
+### 라우트 (Next App Router)
 
 ```
-component → useXxx() hook → Repository → Store (useSyncExternalStore) → DataSource (mock | supabase)
+app/
+├ layout.tsx           — 루트(html/body, fonts, Providers, 글로벌 CSS import)
+├ page.tsx             — 랜딩 (인증 시 /dashboard 로 redirect)
+├ globals.css          — Tailwind directives + reset (preflight off)
+├ (auth)/
+│  ├ login/   signup/   forgot/   onboarding/   page.tsx
+├ tools/
+│  ├ layout.tsx (.module.css), crop/ pdf/        page.tsx
+├ dashboard/
+│  ├ layout.tsx        — Sidebar(usePathname)+Modals+SearchOverlay+Tweaks
+│  ├ page.tsx          — RSC: prefetch 8 도메인 → HydrationBoundary → HomeClient
+│  ├ ledger/calendar/memo/subs/txns: page.tsx (RSC prefetch) + *Client.tsx
+│  └ settings/salary/loan/cash: page.tsx (클라 전용)
+└ middleware.ts        — /dashboard/* 보호 (Supabase 미인증 → /login?next=)
 ```
 
-Infrastructure (`src/shared/data/`):
-- `shared/data/store.ts` — generic `createStore<T>` factory. Produces an immutable, frozen-array snapshot store with `subscribe / getSnapshot / setAll / upsert / remove` and a `Status` ('idle' | 'loading' | 'success' | 'error'). Every mutation creates a new array reference so React 18 `useSyncExternalStore` re-renders correctly.
-- `shared/data/source/types.ts` + `shared/data/source/mock.ts` — `DataSource` is a bag of `Repository<T>` instances (transactions, events, memos, stickyNotes, checklist, subscriptions, pinnedInfo, dailyLog). The mock implementation seeds from each feature's `seeds.ts` and is **in-memory only** — `upsert`/`remove` update the store but do not persist; refreshes reset to seeds. (Note: `usePreferences` and `useAuth` use their own localStorage keys; that persistence is hook-local, not in the mock repos.)
-- `shared/data/source/index.ts` — `getDataSource()` singleton. Today it always returns the mock; the Supabase implementation is the explicit `TODO` there. Replacing this return is intended to be the entire migration on the data side, plus mappers under `shared/data/source/mappers/` (not yet created — see `docs/schema-alignment.md`).
-- `shared/data/hooks/useRepository.ts` — base hook every domain hook wraps. Auto-triggers `repo.init()` when status is `idle`, exposes `{ data, status, error, isLoading, upsert, remove }`.
-- `shared/data/seeds/{index,types,lookups}.ts` — cross-domain types (`Mood`, `PinnedInfo`, `DailyLog`), lookup constants (`MOODS`, `TIMER_PRESETS`, `ACCENT_OPTIONS`, `TWEAK_DEFAULTS`), and the seeds barrel that aggregates each feature's `seeds.ts`.
+### Client UI (`src/screens/`)
 
-Per-domain (`src/features/<domain>/`):
-- `features/<domain>/hooks/useXxx.ts` — thin domain wrappers (`useTransactions`, `useEvents`, `useMemos`, `useStickyNotes`, `useChecklist`, `useSubscriptions`, `usePinnedInfo`, `useDailyLog`, `usePreferences`, `useAuth`). One per feature folder.
-- `features/<domain>/selectors/*` — pure derivation (e.g. `features/transactions/selectors/derived.ts` exports `inferIcon`/`inferPayday`). Components must call these instead of reading display fields directly off domain rows; this is what lets DB rows omit those fields.
-- `features/<domain>/seeds.ts` — initial mock rows for the domain.
+각 라우트가 import 하는 클라이언트 컴포넌트. **1 파일 1 페이지** 규칙. 페이지 chrome CSS 는 컴포넌트 옆 `*.module.css` 로 격리 (Phase 4b 진행 중).
 
-Cross-feature import is forbidden by convention — features may import from `shared/` only. Lift shared bits to `shared/data/seeds/` (constants/types) or compose at the page level instead of feature → feature imports.
+- `screens/landing/LandingPage.tsx`
+- `screens/auth/{PcLogin,MobileLogin,PcSignup,...}` + 공유 `BrandMark`/`Field`/`Btn`
+- `screens/tools/ImageTools.tsx` (CropCanvasPage + PdfCanvasPage)
+- `screens/{ledger,calendar,memo,subs,txns,salary,loan}/*Page.tsx` + 모달
+- `screens/home/{HomePage,StickyNotes,Checklist,MoneyFlow,MiniCalendar,ToolCard,timers/*}`
+- `screens/mobile/{MobileApp,tabs/*,sheets/*,screens/*,community/*,shared/*}`
 
-When adding a new domain entity: create `features/<domain>/seeds.ts` → extend `DataSource` in `shared/data/source/types.ts` → wire a mock repo in `shared/data/source/mock.ts` → register the seed in `shared/data/seeds/index.ts` → write `features/<domain>/hooks/useXxx.ts` on top of `useRepository` → derive any display fields in `features/<domain>/selectors/`.
+### 데이터 레이어 (3-tier)
 
-### Auth gate
+```
+component → useXxx() (TanStack Query) → Repository → Store (useSyncExternalStore) → DataSource (mock | supabase)
+```
 
-`App.tsx` short-circuits on `auth.status === 'unknown'` (initial session restore) by rendering a fallback to prevent flashing the login screen. With Supabase unconfigured, `useAuth` yields `'guest'` so the dev experience always lands on the auth screens unless you bypass via the tweaks panel's "auth preview" radio.
+**서버측 (RSC)** — `src/server/queries/`:
 
-### Domain ↔ DB schema mapping
+- 8개 도메인 fetcher (`transactions/events/memos/sticky-notes/checklist/subscriptions/pinned-info/daily-log`).
+- `cache()` + `@supabase/ssr` server client. 비로그인 시 빈 배열.
+- `keys.ts` — RSC ↔ 클라 query key 일치 (`["transactions"]` 등).
+- `prefetch.ts` — entries 받아 `dehydrate(QueryClient)` 반환.
+- 라우트 page.tsx 가 prefetch + `<HydrationBoundary>` 로 client wrapper 감쌈.
 
-`docs/schema-alignment.md` is the authoritative reference for domain-type ↔ Supabase-column mismatches. It classifies each field as **A** (add column), **B** (derive in selector — do not store), or **C** (rename/transform in mapper). Treat the DB shape as the source of truth; before adding a field to a domain type check whether a selector should derive it instead. Currently no mappers exist (mock-only), so the spec lives only in that doc.
+**클라측** — `src/data/`:
 
-`docs/supabase-plan.md` has the full table DDL, RLS template (`auth.uid() = user_id` per-table), and the `handle_new_user` trigger that creates `profiles` on signup.
+- `data/store.ts` — generic `createStore<T>` 팩토리. 불변 frozen-array 스냅샷 + Status('idle'|'loading'|'success'|'error'). useSyncExternalStore 호환 (서버 스냅샷 인자 포함 — Next prerender 안전).
+- `data/source/{types,mock,supabase,index}.ts` — DataSource bag of `Repository<T>`. mock 은 in-memory + 시드, supabase 는 `@supabase/supabase-js`. `getDataSource()` 싱글톤 + `configureDataSource(mode,userId)` 로 mode 전환.
+- `data/source/mappers/*` — Supabase row ↔ 도메인 타입 변환 (`docs/schema-alignment.md` 참고).
+- `data/useRepositoryQuery.ts` — 도메인 훅 베이스. useSyncExternalStore + useQuery 결합. mutation 은 `useMutation` 으로 노출.
+- 도메인 hook 파일들 (`data/{transactions,events,memos,sticky-notes,checklist,subscriptions,pinned-info,daily-log,auth,preferences,lookups}.ts`) — `useXxx()` + 셀렉터 + 시드 + `formatXxxLabel` 같은 helper.
 
-## Conventions specific to this repo
+### 인증 / 보호
 
-- The codebase is mid-migration from JSX to TSX; ESLint disables `@typescript-eslint/no-explicit-any` and `react/prop-types` accordingly. Prefer real types in new code, but `any` casts on the legacy edges (e.g. `Screen: any` in `App.tsx`) are intentional during migration — don't aggressively retype them as a side quest.
-- Component files often export multiple named components (e.g. `pages.tsx` exports `LedgerPage`, `CalendarPage`, `SettingsPage`). Lazy imports use `.then(m => ({ default: m.X }))` — keep this pattern when adding lazy routes.
-- All copy is Korean. Match the existing tone for new UI strings.
-- Styles are plain CSS files under `src/styles/`, imported once via `main.tsx`. There is no CSS modules / Tailwind setup.
+- middleware (`middleware.ts`) 가 매 요청마다 supabase.auth.getUser() — `/dashboard/*` 미인증 시 `/login?next=...` redirect. env 미설정 시 통과.
+- 클라: `useAuth()` 가 supabase.auth.onAuthStateChange 구독, status: 'unknown'|'authed'|'guest'.
+- Server Actions (`app/(auth)/_actions.ts`) — `signInAction` / `signUpAction` / `sendPasswordResetAction` / `signOutAction`. 폼 wire-up 은 점진 (현재는 useAuth 클라 훅 사용 중).
+
+### Tweaks
+
+- `usePreferences()` (Zustand persist) — 다크모드 / 액센트 컬러 / showCalendar / forceMobile / `pinBoardTitle` 등 UI 환경설정.
+- 다크 모드는 `body.dark` 클래스 토글, accent 는 CSS 변수(`--yellow`) 동적 변경.
+- `<TweaksPanel>` 은 dashboard layout 에 항상 마운트.
+
+## 스타일 — Phase 4b 진행
+
+- **Tailwind v3** 도입 (`tailwind.config.ts`, `postcss.config.mjs`, `app/globals.css`). preflight 는 OFF — 글로벌 CSS 와 공존 단계. 모든 마이그레이션 끝나면 활성화.
+- **`next/font`** 로 Plus_Jakarta_Sans / Gaegu / JetBrains_Mono 를 `--font-{sans,hand,mono}` 변수로 주입. Google Fonts `@import` 사고 영구 차단.
+- **CSS Module 분할** — 페이지/컴포넌트별 `*.module.css` 로 점진 이전:
+  - 완료: tools layout, Sidebar+Topbar(Shell), 5 dashboard 페이지(memo/subs/txns/salary/loan-search), image-tools, home 6개 컴포넌트(StickyNotes/Checklist/MoneyFlow/MiniCalendar/ToolCard/timers).
+  - 미이전 글로벌 CSS:
+    - `src/styles/styles.css` (~990줄) — APP SHELL, GRID, SECTION HEADINGS, HELPERS, dark theme, MODAL/EDIT MODAL (공유 chrome).
+    - `src/styles/pages.css` — page-head/crumb/page-title/timer-btn/icon-btn 등 공유 클래스 (의도적 글로벌).
+    - `src/styles/landing.css` — `.landing-root` 스코프 (안전).
+    - `src/styles/{flows,flows-extra,mobile,mobile-app}.css` — Phase 4b 후속 작업 대상.
+- **글로벌 CSS leak 방지 규칙**:
+  - 새로운 글로벌 클래스 정의 금지. 컴포넌트 옆 `*.module.css` 사용.
+  - 흔한 이름(`nav`/`card`/`btn`/`section`/`brand`) 신규 사용 시 module 강제.
+  - 사이드바·랜딩·도구 등 surface 별 클래스 충돌 없는지 확인 (`docs/css-global-audit.md` 참고).
+
+## 컨벤션
+
+- 모든 UI 카피는 한국어. 신규 문구는 기존 톤(반말 친근체) 매칭.
+- TypeScript: `@ts-nocheck` 추가 금지(ESLint `ban-ts-comment` 룰이 차단). 정 필요하면 `@ts-expect-error` + 사유 코멘트.
+- `: any` 는 마이그레이션 잔재용으로만 허용 (`@typescript-eslint/no-explicit-any: off`). 신규 코드는 실 타입.
+- Server Component vs Client Component:
+  - 라우트 page.tsx 는 가능한 RSC. 인터랙션 leaf 만 `'use client'`.
+  - useState/useRef/useEffect 가 필요한 모든 컴포넌트는 `'use client'`.
+- Lazy import 패턴: `lazy(() => import("...").then((m) => ({ default: m.X })))` (다중 named export 호환).
 
 ## Commit message convention
 
-- **본문은 한국어로 작성.** Conventional Commits 접두사(`feat:`, `fix:`, `chore:`, `refactor:`, `docs:` 등)는 영어 그대로 유지. 예: `feat: 사이드바 스크롤 + 로그아웃 버튼 정리`.
-- 마이그레이션 Phase 커밋은 `chore(phase-N): ...` 형태로 통일.
-- 본문/푸터 한국어. `Co-Authored-By` / `🤖 Generated with` 풋터는 추가하지 않음 (전역 룰).
+- **본문은 한국어로 작성.** Conventional Commits 접두사(`feat:`, `fix:`, `chore:`, `refactor:`, `docs:` 등) 는 영어 그대로. 예: `feat: 사이드바 스크롤 + 로그아웃 버튼 정리`.
+- 마이그레이션 Phase 커밋은 `chore(phase-N): ...` 또는 `feat(phase-N/<topic>): ...`.
+- `Co-Authored-By` / `🤖 Generated with` 풋터 추가 안 함 (전역 룰).
+
+## 도메인 ↔ DB 스키마
+
+- `docs/schema-alignment.md` — 도메인 타입 vs Supabase 컬럼 매핑. A(add column) / B(selector derive) / C(mapper rename) 분류.
+- `docs/supabase-plan.md` — 테이블 DDL, RLS(`auth.uid() = user_id`), `handle_new_user` 트리거.
+- `docs/nextjs-migration-plan.md` — Phase 0~5 마이그레이션 체크리스트 (현 상태 추적).
+- `docs/css-global-audit.md` — 글로벌 CSS leak 감사 결과 + 규칙.
+- `docs/ts-nocheck-inventory.md` — Phase 5 에서 27→0건 회복 완료.
