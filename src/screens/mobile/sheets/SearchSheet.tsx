@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
 import {  useState, useEffect, useMemo , useRef } from "react";
 import { Ico } from "@/screens/mobile/shared/Ico";
 import { useTransactions } from "@/data/transactions";
@@ -8,7 +6,7 @@ import { useMemos } from "@/data/memos";
 
 export const SearchSheet = ({ open, onClose, onJump }: any) => {
   const [q, setQ] = useState("");
-  const inputRef = useRef(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
     if (open) {
       const t = setTimeout(() => inputRef.current?.focus(), 80);
@@ -212,7 +210,8 @@ export const SearchSheet = ({ open, onClose, onJump }: any) => {
     : [];
 
   // group by kind
-  const grouped = matches.reduce((acc, it) => {
+  type Match = (typeof corpus)[number];
+  const grouped = matches.reduce<Record<string, Match[]>>((acc, it) => {
     (acc[it.kind] = acc[it.kind] || []).push(it);
     return acc;
   }, {});
