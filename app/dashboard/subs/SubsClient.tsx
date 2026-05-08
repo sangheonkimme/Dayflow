@@ -1,5 +1,6 @@
 "use client";
 
+import "@/styles/subs.css";
 import { useState } from "react";
 import { SubsPage } from "@/screens/subs/SubsPage";
 import { AddSubSheet } from "@/screens/mobile/sheets/AddSubSheet";

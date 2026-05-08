@@ -1,5 +1,7 @@
 "use client";
 
+import "@/styles/flows.css";
+import "@/styles/flows-extra.css";
 import { useRouter } from "next/navigation";
 import { useMediaQuery } from "@/lib/useMediaQuery";
 import { PCOnboarding } from "@/screens/auth/PcOnboarding";

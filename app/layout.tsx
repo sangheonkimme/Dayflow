@@ -7,20 +7,10 @@ import {
 import "./globals.css";
 import "@/styles/styles.css";
 import "@/styles/landing.css";
-// 페이지별 글로벌 스타일 — Vite SPA 시절 main.tsx 가 임포트하던 항목들.
-// Phase 1 마이그레이션 시 누락 → 페이지가 무스타일로 렌더되던 버그 (2026-05-09 발견·복원).
-// Phase 4b 에서 페이지별 CSS Module 로 점진 이전 예정.
+// pages.css 는 page-head/crumb/page-title 같은 공유 chrome — 모든 라우트가 사용.
 import "@/styles/pages.css";
-import "@/styles/memo.css";
-import "@/styles/subs.css";
-import "@/styles/image-tools.css";
-import "@/styles/txns.css";
-import "@/styles/salary.css";
-import "@/styles/loan-search.css";
-import "@/styles/flows.css";
-import "@/styles/flows-extra.css";
-import "@/styles/mobile.css";
-import "@/styles/mobile-app.css";
+// 페이지·라우트별 CSS 는 각자 page.tsx / *Client.tsx 에서 직접 임포트
+// (Phase 4b 분할 — 글로벌 번들 축소 + 라우트 단위 leak 격리).
 import { Providers } from "@/shared/query/providers";
 
 // Phase 4: Google Fonts 를 next/font 로 직렬화. @import 위치 사고 영구 차단.

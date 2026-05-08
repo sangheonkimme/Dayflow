@@ -5,6 +5,13 @@
 // dashboard 페이지에 일일이 추가하기 번거로워서 페이지별로 처리.)
 // Phase 3 에서 RSC + HydrationBoundary 도입 시 일부 페이지는 서버 렌더 가능.
 
+// 대시보드 공통 chrome 스타일.
+// loan-search.css 는 ⌘K SearchOverlay 가 layout 에서 마운트되므로 여기서 로드.
+// mobile.css/mobile-app.css 도 모바일 분기 시 layout 이 MobileApp 을 띄우므로 동일.
+import "@/styles/loan-search.css";
+import "@/styles/mobile.css";
+import "@/styles/mobile-app.css";
+
 import { lazy, Suspense, useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { Sidebar } from "@/components/Shell";
