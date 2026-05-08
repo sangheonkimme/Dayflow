@@ -1,9 +1,16 @@
-"use client";
+import { HydrationBoundary } from "@tanstack/react-query";
+import { prefetch } from "@/server/prefetch";
+import { queryKeys } from "@/server/queries/keys";
+import { fetchEvents } from "@/server/queries/events";
+import CalendarClient from "./CalendarClient";
 
-import { CalendarPage } from "@/screens/calendar/CalendarPage";
-import { useModalStore } from "@/store/modal";
-
-export default function Page() {
-  const openEvent = useModalStore((s) => s.openEvent);
-  return <CalendarPage onAdd={() => openEvent()} onEditEvent={openEvent} />;
+export default async function Page() {
+  const dehydrated = await prefetch([
+    { key: queryKeys.events, fn: fetchEvents },
+  ]);
+  return (
+    <HydrationBoundary state={dehydrated}>
+      <CalendarClient />
+    </HydrationBoundary>
+  );
 }

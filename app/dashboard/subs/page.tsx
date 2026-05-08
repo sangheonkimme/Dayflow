@@ -1,9 +1,16 @@
-"use client";
+import { HydrationBoundary } from "@tanstack/react-query";
+import { prefetch } from "@/server/prefetch";
+import { queryKeys } from "@/server/queries/keys";
+import { fetchSubscriptions } from "@/server/queries/subscriptions";
+import SubsClient from "./SubsClient";
 
-import { SubsPage } from "@/screens/subs/SubsPage";
-import { useModalStore } from "@/store/modal";
-
-export default function Page() {
-  const openTxn = useModalStore((s) => s.openTxn);
-  return <SubsPage onAdd={() => openTxn()} />;
+export default async function Page() {
+  const dehydrated = await prefetch([
+    { key: queryKeys.subscriptions, fn: fetchSubscriptions },
+  ]);
+  return (
+    <HydrationBoundary state={dehydrated}>
+      <SubsClient />
+    </HydrationBoundary>
+  );
 }

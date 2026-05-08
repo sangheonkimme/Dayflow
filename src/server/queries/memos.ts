@@ -1,0 +1,19 @@
+import { cache } from "react";
+import { createClient } from "@/lib/supabase/server";
+import * as MemoMap from "@/data/source/mappers/memos";
+import type { MemoDoc } from "@/types";
+
+export const fetchMemos = cache(async (): Promise<MemoDoc[]> => {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return [];
+
+  const { data, error } = await supabase
+    .from("notes")
+    .select("*")
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return (data ?? []).map((r) => MemoMap.toDomain(r as never));
+});
