@@ -1,5 +1,6 @@
 node_modules
 dist
+.next
 .DS_Store
 .vite
 *.log
@@ -7,3 +8,4 @@ dist
 .env.local
 .env.*.local
 tsconfig.tsbuildinfo
+next-env.d.ts

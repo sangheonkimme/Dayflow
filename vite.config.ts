@@ -9,7 +9,7 @@ export default defineConfig({
   resolve: {
     alias: [
       { find: "@/app", replacement: r("./src/app") },
-      { find: "@/pages", replacement: r("./src/pages") },
+      { find: "@/screens", replacement: r("./src/screens") },
       { find: "@/widgets", replacement: r("./src/widgets") },
       { find: "@/features", replacement: r("./src/features") },
       { find: "@/shared", replacement: r("./src/shared") },

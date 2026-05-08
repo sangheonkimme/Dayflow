@@ -12,7 +12,6 @@ module.exports = {
     "react",
     "react-hooks",
     "jsx-a11y",
-    "react-refresh",
   ],
   extends: [
     "eslint:recommended",
@@ -22,13 +21,9 @@ module.exports = {
     "plugin:react-hooks/recommended",
     "plugin:jsx-a11y/recommended",
   ],
-  settings: { react: { version: "18.3" } },
-  ignorePatterns: ["dist", "node_modules", "WLD (4)", "*.cjs"],
+  settings: { react: { version: "19.0" } },
+  ignorePatterns: ["dist", "node_modules", "WLD (4)", "archive", ".next", "*.cjs"],
   rules: {
-    "react-refresh/only-export-components": [
-      "warn",
-      { allowConstantExport: true },
-    ],
     // 시안 기반 코드 — 점진 정리 중. TS 도입 후 단계적 강화.
     "@typescript-eslint/no-unused-vars": [
       "warn",

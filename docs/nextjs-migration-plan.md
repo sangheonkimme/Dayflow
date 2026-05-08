@@ -60,13 +60,18 @@
 
 목표: 빈 Next 앱이 떠서 `/` 라우트가 "Hello" 라도 렌더되는 상태.
 
-- [ ] `npx create-next-app@latest` (TS, App Router, Tailwind on, src/ on, alias `@/*`) — 기존 레포 위에 인플레이스로.
-- [ ] `package.json` 의 `vite`, `@vitejs/*` 제거. scripts: `dev`/`build`/`start` 를 next 로 교체.
-- [ ] `index.html`, `src/main.tsx`, `vite.config.ts`, `vite-env.d.ts` 제거.
-- [ ] `src/shared/data/`, `src/lib/`, `src/store/`, `src/data/` 그대로 유지. import alias `@/*` 동일.
-- [ ] `src/lib/supabase.ts` → `lib/supabase/{client,server,middleware}.ts` 3분할 (`@supabase/ssr` 패턴).
-- [ ] `middleware.ts` 추가 — 보호 라우트(`/dashboard/*`)는 RSC 진입 전 `getUser()` 강제, 비로그인 → `/login` 리다이렉트.
-- [ ] CI: `npm run build` (Next) 가 통과하는지만 확인.
+- [x] Next.js 15 + React 19 + @supabase/ssr 도입 (수동 install — `create-next-app` 인터랙티브 회피). Tailwind 는 Phase 4 에서.
+- [x] `package.json` scripts: `dev`/`build`/`start` 를 next 로 교체. `vite`/`@vitejs/plugin-react` 는 vitest 의존성으로 dev 잔존(전용 사용 안 함).
+- [x] `index.html`, `src/main.tsx`, `src/vite-env.d.ts` 제거. `vite.config.ts` 는 vitest 가 읽으므로 보존.
+- [x] `src/shared/data/`, `src/lib/`, `src/store/`, `src/data/` 그대로 유지. **단** `src/pages/` → `src/screens/` 리네임 (Next Pages Router 자동 인식 회피). `src/app/` → `src/shared/query/` 이전 (Next App Router 와 충돌 회피).
+- [x] `lib/supabase/{client,server,middleware}.ts` 3분할 (@supabase/ssr 패턴). 레거시 `src/lib/supabase.ts` 는 `process.env.NEXT_PUBLIC_*` 우선 + `VITE_*` fallback 으로 호환 유지.
+- [x] `middleware.ts` 추가 — 세션 갱신만 활성. 보호 라우트 리다이렉트는 Phase 2 에서.
+- [x] `npm run build` (next build) 통과. `/` Hello placeholder 정적 렌더, dev 서버 200 OK 확인.
+
+**Phase 1 인계 노트** (Phase 2 시작 전 필수)
+- `.env` 에 `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` 추가 필요. (현재 `VITE_*` 만 있음 → 레거시 fallback 으로 동작 중)
+- `src/App.tsx` 와 `src/screens/*` 는 Next 라우트로 미연결 상태. Phase 2 에서 라우트별 이식.
+- `pageExtensions` 옵션 안 씀 — Phase 2 완료 후에도 src/screens/ 가 남아있으면 명시적 제거 또는 폴더 이전.
 
 ### Phase 2 — 라우트 이식
 
