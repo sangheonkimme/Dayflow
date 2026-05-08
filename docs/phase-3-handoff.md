@@ -1,8 +1,33 @@
-# Phase 3 — 데이터 레이어 RSC 통합 (핸드오프)
+# Phase 3 — 데이터 레이어 RSC 통합 (완료)
 
-> Phase 2 완료 시점: 모든 라우트가 `app/` 으로 이식됐지만, 데이터는 여전히 클라이언트에서 fetch (TanStack Query + `getDataSource()` 싱글톤). RSC 의 prefetch / hydration 이 안 들어감.
->
-> Phase 3 목표: RSC 가 진입 시점에 초기 데이터를 prefetch → `HydrationBoundary` 로 클라 TanStack Query 캐시에 hydrate. 후속 mutation 은 클라에서 처리.
+> ✅ **2026-05-08 완료.** 8개 도메인 fetcher + 라우트별 prefetch/HydrationBoundary + 미들웨어 인증 게이트.
+
+## 결과
+
+**서버 fetcher** (`src/server/queries/`)
+- `transactions.ts`, `events.ts`, `memos.ts`, `sticky-notes.ts`, `checklist.ts`, `subscriptions.ts`, `pinned-info.ts`, `daily-log.ts` — 모두 `cache(async () => {...})` 패턴. 비로그인 시 빈 배열 반환.
+- `keys.ts` — RSC ↔ 클라 query key 일치 보장.
+- `prefetch.ts` — entries 받아 `dehydrate(QueryClient)` 반환하는 헬퍼.
+
+**라우트 prefetch** (`app/dashboard/*`)
+- 데이터 사용 6개 페이지 (home, ledger, calendar, memo, subs, txns) 가 server component 로 prefetch + `<HydrationBoundary>` 로 client wrapper 감쌈.
+- 데이터 없는 4개 (settings, salary, loan, cash) 는 클라 전용 유지.
+- 빌드 ƒ Dynamic 표기 → RSC waterfall 제거.
+
+**인증 게이트** (`middleware.ts`)
+- `/dashboard/*` 진입 시 `supabase.auth.getUser()` — 미인증 시 `/login?next=...` 로 redirect.
+- env 미설정 시 통과 (dev/guest 보존).
+
+## Phase 3 인계 노트 (남은 결정사항)
+
+- **클라 도메인 훅의 `useSyncExternalStore` 잔존.** `src/data/*.ts` 의 훅들이 자체 store + RQ 혼합. RSC 가 prefetch 한 캐시를 받아도, 일부 훅은 store 의 빈 스냅샷을 우선 노출. Phase 5 에서 store→pure RQ 로 단순화.
+- **Server Action 미적용.** 인증 폼(/login, /signup)과 mutation(upsertTxn 등) 은 여전히 클라 훅 호출. Server Action 으로 옮기면 progressive enhancement + revalidatePath 로 RSC 캐시 무효화 가능.
+- **realtime.** Supabase realtime 구독 도입 시 클라에서만 동작. RSC prefetch 가 초기값, realtime 채널이 갱신.
+- **mock 모드.** 현 구현은 클라 훅이 `getDataSource()` 분기 처리. RSC fetcher 는 항상 Supabase. 미인증 + mock=on 인 경우 RSC 는 빈 배열, 클라 훅이 mock 시드 반환 — UI 깜빡임 가능. Phase 4 에서 mock 모드 표시 일관화.
+
+---
+
+(아래는 Phase 3 작업 시작 시점 작성된 원본 인계 노트)
 
 ## 핵심 원칙
 
