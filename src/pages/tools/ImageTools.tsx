@@ -902,9 +902,69 @@ function RatioGlyph({ id }) {
 // ============================================================
 // CANVAS PAGES — wrappers exposing both tools as DesignCanvas
 // ============================================================
+function CropEmpty({ onPickSample }: { onPickSample?: () => void }) {
+  return (
+    <div className="tool-page">
+      <div className="page-head">
+        <div>
+          <div className="crumb">도구 · 이미지 자르기</div>
+          <h1 className="page-title">
+            이미지 자르기 <span className="hand-sub">— 시작해보세요</span>
+          </h1>
+          <div className="page-sub">
+            JPG · PNG · HEIC 지원 · 최대 50 MB · 한 번에 한 장씩
+          </div>
+        </div>
+      </div>
+
+      <div className="dropzone">
+        <div className="dz-pile">
+          <SampleImg aspect="4/3" w="160px" rotated={-3} />
+        </div>
+        <h2>여기로 이미지를 끌어다 놓으세요</h2>
+        <p>
+          또는 <button className="dz-link">파일 선택</button> · 클립보드
+          붙여넣기 (⌘V) 도 지원해요
+        </p>
+
+        <div className="dz-formats">
+          <span>JPG</span>
+          <span>PNG</span>
+          <span>HEIC</span>
+          <span>WebP</span>
+          <span>GIF</span>
+        </div>
+
+        <div className="dz-tips">
+          <div className="tip">
+            <b>1.</b>
+            <span>드래그로 자를 영역을 선택해요</span>
+          </div>
+          <div className="tip">
+            <b>2.</b>
+            <span>비율(1:1 / 16:9 / 자유) 을 골라 정렬해요</span>
+          </div>
+          <div className="tip">
+            <b>3.</b>
+            <span>원하는 포맷·크기로 내보내요</span>
+          </div>
+        </div>
+
+        <div className="dz-sample">
+          <span className="hand">미리 체험해보기 →</span>
+          <button className="timer-btn" onClick={onPickSample}>
+            샘플 이미지로 시작
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function CropCanvasPage() {
+  const [state, setState] = useState<"empty" | "loaded">("empty");
   const [variant, setVariant] = useState("classic");
-  const renderVariant = () => {
+  const renderLoaded = () => {
     if (variant === "focus") return <CropFocus />;
     if (variant === "batch") return <CropBatch />;
     return <CropClassic />;
@@ -912,28 +972,51 @@ function CropCanvasPage() {
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
       <div className="variant-switch">
-        <span className="vs-label">모드</span>
+        <span className="vs-label">상태</span>
         <button
-          className={variant === "classic" ? "on" : ""}
-          onClick={() => setVariant("classic")}
+          className={state === "empty" ? "on" : ""}
+          onClick={() => setState("empty")}
         >
-          기본
+          업로드 전
         </button>
         <button
-          className={variant === "focus" ? "on" : ""}
-          onClick={() => setVariant("focus")}
+          className={state === "loaded" ? "on" : ""}
+          onClick={() => setState("loaded")}
         >
-          포커스 모드 <span className="pro-badge">PRO</span>
+          업로드 후
         </button>
-        <button
-          className={variant === "batch" ? "on" : ""}
-          onClick={() => setVariant("batch")}
-        >
-          일괄 처리 <span className="pro-badge">PRO</span>
-        </button>
+        {state === "loaded" && (
+          <>
+            <span className="vs-label" style={{ marginLeft: 12 }}>
+              모드
+            </span>
+            <button
+              className={variant === "classic" ? "on" : ""}
+              onClick={() => setVariant("classic")}
+            >
+              기본
+            </button>
+            <button
+              className={variant === "focus" ? "on" : ""}
+              onClick={() => setVariant("focus")}
+            >
+              포커스 모드 <span className="pro-badge">PRO</span>
+            </button>
+            <button
+              className={variant === "batch" ? "on" : ""}
+              onClick={() => setVariant("batch")}
+            >
+              일괄 처리 <span className="pro-badge">PRO</span>
+            </button>
+          </>
+        )}
       </div>
       <div style={{ flex: 1, minHeight: 0, overflow: "auto" }}>
-        {renderVariant()}
+        {state === "empty" ? (
+          <CropEmpty onPickSample={() => setState("loaded")} />
+        ) : (
+          renderLoaded()
+        )}
       </div>
     </div>
   );

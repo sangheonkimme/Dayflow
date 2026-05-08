@@ -68,7 +68,20 @@ export function useStickyNotes(): RepositoryQueryView<StickyNote> {
   const view = useRepositoryQuery(getDataSource().stickyNotes, {
     queryKey: ["stickyNotes"],
   });
-  const { data, upsert: rawUpsert } = view;
+  const { data: rawData, upsert: rawUpsert } = view;
+
+  // store.upsert가 새 항목을 unshift하므로 시드 순서가 깨진다.
+  // sticky 보드는 placement 순서가 의미를 가지므로 id 오름차순으로 안정 정렬.
+  // (시드 id=1..3, 신규 id=Date.now() → 신규는 항상 우측에 추가)
+  const data = useMemo(() => {
+    const sortable = [...rawData];
+    sortable.sort((a, b) => {
+      const aId = typeof a.id === "number" ? a.id : Number(a.id) || 0;
+      const bId = typeof b.id === "number" ? b.id : Number(b.id) || 0;
+      return aId - bId;
+    });
+    return sortable;
+  }, [rawData]);
 
   const upsert = useCallback<RepositoryQueryView<StickyNote>["upsert"]>(
     async (item) => {
@@ -81,5 +94,8 @@ export function useStickyNotes(): RepositoryQueryView<StickyNote> {
     [data, rawUpsert],
   );
 
-  return useMemo(() => ({ ...view, upsert }), [view, upsert]);
+  return useMemo(
+    () => ({ ...view, data, upsert }),
+    [view, data, upsert],
+  );
 }

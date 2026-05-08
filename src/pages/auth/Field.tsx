@@ -11,6 +11,7 @@ export const Field = ({
   autoFocus,
   placeholder,
   error,
+  onKeyDown,
 }: any) => {
   const ink = dark ? "#fff" : "#1a1814";
   const mute = dark ? "rgba(255,255,255,0.55)" : "rgba(26,24,20,0.55)";
@@ -54,6 +55,7 @@ export const Field = ({
           type={type}
           value={value}
           onChange={onChange}
+          onKeyDown={onKeyDown}
           autoFocus={autoFocus}
           placeholder={placeholder}
           style={{

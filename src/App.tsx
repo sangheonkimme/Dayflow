@@ -28,7 +28,7 @@ import { useEvents } from "@/data/events";
 import { useDataModeStore } from "@/store/dataMode";
 import { useModalStore } from "@/store/modal";
 import { DemoBanner } from "@/components/DemoBanner";
-import { configureDataSource } from "@/data/source";
+import { configureDataSource, getReadyPromise } from "@/data/source";
 import { queryClient } from "@/app/queryClient";
 import type { TxnDraft, AccentColor, AuthPreviewView } from "@/types";
 
@@ -100,6 +100,11 @@ const PCOnboarding = lazy(() =>
     default: m.PCOnboarding,
   })),
 );
+const LandingPage = lazy(() =>
+  import("@/pages/landing/LandingPage").then((m) => ({
+    default: m.LandingPage,
+  })),
+);
 
 const PageFallback = () => (
   <div style={{ padding: 32, color: "var(--ink-mute)", fontSize: 13 }}>
@@ -107,24 +112,76 @@ const PageFallback = () => (
   </div>
 );
 
+// ─────────────────────────────────────────────
+// Public hash routes (auth gate 우회) — /#/tools/crop, /#/tools/pdf
+// 로그인 없이 외부에서 직접 접근 가능한 공개 도구 페이지.
+// ─────────────────────────────────────────────
+type PublicRoute = "crop" | "pdf" | null;
+function parsePublicRoute(hash: string): PublicRoute {
+  if (!hash) return null;
+  const normalized = hash.replace(/^#\/?/, "/");
+  if (normalized.startsWith("/tools/crop")) return "crop";
+  if (normalized.startsWith("/tools/pdf")) return "pdf";
+  return null;
+}
+
+function PublicToolShell({ route }: { route: Exclude<PublicRoute, null> }) {
+  const Tool = route === "crop" ? CropCanvasPage : PdfCanvasPage;
+  return (
+    <div className="public-tool-shell">
+      <header className="public-tool-bar">
+        <a href="#/" className="public-tool-brand" aria-label="Dayflow 홈">
+          <span className="public-tool-mark">D</span>
+          <span className="public-tool-name">Dayflow</span>
+        </a>
+        <nav className="public-tool-nav">
+          <a href="#/tools/crop" className={route === "crop" ? "on" : ""}>
+            이미지 자르기
+          </a>
+          <a href="#/tools/pdf" className={route === "pdf" ? "on" : ""}>
+            이미지 → PDF
+          </a>
+        </nav>
+        <a href="#/" className="public-tool-cta">
+          전체 앱 둘러보기 →
+        </a>
+      </header>
+      <div className="public-tool-body">
+        <Tool />
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
   const auth = useAuth();
   const mode = useDataModeStore((s) => s.mode);
   const userId = auth.user?.id ?? null;
+  const sourceKey = `${mode}:${userId ?? "guest"}`;
+  const [readyKey, setReadyKey] = useState<string | null>(null);
 
   // 데이터 소스를 mode + userId에 맞춰 재구성. 변경 시 RQ 캐시도 통째 비움.
+  // ready promise를 기다린 뒤에야 트리를 마운트해서 placeholder store가 그대로 박히는 문제 방지.
   useEffect(() => {
+    if (auth.status === "unknown") return;
     const changed = configureDataSource({ mode, userId });
     if (changed) queryClient.clear();
-  }, [mode, userId]);
+    let cancelled = false;
+    setReadyKey(null);
+    getReadyPromise().finally(() => {
+      if (!cancelled) setReadyKey(sourceKey);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [mode, userId, auth.status, sourceKey]);
 
-  // 초기 세션 복원 중에는 빈 화면(또는 splash)으로 깜박임 방지
-  if (auth.status === "unknown") {
+  // 초기 세션 복원 / 데이터 소스 init 중에는 splash로 깜박임 방지
+  if (auth.status === "unknown" || readyKey !== sourceKey) {
     return <PageFallback />;
   }
 
   // mode/userId 변경 시 트리 remount → 모든 도메인 hook이 새 store 구독
-  const sourceKey = `${mode}:${userId ?? "guest"}`;
   return <AppShell key={sourceKey} />;
 }
 
@@ -141,6 +198,17 @@ function AppShell() {
   const openEvent = useModalStore((s) => s.openEvent);
   const closeModal = useModalStore((s) => s.close);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [showLanding, setShowLanding] = useState(true);
+  const [publicRoute, setPublicRoute] = useState<PublicRoute>(() =>
+    parsePublicRoute(window.location.hash),
+  );
+
+  useEffect(() => {
+    const onHash = () =>
+      setPublicRoute(parsePublicRoute(window.location.hash));
+    window.addEventListener("hashchange", onHash);
+    return () => window.removeEventListener("hashchange", onHash);
+  }, []);
   const [quickMemo, setQuickMemo] = useState("");
   const [memos, setMemos] = useState<string[]>([
     "헬스장 가는 길에 빵집 들르기",
@@ -186,6 +254,17 @@ function AppShell() {
   };
 
   // ─────────────────────────────────────────────
+  // 공개 도구 라우트 — auth gate보다 먼저 처리해서 로그인 없이 접근 가능.
+  // ─────────────────────────────────────────────
+  if (publicRoute) {
+    return (
+      <Suspense fallback={<PageFallback />}>
+        <PublicToolShell route={publicRoute} />
+      </Suspense>
+    );
+  }
+
+  // ─────────────────────────────────────────────
   // 인증 게이트 — 실 세션 기반 (useAuth)
   // mock 모드에서는 비로그인이어도 대시보드(데모 데이터)를 보여줌
   // ─────────────────────────────────────────────
@@ -193,6 +272,20 @@ function AppShell() {
     const setView = (view: AuthPreviewView) => setTweak("authPreview", view);
     const dark = !!tweaks.dark;
     const lang: "ko" | "en" = "ko";
+    // PC 첫 진입 시 마케팅 랜딩 → CTA 클릭 시 인증 화면으로 진입.
+    // (auth preview tweak이 'login' 외 값이면 사용자가 명시적으로 그 화면을 본다는 뜻이라 랜딩 스킵)
+    if (
+      !isMobile &&
+      showLanding &&
+      (tweaks.authPreview ?? "login") === "login"
+    ) {
+      return (
+        <Suspense fallback={<PageFallback />}>
+          <LandingPage onGoToAuth={() => setShowLanding(false)} />
+          {renderTweaks()}
+        </Suspense>
+      );
+    }
     if (isMobile) {
       const props = { variant: "A" as const, lang, dark, onSwitch: setView };
       let Screen: any = LoginScreen;

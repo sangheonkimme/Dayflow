@@ -220,7 +220,7 @@ export async function createSupabaseSource(
       toDomain: (r) => StickyMap.toDomain(r as never),
       toRow: (input) =>
         StickyMap.toRow(input, userId) as Record<string, unknown>,
-      orderBy: { column: "position", ascending: true },
+      orderBy: { column: "created_at", ascending: true },
     }),
     checklist: makeRepo<ChecklistTask, never>(client, checklistStore, {
       table: "checklist_items",

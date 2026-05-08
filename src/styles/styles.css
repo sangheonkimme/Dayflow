@@ -2,6 +2,85 @@
 
 @import url("https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Gaegu:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap");
 
+/* Public tool shell — 로그인 없이 접근하는 도구 페이지 외곽 */
+.public-tool-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--ink);
+}
+.public-tool-bar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 12px 24px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(247, 241, 227, 0.92);
+  backdrop-filter: blur(8px);
+}
+.public-tool-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: inherit;
+  font-weight: 700;
+}
+.public-tool-mark {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--ink);
+  color: var(--yellow);
+  display: grid;
+  place-items: center;
+  font-size: 14px;
+  font-weight: 800;
+}
+.public-tool-name {
+  font-size: 14px;
+  letter-spacing: -0.01em;
+}
+.public-tool-nav {
+  display: flex;
+  gap: 12px;
+  margin-left: 8px;
+}
+.public-tool-nav a {
+  text-decoration: none;
+  color: var(--ink-soft);
+  font-size: 13px;
+  padding: 6px 10px;
+  border-radius: 8px;
+}
+.public-tool-nav a.on,
+.public-tool-nav a:hover {
+  background: var(--card);
+  color: var(--ink);
+}
+.public-tool-cta {
+  margin-left: auto;
+  text-decoration: none;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: var(--yellow);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+.public-tool-body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 0;
+}
+
+
 :root {
   --bg: #efe9dc;
   --bg-paper: #f7f1e3;
@@ -165,8 +244,9 @@ body {
 }
 
 /* nav 영역을 사이드바 우측 끝까지 확장 → 스크롤바가 사이드바 경계선에 붙는다.
-   스크롤바는 평소 투명, .sidebar 에 hover 시에만 노출. */
-.nav {
+   스크롤바는 평소 투명, .sidebar 에 hover 시에만 노출.
+   주의: .nav 는 랜딩(.landing-root .nav)에서도 쓰이는 클래스라 반드시 .sidebar 로 스코프할 것. */
+.sidebar .nav {
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -182,26 +262,26 @@ body {
   transition: scrollbar-color 0.2s ease;
 }
 .sidebar:hover .nav,
-.nav:focus-within {
+.sidebar .nav:focus-within {
   scrollbar-color: var(--line-strong) transparent;
 }
 /* WebKit */
-.nav::-webkit-scrollbar {
+.sidebar .nav::-webkit-scrollbar {
   width: 6px;
 }
-.nav::-webkit-scrollbar-track {
+.sidebar .nav::-webkit-scrollbar-track {
   background: transparent;
 }
-.nav::-webkit-scrollbar-thumb {
+.sidebar .nav::-webkit-scrollbar-thumb {
   background: transparent;
   border-radius: 3px;
   transition: background 0.2s ease;
 }
 .sidebar:hover .nav::-webkit-scrollbar-thumb,
-.nav:focus-within::-webkit-scrollbar-thumb {
+.sidebar .nav:focus-within::-webkit-scrollbar-thumb {
   background: var(--line-strong);
 }
-.nav::-webkit-scrollbar-thumb:hover {
+.sidebar .nav::-webkit-scrollbar-thumb:hover {
   background: var(--ink-soft);
 }
 .nav-group {
@@ -617,7 +697,8 @@ body {
   flex-direction: column;
 }
 .sticky:hover {
-  transform: translateY(-3px) rotate(var(--rot, 0deg)) scale(1.02);
+  /* transform: rotate를 부모에 적용하면 Chromium에서 한글 IME가 깨지므로 회전 제거 */
+  transform: translateY(-3px) scale(1.02);
   box-shadow: var(--shadow-lift);
   z-index: 5;
 }
@@ -691,6 +772,20 @@ body {
 }
 .sticky-title-emoji {
   font-size: 18px;
+}
+.sticky-title-input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  outline: none;
+  font: inherit;
+  color: inherit;
+  padding: 0;
+  letter-spacing: inherit;
+}
+.sticky-title-input::placeholder {
+  color: rgba(0, 0, 0, 0.3);
 }
 .sticky textarea::placeholder {
   color: rgba(0, 0, 0, 0.3);

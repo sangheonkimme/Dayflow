@@ -65,7 +65,7 @@ export function createStore<T extends Identifiable>(
       const idx = items.findIndex((x) => x.id === item.id);
       const next = [...items];
       if (idx >= 0) next[idx] = item;
-      else next.unshift(item);
+      else next.push(item);
       items = Object.freeze(next);
       emit();
     },
