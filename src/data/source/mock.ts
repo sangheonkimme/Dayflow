@@ -50,15 +50,17 @@ function makeMockRepo<T extends Identifiable>(
   };
 }
 
-export function createMockSource(): DataSource {
+export function createMockSource(opts: { seed?: boolean } = {}): DataSource {
+  const seed = opts.seed ?? true;
+  const pick = <T>(s: T[]): T[] => (seed ? s : []);
   return {
-    transactions: makeMockRepo(TRANSACTION_SEEDS),
-    events: makeMockRepo(EVENT_SEEDS),
-    memos: makeMockRepo(MEMO_SEEDS),
-    stickyNotes: makeMockRepo(STICKY_NOTE_SEEDS),
-    checklist: makeMockRepo(CHECKLIST_SEEDS),
-    subscriptions: makeMockRepo(SUBSCRIPTION_SEEDS),
-    pinnedInfo: makeMockRepo(PINNED_INFO_SEEDS),
-    dailyLog: makeMockRepo(DAILY_LOG_SEEDS),
+    transactions: makeMockRepo(pick(TRANSACTION_SEEDS)),
+    events: makeMockRepo(pick(EVENT_SEEDS)),
+    memos: makeMockRepo(pick(MEMO_SEEDS)),
+    stickyNotes: makeMockRepo(pick(STICKY_NOTE_SEEDS)),
+    checklist: makeMockRepo(pick(CHECKLIST_SEEDS)),
+    subscriptions: makeMockRepo(pick(SUBSCRIPTION_SEEDS)),
+    pinnedInfo: makeMockRepo(pick(PINNED_INFO_SEEDS)),
+    dailyLog: makeMockRepo(pick(DAILY_LOG_SEEDS)),
   };
 }

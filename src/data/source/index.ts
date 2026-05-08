@@ -45,7 +45,8 @@ export function getDataSource(): DataSource {
     // 단순화: 비동기 생성을 동기 진입점에서 처리하기 위해 즉시 mock fallback 후 교체.
     // 실제 createSupabaseSource는 카테고리 캐시 로딩이 await 되어야 하므로
     // _initPromise로 노출.
-    const placeholderMock = createMockSource();
+    // live 모드 placeholder는 시드 없는 빈 mock — 실 사용자 데이터를 시드로 오염시키지 않음
+    const placeholderMock = createMockSource({ seed: false });
     _instance = placeholderMock;
     _initPromise = (async () => {
       const real = await createSupabaseSource(supabase, _userId!);
@@ -64,8 +65,8 @@ export function getDataSource(): DataSource {
     return _instance;
   }
 
-  // 그 외: mock
-  const mock = createMockSource();
+  // 그 외: mock — 'mock' 모드(디자인 QA)일 때만 시드, live fallback(supabase 미설정 등)에서는 빈 상태
+  const mock = createMockSource({ seed: _mode === "mock" });
   _instance = mock;
   _initPromise = Promise.all([
     mock.transactions.init(),

@@ -1,6 +1,5 @@
 /* ===== Dayflow Marketing Landing — paper-desk + modern ===== */
-
-@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Gaegu:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+/* 폰트(@import)는 styles.css에서 이미 로드하므로 여기선 생략 (Vite의 @import 위치 제약 회피) */
 
 /* 모든 토큰·글로벌은 .landing-root 스코프로 격리. main 앱 전역 토큰/스타일 침범 금지. */
 .landing-root {

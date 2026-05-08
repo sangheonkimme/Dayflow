@@ -807,4 +807,3 @@ function Footer() {
   );
 }
 
-window.Landing = Landing;
