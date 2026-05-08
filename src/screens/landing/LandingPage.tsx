@@ -1,7 +1,5 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
 "use client";
-import { useState, useEffect, useRef, Fragment } from "react";
+import { useState, useEffect, Fragment } from "react";
 import Link from "next/link";
 
 // ============================================================
@@ -382,8 +380,8 @@ function Features() {
       list: ['결제일 알림', '연간 환산 비교', '안 쓰는 구독 자동 감지'],
     },
   ];
-  const glyph = (g) => {
-    const p = { width:24, height:24, viewBox:"0 0 24 24", fill:"none", stroke:"currentColor", strokeWidth:1.8, strokeLinecap:"round", strokeLinejoin:"round" };
+  const glyph = (g: string) => {
+    const p = { width:24, height:24, viewBox:"0 0 24 24", fill:"none", stroke:"currentColor", strokeWidth:1.8, strokeLinecap:"round" as const, strokeLinejoin:"round" as const };
     if (g==='wallet') return <svg {...p}><rect x="3" y="6" width="18" height="14" rx="2"/><path d="M3 10h18"/><circle cx="16" cy="15" r="1.2"/></svg>;
     if (g==='cal') return <svg {...p}><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>;
     if (g==='note') return <svg {...p}><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"/><path d="M18 2l4 4-9 9H9v-4z"/></svg>;
@@ -759,7 +757,7 @@ function CtaBand({ onGoToAuth }: { onGoToAuth?: () => void }) {
 
 // ---------- FOOTER ----------
 function Footer() {
-  const soc = (path) => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">{path}</svg>;
+  const soc = (path: React.ReactNode) => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">{path}</svg>;
   return (
     <footer className="footer">
       <div className="footer-inner">
