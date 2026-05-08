@@ -30,9 +30,10 @@
   --shadow-lift: 0 12px 32px rgba(40, 30, 10, 0.16), 0 32px 64px -24px rgba(40, 30, 10, 0.22);
   --shadow-deep: 0 24px 60px rgba(40, 30, 10, 0.22), 0 60px 120px -40px rgba(40, 30, 10, 0.28);
 
-  --sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
-  --hand: 'Gaegu', 'Caveat', cursive;
-  --mono: 'JetBrains Mono', ui-monospace, monospace;
+  /* 폰트 변수는 next/font 가 app/layout.tsx 에서 주입한 --font-sans/--font-hand/--font-mono 사용. */
+  --sans: var(--font-sans), ui-sans-serif, system-ui, -apple-system, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+  --hand: var(--font-hand), 'Caveat', cursive;
+  --mono: var(--font-mono), ui-monospace, monospace;
 
   font-family: var(--sans);
   color: var(--ink);

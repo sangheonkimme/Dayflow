@@ -1,0 +1,4 @@
+/* Tailwind v3 directives. preflight 는 tailwind.config 에서 비활성 — Phase 5 에서
+   글로벌 CSS 정리 후 활성화. components/utilities 만 활용. */
+@tailwind components;
+@tailwind utilities;

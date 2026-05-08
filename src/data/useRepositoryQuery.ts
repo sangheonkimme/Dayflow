@@ -49,8 +49,10 @@ export function useRepositoryQuery<T extends { id: string | number }>(
   const { queryKey } = options;
 
   // store를 RQ와 분리해서 직접 구독 — 외부 변경(mutation 결과, realtime)이 즉시 반영
+  // SSR(Next prerender) 에서는 빈 스냅샷을 반환해 hydration mismatch 방지.
   const data = useSyncExternalStore(
     repo.store.subscribe,
+    repo.store.getSnapshot,
     repo.store.getSnapshot,
   );
 
