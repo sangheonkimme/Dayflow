@@ -81,4 +81,13 @@ export function getDataSource(): DataSource {
   return _instance;
 }
 
+export function getReadyPromise(): Promise<void> {
+  if (!_initPromise) getDataSource();
+  return _initPromise!;
+}
+
+export function getCurrentMode(): DataMode {
+  return _mode;
+}
+
 export type { DataSource, Repository } from "@/data/source/types";
