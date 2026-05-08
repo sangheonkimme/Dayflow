@@ -8,6 +8,7 @@ import { useTransactions } from "@/data/transactions";
 import { inferIcon } from "@/data/transactions";
 import type { Txn } from "@/types";
 import styles from "./TxnsPage.module.css";
+import "@/styles/flows-extra.css";
 
 // ============================================================
 // TRANSACTIONS PAGE — 거래내역 detail

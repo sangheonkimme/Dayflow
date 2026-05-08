@@ -1,7 +1,5 @@
 "use client";
 
-import "@/styles/flows.css";
-import "@/styles/flows-extra.css";
 import { Suspense, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMediaQuery } from "@/lib/useMediaQuery";

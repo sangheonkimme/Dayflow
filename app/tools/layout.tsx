@@ -1,6 +1,5 @@
 "use client";
 
-import "@/styles/image-tools.css";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import styles from "./layout.module.css";

@@ -1,11 +1,22 @@
 "use client";
 import { useState } from "react";
 import { Icon } from "@/components/Icon";
+import styles from "./ImageTools.module.css";
 
 // ============================================================
 // IMAGE TOOLS — Crop & PDF detail pages
 // Two design-canvas presentations, each with 2-3 variants.
+// Phase 4b: image-tools.css → ImageTools.module.css 격리.
+// 공유 globals (timer-btn, page-head, page-title, hand-sub, page-sub,
+// crumb, row, muted, primary) 는 plain string 유지 — styles.css/pages.css 에서 정의.
 // ============================================================
+
+// 배치 처리 상태 → 모듈 클래스 매핑 (.s-done → styles.sDone)
+const STATUS_CLASS: Record<string, string | undefined> = {
+  done: styles.sDone,
+  now: styles.sNow,
+  // wait 는 별도 모디파이어 없음
+};
 
 // ─── Sample image placeholder ───────────────────────────────
 const SampleImg = ({
@@ -86,7 +97,7 @@ function CropClassic({ density = "comfy" }) {
   ];
 
   return (
-    <div className="tool-page">
+    <div className={styles.toolPage}>
       <div className="page-head">
         <div>
           <div className="crumb">도구 · 이미지 자르기</div>
@@ -101,16 +112,20 @@ function CropClassic({ density = "comfy" }) {
         </div>
       </div>
 
-      <div className="crop-shell">
+      <div className={styles.cropShell}>
         {/* LEFT — control rail */}
-        <aside className="crop-rail">
-          <div className="rail-section">
-            <div className="rail-h">비율 프리셋</div>
-            <div className="ratio-grid">
+        <aside className={styles.cropRail}>
+          <div className={styles.railSection}>
+            <div className={styles.railH}>비율 프리셋</div>
+            <div className={styles.ratioGrid}>
               {presets.map((p) => (
                 <button
                   key={p.id}
-                  className={"ratio-card" + (ratio === p.id ? " on" : "")}
+                  className={
+                    ratio === p.id
+                      ? `${styles.ratioCard} ${styles.on}`
+                      : styles.ratioCard
+                  }
                   onClick={() => setRatio(p.id)}
                 >
                   <RatioGlyph id={p.id} />
@@ -121,9 +136,9 @@ function CropClassic({ density = "comfy" }) {
             </div>
           </div>
 
-          <div className="rail-section">
-            <div className="rail-h">자유 입력</div>
-            <div className="num-grid">
+          <div className={styles.railSection}>
+            <div className={styles.railH}>자유 입력</div>
+            <div className={styles.numGrid}>
               <label>
                 <span>W</span>
                 <input defaultValue="1080" />
@@ -147,29 +162,29 @@ function CropClassic({ density = "comfy" }) {
             </div>
           </div>
 
-          <div className="rail-section">
-            <div className="rail-h">변환</div>
-            <div className="trans-row">
+          <div className={styles.railSection}>
+            <div className={styles.railH}>변환</div>
+            <div className={styles.transRow}>
               <button
-                className={rot === -90 ? "on" : ""}
+                className={rot === -90 ? styles.on : ""}
                 onClick={() => setRot(rot - 90)}
               >
                 ↺ -90°
               </button>
               <button
-                className={rot === 90 ? "on" : ""}
+                className={rot === 90 ? styles.on : ""}
                 onClick={() => setRot(rot + 90)}
               >
                 ↻ +90°
               </button>
               <button
-                className={flip ? "on" : ""}
+                className={flip ? styles.on : ""}
                 onClick={() => setFlip(!flip)}
               >
                 ⇆ 좌우반전
               </button>
             </div>
-            <div className="rot-slider">
+            <div className={styles.rotSlider}>
               <input
                 type="range"
                 min="-45"
@@ -177,69 +192,74 @@ function CropClassic({ density = "comfy" }) {
                 value={rot % 360 > 45 ? 0 : rot}
                 onChange={(e) => setRot(+e.target.value)}
               />
-              <span className="rot-val">{rot}°</span>
+              <span className={styles.rotVal}>{rot}°</span>
             </div>
           </div>
         </aside>
 
         {/* CENTER — preview */}
-        <div className="crop-stage">
-          <div className="stage-toolbar">
-            <span className="stage-meta">미리보기</span>
-            <div className="stage-zoom">
+        <div className={styles.cropStage}>
+          <div className={styles.stageToolbar}>
+            <span className={styles.stageMeta}>미리보기</span>
+            <div className={styles.stageZoom}>
               <button>−</button>
               <span>62%</span>
               <button>+</button>
-              <span className="div" />
+              <span className={styles.div} />
               <button>맞춤</button>
               <button>1:1</button>
             </div>
           </div>
-          <div className="stage-canvas">
-            <div className="stage-img">
+          <div className={styles.stageCanvas}>
+            <div className={styles.stageImg}>
               <SampleImg aspect="3/2" />
-              <div className="crop-overlay">
-                <div className="crop-grid">
+              <div className={styles.cropOverlay}>
+                <div className={styles.cropGrid}>
                   {[...Array(9)].map((_, i) => (
                     <span key={i} />
                   ))}
                 </div>
                 {[...Array(8)].map((_, i) => (
-                  <span key={i} className={`crop-h h-${i}`} />
+                  <span
+                    key={i}
+                    className={`${styles.cropH} ${styles[`h${i}`]}`}
+                  />
                 ))}
               </div>
             </div>
           </div>
-          <div className="stage-foot">
+          <div className={styles.stageFoot}>
             <span>출력 1080 × 810 · 4:3</span>
             <span>예상 용량 ≈ 240 KB</span>
           </div>
         </div>
 
         {/* RIGHT — output options */}
-        <aside className="crop-out">
-          <div className="rail-h">내보내기</div>
-          <div className="format-row">
+        <aside className={styles.cropOut}>
+          <div className={styles.railH}>내보내기</div>
+          <div className={styles.formatRow}>
             {["JPG", "PNG", "WebP"].map((f) => (
-              <button key={f} className={f === "JPG" ? "on" : ""}>
+              <button key={f} className={f === "JPG" ? styles.on : ""}>
                 {f}
               </button>
             ))}
           </div>
-          <div className="quality">
-            <div className="q-row">
+          <div className={styles.quality}>
+            <div className={styles.qRow}>
               <span>품질</span>
               <b>92</b>
             </div>
             <input type="range" min="0" max="100" defaultValue="92" />
           </div>
-          <div className="rail-h" style={{ marginTop: 18 }}>
+          <div className={styles.railH} style={{ marginTop: 18 }}>
             다운로드
           </div>
-          <button className="dl-btn">↓ JPG로 저장</button>
-          <button className="dl-btn ghost">클립보드 복사</button>
-          <div className="tip-card">
-            <span className="hand">팁 ✎</span>
+          <button className={styles.dlBtn}>↓ JPG로 저장</button>
+          <button className={`${styles.dlBtn} ${styles.ghost}`}>
+            클립보드 복사
+          </button>
+          <div className={styles.tipCard}>
+            <span className={styles.hand}>팁 ✎</span>
             <p>SNS용은 1080px 너비 + 품질 88~92가 가장 안정적이에요.</p>
           </div>
         </aside>
@@ -254,68 +274,71 @@ function CropClassic({ density = "comfy" }) {
 function CropFocus() {
   const [ratio, setRatio] = useState("16:9");
   return (
-    <div className="tool-page focus">
-      <div className="focus-head">
-        <div className="focus-title">
+    <div className={`${styles.toolPage} ${styles.focus}`}>
+      <div className={styles.focusHead}>
+        <div className={styles.focusTitle}>
           <Icon name="crop" size={18} />
           <h2>이미지 자르기</h2>
           <span className="muted">sunset_over_lake.jpg</span>
         </div>
-        <div className="focus-actions">
+        <div className={styles.focusActions}>
           <button className="timer-btn">취소</button>
           <button className="timer-btn primary">완료 · 저장</button>
         </div>
       </div>
 
-      <div className="focus-stage">
-        <div className="focus-img">
+      <div className={styles.focusStage}>
+        <div className={styles.focusImg}>
           <SampleImg aspect="16/9" />
-          <div className="crop-overlay big">
-            <div className="crop-grid">
+          <div className={`${styles.cropOverlay} ${styles.big}`}>
+            <div className={styles.cropGrid}>
               {[...Array(9)].map((_, i) => (
                 <span key={i} />
               ))}
             </div>
             {[...Array(8)].map((_, i) => (
-              <span key={i} className={`crop-h h-${i}`} />
+              <span
+                key={i}
+                className={`${styles.cropH} ${styles[`h${i}`]}`}
+              />
             ))}
           </div>
         </div>
 
         {/* Floating bottom toolbar */}
-        <div className="float-bar">
-          <div className="float-group">
-            <span className="fg-label">비율</span>
+        <div className={styles.floatBar}>
+          <div className={styles.floatGroup}>
+            <span className={styles.fgLabel}>비율</span>
             {["1:1", "4:3", "16:9", "9:16", "자유"].map((r) => (
               <button
                 key={r}
-                className={ratio === r ? "on" : ""}
+                className={ratio === r ? styles.on : ""}
                 onClick={() => setRatio(r)}
               >
                 {r}
               </button>
             ))}
           </div>
-          <span className="bar-sep" />
-          <div className="float-group">
-            <span className="fg-label">변환</span>
+          <span className={styles.barSep} />
+          <div className={styles.floatGroup}>
+            <span className={styles.fgLabel}>변환</span>
             <button title="-90°">↺</button>
             <button title="+90°">↻</button>
             <button title="좌우반전">⇆</button>
             <button title="상하반전">⇅</button>
           </div>
-          <span className="bar-sep" />
-          <div className="float-group">
-            <span className="fg-label">출력</span>
-            <button className="on">JPG</button>
+          <span className={styles.barSep} />
+          <div className={styles.floatGroup}>
+            <span className={styles.fgLabel}>출력</span>
+            <button className={styles.on}>JPG</button>
             <button>PNG</button>
             <button>WebP</button>
-            <span className="q-mini">Q 92</span>
+            <span className={styles.qMini}>Q 92</span>
           </div>
         </div>
 
         {/* Floating crumb chip */}
-        <div className="crop-readout">
+        <div className={styles.cropReadout}>
           1920 × 1080 → <b>1280 × 720</b> · 16:9
         </div>
       </div>
@@ -372,7 +395,7 @@ function CropBatch() {
     },
   ];
   return (
-    <div className="tool-page">
+    <div className={styles.toolPage}>
       <div className="page-head">
         <div>
           <div className="crumb">도구 · 이미지 자르기 · 일괄</div>
@@ -387,10 +410,10 @@ function CropBatch() {
         </div>
       </div>
 
-      <div className="batch-shell">
-        <div className="batch-settings">
-          <div className="rail-h">공통 설정</div>
-          <div className="bs-row">
+      <div className={styles.batchShell}>
+        <div className={styles.batchSettings}>
+          <div className={styles.railH}>공통 설정</div>
+          <div className={styles.bsRow}>
             <span>비율</span>
             <select defaultValue="1:1">
               <option>자유</option>
@@ -399,7 +422,7 @@ function CropBatch() {
               <option>16:9</option>
             </select>
           </div>
-          <div className="bs-row">
+          <div className={styles.bsRow}>
             <span>출력</span>
             <select defaultValue="JPG">
               <option>JPG</option>
@@ -407,38 +430,50 @@ function CropBatch() {
               <option>WebP</option>
             </select>
           </div>
-          <div className="bs-row">
+          <div className={styles.bsRow}>
             <span>품질</span>
             <input type="range" min="0" max="100" defaultValue="90" />
           </div>
-          <div className="bs-row">
+          <div className={styles.bsRow}>
             <span>파일명</span>
             <input defaultValue="cropped_{n}.jpg" />
           </div>
-          <div className="bs-progress">
-            <div className="bs-progress-bar">
+          <div className={styles.bsProgress}>
+            <div className={styles.bsProgressBar}>
               <span style={{ width: "38%" }} />
             </div>
             <small>2 / 6 완료 · 예상 1분 12초 남음</small>
           </div>
         </div>
 
-        <div className="batch-grid">
-          {items.map((it) => (
-            <div key={it.id} className={"batch-card s-" + it.status}>
-              <div className="bc-thumb">
-                <SampleImg aspect="1/1" />
-                {it.status === "done" && <span className="bc-check">✓</span>}
-                {it.status === "now" && <span className="bc-spin" />}
+        <div className={styles.batchGrid}>
+          {items.map((it) => {
+            const statusCls = STATUS_CLASS[it.status];
+            return (
+              <div
+                key={it.id}
+                className={
+                  statusCls
+                    ? `${styles.batchCard} ${statusCls}`
+                    : styles.batchCard
+                }
+              >
+                <div className={styles.bcThumb}>
+                  <SampleImg aspect="1/1" />
+                  {it.status === "done" && (
+                    <span className={styles.bcCheck}>✓</span>
+                  )}
+                  {it.status === "now" && <span className={styles.bcSpin} />}
+                </div>
+                <div className={styles.bcMeta}>
+                  <b>{it.name}</b>
+                  <small>
+                    {it.size} · {it.out}
+                  </small>
+                </div>
               </div>
-              <div className="bc-meta">
-                <b>{it.name}</b>
-                <small>
-                  {it.size} · {it.out}
-                </small>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>
@@ -458,7 +493,7 @@ function PdfStoryboard() {
     { id: 6, name: "04_summary.jpg", size: "1.8 MB" },
   ];
   return (
-    <div className="tool-page">
+    <div className={styles.toolPage}>
       <div className="page-head">
         <div>
           <div className="crumb">도구 · 이미지 → PDF</div>
@@ -475,11 +510,11 @@ function PdfStoryboard() {
         </div>
       </div>
 
-      <div className="pdf-shell">
-        <aside className="pdf-rail">
-          <div className="rail-section">
-            <div className="rail-h">용지</div>
-            <div className="paper-row">
+      <div className={styles.pdfShell}>
+        <aside className={styles.pdfRail}>
+          <div className={styles.railSection}>
+            <div className={styles.railH}>용지</div>
+            <div className={styles.paperRow}>
               {[
                 { id: "a4", label: "A4", sub: "210 × 297" },
                 { id: "lt", label: "Letter", sub: "8.5 × 11" },
@@ -487,10 +522,14 @@ function PdfStoryboard() {
               ].map((p, i) => (
                 <button
                   key={p.id}
-                  className={"paper-card" + (i === 0 ? " on" : "")}
+                  className={
+                    i === 0
+                      ? `${styles.paperCard} ${styles.on}`
+                      : styles.paperCard
+                  }
                 >
                   <span
-                    className="paper-glyph"
+                    className={styles.paperGlyph}
                     style={{
                       aspectRatio:
                         p.id === "lt"
@@ -507,46 +546,46 @@ function PdfStoryboard() {
             </div>
           </div>
 
-          <div className="rail-section">
-            <div className="rail-h">방향 / 정렬</div>
-            <div className="orient-row">
-              <button className="on">세로</button>
+          <div className={styles.railSection}>
+            <div className={styles.railH}>방향 / 정렬</div>
+            <div className={styles.orientRow}>
+              <button className={styles.on}>세로</button>
               <button>가로</button>
             </div>
-            <div className="orient-row" style={{ marginTop: 8 }}>
+            <div className={styles.orientRow} style={{ marginTop: 8 }}>
               <button>장당 1장</button>
               <button>2장 (분할)</button>
             </div>
           </div>
 
-          <div className="rail-section">
-            <div className="rail-h">파일명</div>
+          <div className={styles.railSection}>
+            <div className={styles.railH}>파일명</div>
             <input
-              className="rail-input"
+              className={styles.railInput}
               defaultValue="document_2026-05-03.pdf"
             />
           </div>
         </aside>
 
-        <div className="pdf-board">
-          <div className="board-h">
+        <div className={styles.pdfBoard}>
+          <div className={styles.boardH}>
             <span>
               페이지 순서 <small>(드래그로 변경)</small>
             </span>
             <span className="muted">{pages.length}장</span>
           </div>
-          <div className="page-grid">
+          <div className={styles.pageGrid}>
             {pages.map((p, i) => (
-              <div key={p.id} className="page-card">
-                <span className="page-num">{i + 1}</span>
-                <span className="page-grip">⋮⋮</span>
+              <div key={p.id} className={styles.pageCard}>
+                <span className={styles.pageNum}>{i + 1}</span>
+                <span className={styles.pageGrip}>⋮⋮</span>
                 <SampleImg aspect="3/4" muted={i % 2 === 1} />
-                <div className="page-name">{p.name}</div>
+                <div className={styles.pageName}>{p.name}</div>
                 <small>{p.size}</small>
               </div>
             ))}
-            <div className="page-card add">
-              <div className="add-plus">+</div>
+            <div className={`${styles.pageCard} ${styles.add}`}>
+              <div className={styles.addPlus}>+</div>
               <small>이미지 추가</small>
             </div>
           </div>
@@ -561,7 +600,7 @@ function PdfStoryboard() {
 // ============================================================
 function PdfEmpty() {
   return (
-    <div className="tool-page">
+    <div className={styles.toolPage}>
       <div className="page-head">
         <div>
           <div className="crumb">도구 · 이미지 → PDF</div>
@@ -574,19 +613,19 @@ function PdfEmpty() {
         </div>
       </div>
 
-      <div className="dropzone">
-        <div className="dz-pile">
+      <div className={styles.dropzone}>
+        <div className={styles.dzPile}>
           <SampleImg aspect="3/4" w="120px" rotated={-7} />
           <SampleImg aspect="3/4" w="120px" rotated={3} />
           <SampleImg aspect="3/4" w="120px" rotated={-2} />
         </div>
         <h2>여기로 이미지를 끌어다 놓으세요</h2>
         <p>
-          또는 <button className="dz-link">파일 선택</button> · 클립보드
+          또는 <button className={styles.dzLink}>파일 선택</button> · 클립보드
           붙여넣기 (⌘V) 도 지원해요
         </p>
 
-        <div className="dz-formats">
+        <div className={styles.dzFormats}>
           <span>JPG</span>
           <span>PNG</span>
           <span>HEIC</span>
@@ -594,23 +633,23 @@ function PdfEmpty() {
           <span>GIF</span>
         </div>
 
-        <div className="dz-tips">
-          <div className="tip">
+        <div className={styles.dzTips}>
+          <div className={styles.tip}>
             <b>1.</b>
             <span>여러 이미지를 한꺼번에 끌어다 놓아요</span>
           </div>
-          <div className="tip">
+          <div className={styles.tip}>
             <b>2.</b>
             <span>드래그로 순서를 바꿀 수 있어요</span>
           </div>
-          <div className="tip">
+          <div className={styles.tip}>
             <b>3.</b>
             <span>용지 크기 (A4 / Letter / 원본) 선택 후 내보내기</span>
           </div>
         </div>
 
-        <div className="dz-sample">
-          <span className="hand">미리 체험해보기 →</span>
+        <div className={styles.dzSample}>
+          <span className={styles.hand}>미리 체험해보기 →</span>
           <button className="timer-btn">샘플 3장으로 시작</button>
         </div>
       </div>
@@ -632,7 +671,7 @@ function PdfUploaded() {
   const totalSize = "5.3 MB";
 
   return (
-    <div className="tool-page">
+    <div className={styles.toolPage}>
       <div className="page-head">
         <div>
           <div className="crumb">도구 · 이미지 → PDF</div>
@@ -650,33 +689,37 @@ function PdfUploaded() {
         </div>
       </div>
 
-      <div className="pdf-uploaded">
+      <div className={styles.pdfUploaded}>
         {/* TOP — uploaded preview strip */}
-        <section className="up-strip">
-          <div className="strip-h">
-            <span className="rail-h" style={{ marginBottom: 0 }}>
+        <section className={styles.upStrip}>
+          <div className={styles.stripH}>
+            <span className={styles.railH} style={{ marginBottom: 0 }}>
               업로드된 이미지
             </span>
             <small className="muted">
               드래그로 순서 변경 · 클릭으로 미리보기
             </small>
           </div>
-          <div className="strip-row">
+          <div className={styles.stripRow}>
             {uploaded.map((img, i) => (
               <div
                 key={img.id}
-                className={"strip-card" + (i === 0 ? " active" : "")}
+                className={
+                  i === 0
+                    ? `${styles.stripCard} ${styles.active}`
+                    : styles.stripCard
+                }
               >
-                <span className="strip-num">{i + 1}</span>
-                <span className="strip-grip">⋮⋮</span>
-                <button className="strip-x" title="제거">
+                <span className={styles.stripNum}>{i + 1}</span>
+                <span className={styles.stripGrip}>⋮⋮</span>
+                <button className={styles.stripX} title="제거">
                   ×
                 </button>
                 <SampleImg
                   aspect={img.w > img.h ? "3/2" : "3/4"}
                   muted={i % 2 === 1}
                 />
-                <div className="strip-meta">
+                <div className={styles.stripMeta}>
                   <b>{img.name}</b>
                   <small>
                     {img.size} · {img.w}×{img.h}
@@ -684,22 +727,22 @@ function PdfUploaded() {
                 </div>
               </div>
             ))}
-            <div className="strip-card add">
-              <div className="add-plus">+</div>
+            <div className={`${styles.stripCard} ${styles.add}`}>
+              <div className={styles.addPlus}>+</div>
               <small>이미지 추가</small>
-              <span className="hand">또는 끌어다 놓기</span>
+              <span className={styles.hand}>또는 끌어다 놓기</span>
             </div>
           </div>
         </section>
 
         {/* BOTTOM — settings + summary */}
-        <section className="up-bottom">
-          <div className="up-settings">
-            <div className="rail-h">PDF 설정</div>
+        <section className={styles.upBottom}>
+          <div className={styles.upSettings}>
+            <div className={styles.railH}>PDF 설정</div>
 
-            <div className="set-block">
-              <div className="set-label">용지 크기</div>
-              <div className="paper-row">
+            <div className={styles.setBlock}>
+              <div className={styles.setLabel}>용지 크기</div>
+              <div className={styles.paperRow}>
                 {[
                   {
                     id: "a4",
@@ -722,11 +765,15 @@ function PdfUploaded() {
                 ].map((p) => (
                   <button
                     key={p.id}
-                    className={"paper-card" + (paper === p.id ? " on" : "")}
+                    className={
+                      paper === p.id
+                        ? `${styles.paperCard} ${styles.on}`
+                        : styles.paperCard
+                    }
                     onClick={() => setPaper(p.id)}
                   >
                     <span
-                      className="paper-glyph"
+                      className={styles.paperGlyph}
                       style={{ aspectRatio: p.ratio }}
                     />
                     <b>{p.label}</b>
@@ -736,17 +783,17 @@ function PdfUploaded() {
               </div>
             </div>
 
-            <div className="set-block">
-              <div className="set-label">방향</div>
-              <div className="orient-row">
+            <div className={styles.setBlock}>
+              <div className={styles.setLabel}>방향</div>
+              <div className={styles.orientRow}>
                 <button
-                  className={orient === "portrait" ? "on" : ""}
+                  className={orient === "portrait" ? styles.on : ""}
                   onClick={() => setOrient("portrait")}
                 >
                   ┃ 세로
                 </button>
                 <button
-                  className={orient === "landscape" ? "on" : ""}
+                  className={orient === "landscape" ? styles.on : ""}
                   onClick={() => setOrient("landscape")}
                 >
                   ━ 가로
@@ -754,29 +801,29 @@ function PdfUploaded() {
               </div>
             </div>
 
-            <div className="set-block">
-              <div className="set-label">파일명</div>
+            <div className={styles.setBlock}>
+              <div className={styles.setLabel}>파일명</div>
               <input
-                className="rail-input"
+                className={styles.railInput}
                 defaultValue="document_2026-05-03.pdf"
               />
             </div>
           </div>
 
           {/* Live preview */}
-          <div className="up-preview">
-            <div className="prev-h">
+          <div className={styles.upPreview}>
+            <div className={styles.prevH}>
               미리보기{" "}
               <small>
                 · {paper === "or" ? "원본" : paper.toUpperCase()}{" "}
                 {orient === "portrait" ? "세로" : "가로"}
               </small>
             </div>
-            <div className="prev-stack">
+            <div className={styles.prevStack}>
               {uploaded.map((img, i) => (
                 <div
                   key={img.id}
-                  className="prev-page"
+                  className={styles.prevPage}
                   style={{
                     aspectRatio:
                       orient === "portrait"
@@ -794,8 +841,8 @@ function PdfUploaded() {
                     zIndex: uploaded.length - i,
                   }}
                 >
-                  <span className="prev-no">{i + 1}</span>
-                  <div className="prev-pad">
+                  <span className={styles.prevNo}>{i + 1}</span>
+                  <div className={styles.prevPad}>
                     <SampleImg
                       aspect={img.w > img.h ? "3/2" : "3/4"}
                       muted={i % 2 === 1}
@@ -804,8 +851,8 @@ function PdfUploaded() {
                 </div>
               ))}
             </div>
-            <div className="prev-foot">
-              <span className="hand">총 {uploaded.length}쪽</span>
+            <div className={styles.prevFoot}>
+              <span className={styles.hand}>총 {uploaded.length}쪽</span>
               <span className="muted">예상 3.8 MB</span>
             </div>
           </div>
@@ -828,7 +875,7 @@ function PdfSpread() {
     { id: 6, name: "05" },
   ];
   return (
-    <div className="tool-page">
+    <div className={styles.toolPage}>
       <div className="page-head">
         <div>
           <div className="crumb">도구 · 이미지 → PDF · 미리보기</div>
@@ -843,38 +890,42 @@ function PdfSpread() {
         </div>
       </div>
 
-      <div className="spread-shell">
-        <aside className="spread-thumbs">
-          <div className="rail-h">{pages.length}장</div>
+      <div className={styles.spreadShell}>
+        <aside className={styles.spreadThumbs}>
+          <div className={styles.railH}>{pages.length}장</div>
           {pages.map((p, i) => (
             <div
               key={p.id}
-              className={"spread-thumb" + (i === 1 || i === 2 ? " on" : "")}
+              className={
+                i === 1 || i === 2
+                  ? `${styles.spreadThumb} ${styles.on}`
+                  : styles.spreadThumb
+              }
             >
-              <span className="t-num">{i + 1}</span>
+              <span className={styles.tNum}>{i + 1}</span>
               <SampleImg aspect="3/4" />
             </div>
           ))}
         </aside>
 
-        <div className="spread-stage">
-          <div className="spread-bg">
-            <div className="spread-book">
-              <div className="spread-page left">
-                <div className="page-no">2</div>
+        <div className={styles.spreadStage}>
+          <div className={styles.spreadBg}>
+            <div className={styles.spreadBook}>
+              <div className={`${styles.spreadPage} ${styles.left}`}>
+                <div className={styles.pageNo}>2</div>
                 <SampleImg aspect="3/4" />
               </div>
-              <div className="spread-page right">
-                <div className="page-no">3</div>
+              <div className={`${styles.spreadPage} ${styles.right}`}>
+                <div className={styles.pageNo}>3</div>
                 <SampleImg aspect="3/4" muted />
               </div>
             </div>
           </div>
-          <div className="spread-controls">
+          <div className={styles.spreadControls}>
             <button>← 이전</button>
-            <span className="spread-pos">2 — 3 / 6</span>
+            <span className={styles.spreadPos}>2 — 3 / 6</span>
             <button>다음 →</button>
-            <span className="div" />
+            <span className={styles.div} />
             <button>맞춤</button>
             <button>100%</button>
             <button>200%</button>
@@ -897,7 +948,7 @@ function RatioGlyph({ id }) {
     fb: [26, 10],
   };
   const [w, h] = map[id] || [20, 14];
-  return <span className="ratio-glyph" style={{ width: w, height: h }} />;
+  return <span className={styles.ratioGlyph} style={{ width: w, height: h }} />;
 }
 
 // ============================================================
@@ -905,7 +956,7 @@ function RatioGlyph({ id }) {
 // ============================================================
 function CropEmpty({ onPickSample }: { onPickSample?: () => void }) {
   return (
-    <div className="tool-page">
+    <div className={styles.toolPage}>
       <div className="page-head">
         <div>
           <div className="crumb">도구 · 이미지 자르기</div>
@@ -918,17 +969,17 @@ function CropEmpty({ onPickSample }: { onPickSample?: () => void }) {
         </div>
       </div>
 
-      <div className="dropzone">
-        <div className="dz-pile">
+      <div className={styles.dropzone}>
+        <div className={styles.dzPile}>
           <SampleImg aspect="4/3" w="160px" rotated={-3} />
         </div>
         <h2>여기로 이미지를 끌어다 놓으세요</h2>
         <p>
-          또는 <button className="dz-link">파일 선택</button> · 클립보드
+          또는 <button className={styles.dzLink}>파일 선택</button> · 클립보드
           붙여넣기 (⌘V) 도 지원해요
         </p>
 
-        <div className="dz-formats">
+        <div className={styles.dzFormats}>
           <span>JPG</span>
           <span>PNG</span>
           <span>HEIC</span>
@@ -936,23 +987,23 @@ function CropEmpty({ onPickSample }: { onPickSample?: () => void }) {
           <span>GIF</span>
         </div>
 
-        <div className="dz-tips">
-          <div className="tip">
+        <div className={styles.dzTips}>
+          <div className={styles.tip}>
             <b>1.</b>
             <span>드래그로 자를 영역을 선택해요</span>
           </div>
-          <div className="tip">
+          <div className={styles.tip}>
             <b>2.</b>
             <span>비율(1:1 / 16:9 / 자유) 을 골라 정렬해요</span>
           </div>
-          <div className="tip">
+          <div className={styles.tip}>
             <b>3.</b>
             <span>원하는 포맷·크기로 내보내요</span>
           </div>
         </div>
 
-        <div className="dz-sample">
-          <span className="hand">미리 체험해보기 →</span>
+        <div className={styles.dzSample}>
+          <span className={styles.hand}>미리 체험해보기 →</span>
           <button className="timer-btn" onClick={onPickSample}>
             샘플 이미지로 시작
           </button>
@@ -972,42 +1023,42 @@ function CropCanvasPage() {
   };
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
-      <div className="variant-switch">
-        <span className="vs-label">상태</span>
+      <div className={styles.variantSwitch}>
+        <span className={styles.vsLabel}>상태</span>
         <button
-          className={state === "empty" ? "on" : ""}
+          className={state === "empty" ? styles.on : ""}
           onClick={() => setState("empty")}
         >
           업로드 전
         </button>
         <button
-          className={state === "loaded" ? "on" : ""}
+          className={state === "loaded" ? styles.on : ""}
           onClick={() => setState("loaded")}
         >
           업로드 후
         </button>
         {state === "loaded" && (
           <>
-            <span className="vs-label" style={{ marginLeft: 12 }}>
+            <span className={styles.vsLabel} style={{ marginLeft: 12 }}>
               모드
             </span>
             <button
-              className={variant === "classic" ? "on" : ""}
+              className={variant === "classic" ? styles.on : ""}
               onClick={() => setVariant("classic")}
             >
               기본
             </button>
             <button
-              className={variant === "focus" ? "on" : ""}
+              className={variant === "focus" ? styles.on : ""}
               onClick={() => setVariant("focus")}
             >
-              포커스 모드 <span className="pro-badge">PRO</span>
+              포커스 모드 <span className={styles.proBadge}>PRO</span>
             </button>
             <button
-              className={variant === "batch" ? "on" : ""}
+              className={variant === "batch" ? styles.on : ""}
               onClick={() => setVariant("batch")}
             >
-              일괄 처리 <span className="pro-badge">PRO</span>
+              일괄 처리 <span className={styles.proBadge}>PRO</span>
             </button>
           </>
         )}
@@ -1027,16 +1078,16 @@ function PdfCanvasPage() {
   const [state, setState] = useState("empty");
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
-      <div className="variant-switch">
-        <span className="vs-label">상태</span>
+      <div className={styles.variantSwitch}>
+        <span className={styles.vsLabel}>상태</span>
         <button
-          className={state === "empty" ? "on" : ""}
+          className={state === "empty" ? styles.on : ""}
           onClick={() => setState("empty")}
         >
           업로드 전
         </button>
         <button
-          className={state === "uploaded" ? "on" : ""}
+          className={state === "uploaded" ? styles.on : ""}
           onClick={() => setState("uploaded")}
         >
           업로드 후 (3장)

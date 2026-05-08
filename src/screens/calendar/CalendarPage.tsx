@@ -3,6 +3,7 @@ import { Icon } from "@/components/Icon";
 import { DOW } from "@/lib/date";
 import { EVENT_CATEGORY_COLORS } from "@/lib/categories";
 import { useEvents } from "@/data/events";
+import "@/styles/flows.css";
 
 export const CalendarPage = ({ onAdd, onEditEvent }: any) => {
   const today = new Date();

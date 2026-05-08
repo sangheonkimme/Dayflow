@@ -3,6 +3,7 @@ import { Icon } from "@/components/Icon";
 import { Modal } from "@/components/Modal";
 import { useTransactions } from "@/data/transactions";
 import { recent as selectRecent } from "@/data/transactions";
+import "@/styles/flows.css";
 
 // ============================================================
 // RECEIPT UPLOAD MODAL — 영수증 첨부 플로우
