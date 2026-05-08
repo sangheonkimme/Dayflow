@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
 import { useState, useMemo } from "react";
 import { Icon } from "@/components/Icon";
 import { Modal } from "@/components/Modal";
@@ -7,6 +5,7 @@ import { formatWon } from "@/lib/format";
 import { DOW } from "@/lib/date";
 import { sumBy } from "@/lib/aggregate";
 import { useSubscriptions } from "@/data/subscriptions";
+import type { Subscription } from "@/types";
 import {
   subscriptionColor,
   subscriptionInitial,
@@ -42,10 +41,12 @@ const SUB_PALETTE = [
   "#ee5a3d",
 ];
 
-function SubsPage({ onAdd }) {
-  const [sortBy, setSortBy] = useState("day"); // day | price | name
-  const [editing, setEditing] = useState(null);
-  const [tipOpen, setTipOpen] = useState(null); // { kind: "cancel"|"overlap", subId? }
+type SortKey = "day" | "price" | "name";
+type TipState = { kind: "cancel" | "overlap"; subId?: string | number } | null;
+function SubsPage({ onAdd }: { onAdd?: () => void }) {
+  const [sortBy, setSortBy] = useState<SortKey>("day");
+  const [editing, setEditing] = useState<Subscription | null>(null);
+  const [tipOpen, setTipOpen] = useState<TipState>(null);
 
   const { all: SUBS, usage: USAGE_LIST } = useSubscriptions();
   const SUB_USAGE = useMemo(() => {
@@ -67,10 +68,10 @@ function SubsPage({ onAdd }) {
   const monthlyTotal = sumBy(monthlyActive, "price");
   const annualized = monthlyTotal * 12 + sumBy(yearlyActive, "price");
   const upcoming = monthlyActive
-    .filter((s) => s.day >= todayDate)
-    .sort((a, b) => a.day - b.day);
+    .filter((s) => (s.day ?? 0) >= todayDate)
+    .sort((a, b) => (a.day ?? 0) - (b.day ?? 0));
   const nextOne = upcoming[0];
-  const dDay = nextOne ? nextOne.day - todayDate : null;
+  const dDay = nextOne?.day != null ? nextOne.day - todayDate : null;
 
   const fmt = formatWon;
 
@@ -78,17 +79,18 @@ function SubsPage({ onAdd }) {
   const list = useMemo(() => {
     const active = SUBS.filter((s) => s.status === "active");
     const paused = SUBS.filter((s) => s.status === "paused");
-    const sorter = {
-      day: (a, b) => a.day - b.day,
-      price: (a, b) => b.price - a.price,
-      name: (a, b) => a.name.localeCompare(b.name, "ko"),
+    const sorter: (a: Subscription, b: Subscription) => number = {
+      day: (a: Subscription, b: Subscription) => (a.day ?? 0) - (b.day ?? 0),
+      price: (a: Subscription, b: Subscription) => b.price - a.price,
+      name: (a: Subscription, b: Subscription) =>
+        a.name.localeCompare(b.name, "ko"),
     }[sortBy];
     return [...active.sort(sorter), ...paused];
   }, [sortBy]);
 
   // upcoming 7 days strip
   const next7Days = useMemo(() => {
-    const arr = [];
+    const arr: { date: Date; day: number; items: Subscription[]; isToday: boolean }[] = [];
     for (let i = 0; i < 7; i++) {
       const dt = new Date(today);
       dt.setDate(todayDate + i);
@@ -199,11 +201,11 @@ function SubsPage({ onAdd }) {
             </div>
           </div>
           <div className="filter-tabs">
-            {[
+            {([
               ["day", "결제일순"],
               ["price", "금액순"],
               ["name", "이름순"],
-            ].map(([k, l]) => (
+            ] as const).map(([k, l]) => (
               <span
                 key={k}
                 className={"filter-tab" + (sortBy === k ? " on" : "")}
@@ -217,11 +219,12 @@ function SubsPage({ onAdd }) {
 
         <div className="subs-list">
           {list.map((s) => {
+            const sDay = s.day ?? 0;
             const dleft =
               s.cycle === "월"
-                ? s.day >= todayDate
-                  ? s.day - todayDate
-                  : 30 - todayDate + s.day
+                ? sDay >= todayDate
+                  ? sDay - todayDate
+                  : 30 - todayDate + sDay
                 : null;
             const isSoon =
               dleft !== null && dleft <= 3 && s.status === "active";

@@ -24,6 +24,16 @@ module.exports = {
   settings: { react: { version: "19.0" } },
   ignorePatterns: ["dist", "node_modules", "WLD (4)", "archive", ".next", "*.cjs"],
   rules: {
+    // @ts-nocheck 신규 추가 금지 (Phase 5 마지막에 전수 회복 완료, 2026-05-09).
+    "@typescript-eslint/ban-ts-comment": [
+      "error",
+      {
+        "ts-nocheck": true,
+        "ts-expect-error": "allow-with-description",
+        "ts-ignore": true,
+        "ts-check": false,
+      },
+    ],
     // 시안 기반 코드 — 점진 정리 중. TS 도입 후 단계적 강화.
     "@typescript-eslint/no-unused-vars": [
       "warn",
