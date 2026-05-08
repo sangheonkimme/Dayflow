@@ -3,12 +3,31 @@ import { Ico } from "@/screens/mobile/shared/Ico";
 import { useSubscriptions } from "@/data/subscriptions";
 
 export const AddSubSheet = ({ open, onClose }: any) => {
+  const { upsert } = useSubscriptions();
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [cat, setCat] = useState("엔터");
   const [day, setDay] = useState(1);
-  const [cycle, setCycle] = useState("월");
+  const [cycle, setCycle] = useState<"월" | "년">("월");
   const [pay, setPay] = useState("신용카드");
+
+  const handleSubmit = async () => {
+    const priceNum = Number(price.replace(/[^0-9]/g, ""));
+    if (!name.trim() || priceNum <= 0) return;
+    await upsert({
+      id: Date.now(),
+      name: name.trim(),
+      cat,
+      price: priceNum,
+      cycle,
+      day,
+      status: "active",
+      initial: name.trim().slice(0, 1),
+    });
+    setName("");
+    setPrice("");
+    onClose?.();
+  };
   const cats = [
     { name: "엔터", color: "#ffb38a", ico: "play" },
     { name: "업무", color: "#d4c1f0", ico: "tag" },
@@ -24,7 +43,7 @@ export const AddSubSheet = ({ open, onClose }: any) => {
     { name: "iCloud+", price: 3300, cat: "유틸" },
   ];
   const cur = cats.find((c) => c.name === cat) || cats[0];
-  const cycles = ["월", "년", "주"];
+  const cycles: ("월" | "년")[] = ["월", "년"];
   const pays = ["신용카드", "체크카드", "계좌이체", "기타"];
   const fmt = (v) => (v ? Number(v).toLocaleString() : "0");
 
@@ -361,7 +380,9 @@ export const AddSubSheet = ({ open, onClose }: any) => {
               취소
             </button>
             <button
-              onClick={onClose}
+              type="button"
+              onClick={handleSubmit}
+              disabled={!name.trim() || !price}
               style={{
                 flex: 2,
                 padding: "14px 0",
@@ -371,7 +392,8 @@ export const AddSubSheet = ({ open, onClose }: any) => {
                 color: "var(--bg-paper)",
                 fontWeight: 700,
                 fontSize: 13,
-                cursor: "pointer",
+                cursor: !name.trim() || !price ? "not-allowed" : "pointer",
+                opacity: !name.trim() || !price ? 0.5 : 1,
               }}
             >
               구독 추가하기

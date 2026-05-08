@@ -300,7 +300,8 @@ function SubsPage({ onAdd }: { onAdd?: () => void }) {
         </div>
       </div>
 
-      {/* INSIGHT — single compact strip */}
+      {/* INSIGHT — 데모 데이터 — 실제 구독이 하나도 없을 땐 노출 안 함. */}
+      {SUBS.length > 0 && (
       <div className="card card-pad insight-card" style={{ marginTop: 18 }}>
         <div className="insight-stamp">SAVE TIPS</div>
         <h3>새는 돈, 점검해볼까요?</h3>
@@ -337,6 +338,7 @@ function SubsPage({ onAdd }: { onAdd?: () => void }) {
           </li>
         </ul>
       </div>
+      )}
 
       {editing && (
         <SubEditModal

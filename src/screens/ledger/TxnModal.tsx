@@ -5,25 +5,30 @@ import { Modal } from "@/components/Modal";
 // ─────────────────────────────────────────────
 // Helper — natural-language quick parse
 // ─────────────────────────────────────────────
-function parseTxn(input, type) {
+function parseTxn(input: string, type: "in" | "out") {
   const cats = ["식비", "주거", "교통", "쇼핑", "여가", "건강", "구독", "기타"];
   const incomeCats = ["월급", "보너스", "부수입", "환급", "기타"];
   const list = type === "in" ? incomeCats : cats;
   const cat =
     list.find((c) => input.includes(c)) || (type === "in" ? "월급" : "기타");
-  const num = input.replace(/,/g, "").match(/(\d+(?:\.\d+)?)([kw만천]?)/i);
+  // 콤마 구분자 제거 후 숫자+단위 매칭. memo 추출도 같은 normalized 본문 기준.
+  const normalized = input.replace(/,/g, "");
+  const num = normalized.match(/(\d+(?:\.\d+)?)([kw만천]?)/i);
   let amount = 0;
+  let amountToken = "";
   if (num) {
     let v = parseFloat(num[1]);
     const unit = num[2].toLowerCase();
     if (unit === "k" || unit === "천") v *= 1000;
     if (unit === "w" || unit === "만") v *= 10000;
     amount = Math.round(v);
+    amountToken = num[0];
   }
   const memo =
-    input
-      .replace(/(\d+(?:\.\d+)?[kw만천]?)/i, "")
+    normalized
+      .replace(amountToken, "")
       .replace(cat, "")
+      .replace(/\s+/g, " ")
       .trim() || "—";
   return { amount, cat, memo };
 }
@@ -230,8 +235,8 @@ function TxnEdit({ onClose, editing, onDelete, onSave }) {
   );
 }
 
-function TxnQuick({ onClose, onSave, onDetailed }) {
-  const [type, setType] = useState("out");
+function TxnQuick({ onClose, onSave, onDetailed }: any) {
+  const [type, setType] = useState<"in" | "out">("out");
   const [val, setVal] = useState("");
   const parsed = parseTxn(val, type);
 

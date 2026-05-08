@@ -254,11 +254,32 @@ export function memoWordCount(memo: Pick<MemoDoc, "word" | "body">): number {
   return (memo.body ?? "").replace(/\s/g, "").length;
 }
 
+/**
+ * memo.updated 가 ISO timestamp(2026-05-08T23:07:49.809723+00:00) 일 때
+ * 사람이 읽을 수 있는 형태(M월 D일 HH:MM)로 포맷. 비-ISO 자유 문자열
+ * ('방금', '어제') 은 그대로 통과.
+ */
+function formatUpdated(value: string): string {
+  // ISO 패턴: 4자리-2자리-2자리T 시작
+  if (!/^\d{4}-\d{2}-\d{2}T/.test(value)) return value;
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return value;
+  const now = new Date();
+  const sameDay =
+    d.getFullYear() === now.getFullYear() &&
+    d.getMonth() === now.getMonth() &&
+    d.getDate() === now.getDate();
+  const hh = String(d.getHours()).padStart(2, "0");
+  const mm = String(d.getMinutes()).padStart(2, "0");
+  if (sameDay) return `오늘 ${hh}:${mm}`;
+  return `${d.getMonth() + 1}월 ${d.getDate()}일 ${hh}:${mm}`;
+}
+
 export function memoUpdatedLabel(
   memo: Pick<MemoDoc, "updated">,
   fallbackDate?: Date,
 ): string {
-  if (memo.updated) return memo.updated;
+  if (memo.updated) return formatUpdated(memo.updated);
   if (fallbackDate) return getRelativeDateLabel(fallbackDate);
   return "—";
 }

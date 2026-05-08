@@ -1,9 +1,15 @@
 "use client";
 
+import { useState } from "react";
 import { SubsPage } from "@/screens/subs/SubsPage";
-import { useModalStore } from "@/store/modal";
+import { AddSubSheet } from "@/screens/mobile/sheets/AddSubSheet";
 
 export default function Page() {
-  const openTxn = useModalStore((s) => s.openTxn);
-  return <SubsPage onAdd={() => openTxn()} />;
+  const [addOpen, setAddOpen] = useState(false);
+  return (
+    <>
+      <SubsPage onAdd={() => setAddOpen(true)} />
+      <AddSubSheet open={addOpen} onClose={() => setAddOpen(false)} />
+    </>
+  );
 }
