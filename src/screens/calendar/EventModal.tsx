@@ -67,7 +67,7 @@ const fmtTime = (h, m) => {
 // ============================================================
 // EVENT MODAL — B + C 하이브리드
 // ============================================================
-export function EventModal({ onClose, editing, onDelete, onSave }) {
+export function EventModal({ onClose, editing, onDelete, onSave }: any) {
   const [mode, setMode] = useState(editing ? "edit" : "quick");
   return (
     <Modal open={true} onClose={onClose}>
