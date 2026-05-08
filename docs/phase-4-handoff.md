@@ -1,8 +1,23 @@
-# Phase 4 — 스타일 마이그레이션 (핸드오프)
+# Phase 4 — 스타일 마이그레이션 (부분 완료)
 
-> Phase 3 완료 시점: 모든 라우트가 RSC 데이터 prefetch 로 동작. 스타일은 여전히 글로벌 `src/styles/styles.css` (3000+ 줄) 와 `src/styles/landing.css`.
+> ✅ **Phase 4a (2026-05-08 완료)** — Tailwind v3 + next/font + 디자인 토큰 매핑.
 >
-> Phase 4 목표: 글로벌 CSS leak 위험을 영구 차단. 디자인 토큰만 글로벌, 컴포넌트 스타일은 CSS Modules 또는 Tailwind 로 격리.
+> ⏳ **Phase 4b (남음)** — CSS Modules 로 페이지 단위 이전 + shadcn/ui 도입 + preflight 활성화. 페이지별 시각 회귀 검토 필요해 별도 세션에서 진행.
+
+## Phase 4a 결과 (완료)
+
+- **Tailwind v3** 설치 (`tailwind.config.ts`, `postcss.config.mjs`, `app/globals.css`).
+  - `theme.extend` 가 `:root` CSS 변수와 1:1 매핑 (`colors.bg → var(--bg)` 식). 다크 모드/액센트 토글이 그대로 동작.
+  - `darkMode: "class"` — `body.dark` 토글과 호환.
+  - `corePlugins.preflight: false` — 글로벌 reset 과 충돌 회피. Phase 4b 에서 활성화.
+  - 빌드 CSS 에 `bg-yellow`, `font-hand` 등 유틸 생성 확인.
+- **next/font** 도입.
+  - `app/layout.tsx` 가 `Plus_Jakarta_Sans`, `Gaegu`, `JetBrains_Mono` 를 variable 옵션으로 로드.
+  - `styles.css` / `landing.css` 의 `--sans`/`--hand`/`--mono` 가 `var(--font-*)` chain.
+  - Google Fonts `@import url(...)` 제거 — Vite `@import` 위치 사고 영구 차단.
+- **호환성**: 기존 글로벌 CSS 와 공존. 17 라우트 빌드 통과.
+
+## Phase 4b 남은 작업 (별도 세션 권장)
 
 ## 전략
 
