@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type KeyboardEvent } from "react";
 import { AUTH_TEXT } from "@/pages/auth/authText";
 import { GoogleIcon } from "@/pages/auth/GoogleIcon";
 import { EyeIcon } from "@/pages/auth/EyeIcon";
@@ -10,10 +10,19 @@ import { BrandPanel } from "@/pages/auth/PcBrandPanel";
 export const PCLogin = ({ lang = "ko", dark = false, onSwitch }: any) => {
   const t = AUTH_TEXT[lang];
   const { signIn } = useAuth();
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(
+    () =>
+      (typeof window !== "undefined" &&
+        window.localStorage.getItem("dayflow.rememberedEmail")) ||
+      "",
+  );
   const [pwd, setPwd] = useState("");
   const [showPwd, setShowPwd] = useState(false);
-  const [remember, setRemember] = useState(true);
+  const [remember, setRemember] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      !!window.localStorage.getItem("dayflow.rememberedEmail"),
+  );
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -23,9 +32,21 @@ export const PCLogin = ({ lang = "ko", dark = false, onSwitch }: any) => {
     setSubmitting(true);
     try {
       const r = await signIn(email, pwd);
-      if (!r.ok) setErrorMsg(r.message || "로그인에 실패했어요.");
+      if (r.ok) {
+        if (remember)
+          window.localStorage.setItem("dayflow.rememberedEmail", email);
+        else window.localStorage.removeItem("dayflow.rememberedEmail");
+      } else {
+        setErrorMsg(r.message || "로그인에 실패했어요.");
+      }
     } finally {
       setSubmitting(false);
+    }
+  };
+  const onEnter = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      if (email.includes("@") && pwd.length >= 1) handleSubmit();
     }
   };
   const ink = dark ? "#fff" : "#1a1814";
@@ -133,6 +154,7 @@ export const PCLogin = ({ lang = "ko", dark = false, onSwitch }: any) => {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              onKeyDown={onEnter}
               placeholder="you@example.com"
               dark={dark}
             />
@@ -141,6 +163,7 @@ export const PCLogin = ({ lang = "ko", dark = false, onSwitch }: any) => {
               type={showPwd ? "text" : "password"}
               value={pwd}
               onChange={(e) => setPwd(e.target.value)}
+              onKeyDown={onEnter}
               placeholder="••••••••"
               dark={dark}
               rightSlot={
@@ -178,7 +201,7 @@ export const PCLogin = ({ lang = "ko", dark = false, onSwitch }: any) => {
                   accentColor: dark ? "#ffd84d" : "#1a1814",
                 }}
               />
-              {lang === "ko" ? "로그인 상태 유지" : "Keep me signed in"}
+              {lang === "ko" ? "아이디 기억하기" : "Remember email"}
             </label>
             <a
               onClick={() => onSwitch && onSwitch("forgot")}

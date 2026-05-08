@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type KeyboardEvent } from "react";
 import { useAuth } from "@/data/auth";
 import { AUTH_TEXT } from "@/pages/auth/authText";
 import { EyeIcon } from "@/pages/auth/EyeIcon";
@@ -33,6 +33,12 @@ export const LoginScreen = ({
       if (!r.ok) setErrorMsg(r.message || "로그인에 실패했어요.");
     } finally {
       setSubmitting(false);
+    }
+  };
+  const onEnter = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      if (email.includes("@") && pwd.length >= 1) handleSubmit();
     }
   };
 
@@ -77,6 +83,7 @@ export const LoginScreen = ({
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            onKeyDown={onEnter}
             placeholder="you@example.com"
             dark={dark}
           />
@@ -85,6 +92,7 @@ export const LoginScreen = ({
             type={showPwd ? "text" : "password"}
             value={pwd}
             onChange={(e) => setPwd(e.target.value)}
+            onKeyDown={onEnter}
             placeholder="••••••••"
             dark={dark}
             rightSlot={
@@ -268,6 +276,7 @@ export const LoginScreen = ({
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              onKeyDown={onEnter}
               placeholder="you@example.com"
               dark={dark}
             />
@@ -276,6 +285,7 @@ export const LoginScreen = ({
               type={showPwd ? "text" : "password"}
               value={pwd}
               onChange={(e) => setPwd(e.target.value)}
+              onKeyDown={onEnter}
               placeholder="••••••••"
               dark={dark}
               rightSlot={
@@ -419,6 +429,7 @@ export const LoginScreen = ({
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          onKeyDown={onEnter}
           placeholder="you@example.com"
           dark={dark}
         />
@@ -427,6 +438,7 @@ export const LoginScreen = ({
           type={showPwd ? "text" : "password"}
           value={pwd}
           onChange={(e) => setPwd(e.target.value)}
+          onKeyDown={onEnter}
           placeholder="••••••••"
           dark={dark}
           rightSlot={
