@@ -1,20 +1,8 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
-import { useState, useEffect, useRef, useMemo } from "react";
-import { DOW } from "@/lib/date";
-import { useTransactions } from "@/data/transactions";
-import { useEvents, useEventsByDate } from "@/data/events";
-import { useChecklist } from "@/data/checklist";
-import { useAuth } from "@/data/auth";
-import { groupByDay, recent as selectRecent } from "@/data/transactions";
-import { inferIcon } from "@/data/transactions";
-import { daysWithEventsInMonth } from "@/data/events";
+"use client";
+import { useState } from "react";
 
 // 추출된 헬퍼/탭 (Phase 6c-1)
 import { Ico } from "@/screens/mobile/shared/Ico";
-import { SectionHeader } from "@/screens/mobile/shared/SectionHeader";
-import { SwipeIcon } from "@/screens/mobile/shared/SwipeIcon";
-import { SwipeRow } from "@/screens/mobile/shared/SwipeRow";
 import { MobileHome } from "@/screens/mobile/tabs/Home";
 import { MobileLedger } from "@/screens/mobile/tabs/Ledger";
 import { MobileCalendar } from "@/screens/mobile/tabs/Calendar";
@@ -42,7 +30,7 @@ import { UpgradeSheet } from "@/screens/mobile/sheets/UpgradeSheet";
 
 const MobileApp = ({ initialTab = "home" }: any) => {
   const [tab, setTab] = useState(initialTab);
-  const [openTxn, setOpenTxn] = useState(null);
+  const [openTxn, setOpenTxn] = useState<unknown>(null);
   const [addTxnOpen, setAddTxnOpen] = useState(false);
   const [addEventOpen, setAddEventOpen] = useState(false);
   const [addSubOpen, setAddSubOpen] = useState(false);
@@ -58,7 +46,7 @@ const MobileApp = ({ initialTab = "home" }: any) => {
     autoStart: false,
     vibrate: true,
   });
-  const [menuStack, setMenuStack] = useState([]); // ["subs"], ["notif"]
+  const [menuStack, setMenuStack] = useState<string[]>([]); // ["subs"], ["notif"]
   setOpenTxnRef(setOpenTxn);
 
   const onFab = () => {

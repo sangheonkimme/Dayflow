@@ -1,13 +1,11 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
 export const Ico = ({ name, size = 22 }: any) => {
   const s = { width: size, height: size };
   const stroke = {
     fill: "none",
     stroke: "currentColor",
     strokeWidth: 1.8,
-    strokeLinecap: "round",
-    strokeLinejoin: "round",
+    strokeLinecap: "round" as const,
+    strokeLinejoin: "round" as const,
   };
   const paths = {
     bell: (

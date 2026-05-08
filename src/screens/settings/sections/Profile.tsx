@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
 import { SettingRow } from "@/screens/settings/SettingRow";
 
 export const ProfileSection = () => {
@@ -36,7 +34,7 @@ export const ProfileSection = () => {
         <SettingRow label="자기소개" sub="대시보드 상단에 표시됩니다">
           <textarea
             className="set-input"
-            rows="2"
+            rows={2}
             defaultValue="디자이너 / 일과 삶의 균형을 추구합니다."
           />
         </SettingRow>
