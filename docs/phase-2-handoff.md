@@ -1,8 +1,27 @@
-# Phase 2 — 라우트 이식 (핸드오프)
+# Phase 2 — 라우트 이식 (완료)
 
-> Phase 1 완료 시점: Next.js 15 셸이 동작하지만, 실제 페이지는 `app/page.tsx` placeholder 만 있음. `src/screens/*` 의 모든 페이지는 Next 라우트와 미연결.
->
-> Phase 2 목표: `src/screens/*` 의 페이지를 `app/<route>/page.tsx` 로 이식하여 실제 사용 가능한 Next 앱 완성.
+> ✅ **2026-05-08 완료.** `src/App.tsx` 의 SPA 라우팅을 Next.js App Router 17개 라우트로 이식. 빌드 통과, dev 서버 16/16 200 OK.
+
+## 결과 라우트 맵
+
+```
+/                           landing (authed/mock 은 /dashboard 로 redirect)
+/login /signup /forgot      auth (라우트 그룹 (auth))
+/onboarding
+/tools/crop /tools/pdf      공개 도구 (공유 layout)
+/dashboard                  home
+/dashboard/ledger           가계부
+/dashboard/calendar
+/dashboard/memo
+/dashboard/subs
+/dashboard/txns
+/dashboard/settings
+/dashboard/salary
+/dashboard/loan
+/dashboard/cash             (loan 별칭)
+```
+
+`src/App.tsx` 와 `src/lib/spa-nav.ts` 는 Phase 2 마무리에서 삭제. SPA 라우팅 흔적 없음.
 
 ## 이식 우선순위 (1주 분량 추정)
 
