@@ -47,13 +47,6 @@ export async function loadCategoryCache(
   return cache;
 }
 
-export function getCachedCategoryById(
-  userId: string,
-  id: string,
-): Category | undefined {
-  return _cacheByUser.get(userId)?.byId.get(id);
-}
-
 /**
  * 이름 → category id. 캐시 미스 시 insert 후 캐시 갱신.
  * Returns null when name is undefined/empty.
