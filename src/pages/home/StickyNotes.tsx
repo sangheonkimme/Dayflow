@@ -2,6 +2,7 @@
 // @ts-nocheck
 import { useState } from "react";
 import { Icon } from "@/components/Icon";
+import { useDraftField } from "@/lib/useDraftField";
 import {
   useStickyNotes,
   stickyDateLabel,
@@ -32,14 +33,12 @@ export function StickyNotes() {
 
   const updateNote = (id, text) => {
     const n = notes.find((x) => x.id === id);
-    if (n) upsert({ ...n, text });
+    if (n && n.text !== text) upsert({ ...n, text });
   };
 
   const removeNote = (id) => {
     remove(id);
   };
-
-  const rotations = [-2, 1.5, -1];
 
   return (
     <div className="notes-card col-9">
@@ -78,32 +77,13 @@ export function StickyNotes() {
       </div>
 
       <div className="notes-board">
-        {notes.map((n, i) => (
-          <div
+        {notes.map((n) => (
+          <StickyCard
             key={n.id}
-            className={"sticky " + n.color}
-            style={{
-              "--rot": `${rotations[i % rotations.length]}deg`,
-              transform: `rotate(${rotations[i % rotations.length]}deg)`,
-            }}
-          >
-            <button className="sticky-close" onClick={() => removeNote(n.id)}>
-              <Icon name="x" size={12} />
-            </button>
-            <div className="sticky-title">
-              <span className="sticky-title-emoji">{n.emoji}</span>
-              {n.title}
-            </div>
-            <textarea
-              value={n.text}
-              onChange={(e) => updateNote(n.id, e.target.value)}
-              placeholder="메모를 입력하세요..."
-            />
-            <div className="sticky-foot">
-              <span>— {stickyAuthorLabel(n)}</span>
-              <span>{stickyDateLabel(n)}</span>
-            </div>
-          </div>
+            note={n}
+            onRemove={removeNote}
+            onCommit={updateNote}
+          />
         ))}
         {notes.length < 3 && (
           <div
@@ -126,6 +106,36 @@ export function StickyNotes() {
   );
 }
 
+// 입력 중에는 로컬 draft만 갱신하고 blur 시점에 1회 commit. (IME 안전)
+function StickyCard({ note, onRemove, onCommit }) {
+  const { value, setDraft, commit } = useDraftField<string>({
+    value: note.text,
+    onCommit: (next) => onCommit(note.id, next),
+  });
+
+  return (
+    <div className={"sticky " + note.color}>
+      <button className="sticky-close" onClick={() => onRemove(note.id)}>
+        <Icon name="x" size={12} />
+      </button>
+      <div className="sticky-title">
+        <span className="sticky-title-emoji">{note.emoji}</span>
+        {note.title}
+      </div>
+      <textarea
+        value={value}
+        onChange={(e) => setDraft(e.target.value)}
+        onBlur={commit}
+        placeholder="메모를 입력하세요..."
+      />
+      <div className="sticky-foot">
+        <span>— {stickyAuthorLabel(note)}</span>
+        <span>{stickyDateLabel(note)}</span>
+      </div>
+    </div>
+  );
+}
+
 // ============================================================
 // DESK PILE — under sticky-note board
 // 1) 오늘의 한 줄 (lined-paper journal)
@@ -136,7 +146,11 @@ function DeskPile() {
   const mood = moodToEmoji(entry?.mood ?? "fire");
   const journal = entry?.oneLine ?? "";
   const setMood = (emoji) => setMoodHook(emojiToMood(emoji));
-  const setJournal = (text) => setOneLine(text);
+  const {
+    value: journalDraft,
+    setDraft: setJournalDraft,
+    commit: commitJournal,
+  } = useDraftField<string>({ value: journal, onCommit: setOneLine });
 
   const {
     data: pins,
@@ -172,8 +186,9 @@ function DeskPile() {
             <span className="journal-mood">{mood}</span>
             <textarea
               className="journal-input"
-              value={journal}
-              onChange={(e) => setJournal(e.target.value)}
+              value={journalDraft}
+              onChange={(e) => setJournalDraft(e.target.value)}
+              onBlur={commitJournal}
               placeholder="오늘 어땠어요? 한 줄로 남겨보세요…"
               rows="2"
             />
@@ -182,7 +197,7 @@ function DeskPile() {
             <span className="hand">
               {new Date().getMonth() + 1}월 {new Date().getDate()}일
             </span>
-            <span className="journal-count">{journal.length} / 80</span>
+            <span className="journal-count">{journalDraft.length} / 80</span>
           </div>
         </div>
 
@@ -213,11 +228,30 @@ function PinCard({ pin, onRemove, onUpdate }) {
   const [editing, setEditing] = useState(false);
   const [copied, setCopied] = useState(false);
 
+  const labelField = useDraftField<string>({
+    value: pin.label,
+    onCommit: (next) => {
+      if (next !== pin.label) onUpdate({ ...pin, label: next });
+    },
+  });
+  const valueField = useDraftField<string>({
+    value: pin.value,
+    onCommit: (next) => {
+      if (next !== pin.value) onUpdate({ ...pin, value: next });
+    },
+  });
+
   const copy = (e) => {
     e.stopPropagation();
     navigator.clipboard?.writeText(pin.value);
     setCopied(true);
     setTimeout(() => setCopied(false), 1100);
+  };
+
+  const finishEditing = () => {
+    labelField.commit();
+    valueField.commit();
+    setEditing(false);
   };
 
   return (
@@ -235,18 +269,19 @@ function PinCard({ pin, onRemove, onUpdate }) {
         <>
           <input
             className="pin-label-in"
-            value={pin.label}
-            onChange={(e) => onUpdate({ ...pin, label: e.target.value })}
+            value={labelField.value}
+            onChange={(e) => labelField.setDraft(e.target.value)}
+            onBlur={labelField.commit}
             onClick={(e) => e.stopPropagation()}
             placeholder="라벨"
           />
           <input
             className="pin-value-in"
-            value={pin.value}
-            onChange={(e) => onUpdate({ ...pin, value: e.target.value })}
+            value={valueField.value}
+            onChange={(e) => valueField.setDraft(e.target.value)}
             onClick={(e) => e.stopPropagation()}
-            onBlur={() => setEditing(false)}
-            onKeyDown={(e) => e.key === "Enter" && setEditing(false)}
+            onBlur={finishEditing}
+            onKeyDown={(e) => e.key === "Enter" && finishEditing()}
             placeholder="내용"
             autoFocus
           />
