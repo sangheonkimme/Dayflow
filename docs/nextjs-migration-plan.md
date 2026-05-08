@@ -50,7 +50,7 @@
 
 목표: Next 옮기기 전에 이식 친화적 형태로 만들어 두기. **Next 부트스트랩 PR 전에 모두 머지.**
 
-- [ ] `App.tsx` 의 `renderPage()` switch 를 라우트 단위로 모듈화. `pages.tsx` 의 다중 export(`LedgerPage`, `CalendarPage`, `SettingsPage`) → 1파일 1컴포넌트로 분리.
+- [x] `App.tsx` 의 `renderPage()` switch 를 라우트 단위로 모듈화. → 데스크탑 페이지는 이미 1파일 1컴포넌트(`LedgerPage`, `CalendarPage`, `MemoPage`, `SubsPage`, `TxnsPage`, `SettingsPage`, `SalaryCalcPage`, `LoanCalcPage`, `CropCanvasPage`, `PdfCanvasPage`)로 분리되어 있었음. 인라인이던 home 분기를 `pages/home/HomePage.tsx` 로 추출하여 모든 라우트가 동일한 패턴(컴포넌트 + props 인터페이스)을 따르도록 정리. App.tsx 라인수 약 100줄 감소.
 - [ ] hash routing(`#/tools/crop` 등) 전부 정리. 잠시 `react-router-dom` 끼워서 path 기반으로 통일 → Next 라우팅에 그대로 매핑.
 - [x] **글로벌 CSS 셀렉터 전수 감사**. → `docs/css-global-audit.md`. leak 후보 5건(`.nav`, `.brand-mark`, `.brand-mark::after`, `.brand-name`, `.swatch`) 모두 `.app`/`.sidebar` 스코프로 격리. 흔한 이름(`.card`, `.btn` 등)은 Phase 4에서 CSS Modules 로 자연 해소.
 - [x] `@ts-nocheck` 파일 목록화 + 타입 회복 우선순위 매기기. → `docs/ts-nocheck-inventory.md` (27개, P0~P4 분류)

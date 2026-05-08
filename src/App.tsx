@@ -1,13 +1,6 @@
 import { lazy, Suspense, useState, useEffect } from "react";
-import { Sidebar, Topbar } from "@/components/Shell";
-import { StickyNotes } from "@/pages/home/StickyNotes";
-import { Checklist } from "@/pages/home/Checklist";
-import { GeneralTimer } from "@/pages/home/timers/GeneralTimer";
-import { Pomodoro } from "@/pages/home/timers/Pomodoro";
-import { Stopwatch } from "@/pages/home/timers/Stopwatch";
-import { MoneyFlow } from "@/pages/home/MoneyFlow";
-import { MiniCalendar } from "@/pages/home/MiniCalendar";
-import { ToolCard } from "@/pages/home/ToolCard";
+import { Sidebar } from "@/components/Shell";
+import { HomePage } from "@/pages/home/HomePage";
 import { LedgerPage } from "@/pages/ledger/LedgerPage";
 import { CalendarPage } from "@/pages/calendar/CalendarPage";
 import { SettingsPage } from "@/pages/settings/SettingsPage";
@@ -209,12 +202,6 @@ function AppShell() {
     window.addEventListener("hashchange", onHash);
     return () => window.removeEventListener("hashchange", onHash);
   }, []);
-  const [quickMemo, setQuickMemo] = useState("");
-  const [memos, setMemos] = useState<string[]>([
-    "헬스장 가는 길에 빵집 들르기",
-    "수요일 회의 자료 미리 보기",
-  ]);
-
   const isNarrowViewport = useMediaQuery("(max-width: 768px)");
   const isMobile = tweaks.forceMobile || isNarrowViewport;
 
@@ -246,12 +233,6 @@ function AppShell() {
       accentMap[tweaks.accent] || "#ffe27a",
     );
   }, [tweaks.accent]);
-
-  const addQuickMemo = () => {
-    if (!quickMemo.trim()) return;
-    setMemos([quickMemo, ...memos].slice(0, 3));
-    setQuickMemo("");
-  };
 
   // ─────────────────────────────────────────────
   // 공개 도구 라우트 — auth gate보다 먼저 처리해서 로그인 없이 접근 가능.
@@ -349,97 +330,15 @@ function AppShell() {
       return <SettingsPage tweaks={tweaks} setTweak={setTweak} />;
 
     return (
-      <>
-        <Topbar
-          dark={tweaks.dark}
-          onToggleDark={() => setTweak("dark", !tweaks.dark)}
-          onSearch={() => setSearchOpen(true)}
-        />
-
-        <div className="grid">
-          <StickyNotes />
-          <Checklist />
-        </div>
-
-        <div className="section-h" style={{ marginTop: 26 }}>
-          <h2>도구 모음</h2>
-          <span className="more">전체 보기 →</span>
-        </div>
-        <div className="grid">
-          <ToolCard
-            icon="coin"
-            title="연봉 계산기"
-            desc="실수령액을 간편하게 계산해보세요"
-            items={["2026년 기준 세율 적용", "4대 보험 · 소득세 자동 계산"]}
-            onClick={() => setActive("salary")}
-          />
-          <ToolCard
-            icon="crop"
-            title="이미지 자르기"
-            desc="업로드한 이미지를 빠르게 자르고 내보내세요"
-            items={["원하는 크기와 포맷 설정", "전체 화면 도구에서 사용 가능"]}
-            onClick={() => setActive("crop")}
-          />
-          <ToolCard
-            icon="pdf"
-            title="이미지 → PDF"
-            desc="여러 이미지를 하나의 PDF로 깔끔하게 합쳐요"
-            items={["품질 유지와 순서 편집", "전체 화면 도구에서 진행"]}
-            onClick={() => setActive("pdf")}
-          />
-        </div>
-
-        <div className="section-h" style={{ marginTop: 26 }}>
-          <h2>타이머</h2>
-          <span className="more" onClick={() => setActive("settings")}>
-            설정 →
-          </span>
-        </div>
-        <div className="grid">
-          <GeneralTimer />
-          <Pomodoro />
-          <Stopwatch />
-        </div>
-
-        <div className="section-h" style={{ marginTop: 26 }}>
-          <h2>한눈에 보기</h2>
-          <span className="more" onClick={() => setActive("ledger")}>
-            자세히 →
-          </span>
-        </div>
-        <div className="grid">
-          <MoneyFlow
-            onAdd={() => openTxn()}
-            onOpenLedger={() => setActive("ledger")}
-            onEditTxn={openTxn}
-          />
-          {tweaks.showCalendar && (
-            <MiniCalendar
-              onOpen={() => setActive("calendar")}
-              memos={memos}
-              quickMemo={quickMemo}
-              setQuickMemo={setQuickMemo}
-              addQuickMemo={addQuickMemo}
-              onEditEvent={openEvent}
-            />
-          )}
-        </div>
-
-        <div
-          style={{
-            marginTop: 32,
-            paddingTop: 18,
-            borderTop: "1px dashed var(--line)",
-            fontSize: 12,
-            color: "var(--ink-mute)",
-            display: "flex",
-            justifyContent: "space-between",
-          }}
-        >
-          <span>© 2026 Dayflow Dashboard · Made with ☕ in Seoul</span>
-          <span>v2.0 · 패치노트</span>
-        </div>
-      </>
+      <HomePage
+        tweaks={tweaks}
+        setTweak={setTweak}
+        setActive={setActive}
+        setSearchOpen={setSearchOpen}
+        openTxn={() => openTxn()}
+        openEvent={openEvent}
+        onEditTxn={openTxn}
+      />
     );
   }
 
