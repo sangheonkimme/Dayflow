@@ -52,7 +52,7 @@
 
 - [ ] `App.tsx` 의 `renderPage()` switch 를 라우트 단위로 모듈화. `pages.tsx` 의 다중 export(`LedgerPage`, `CalendarPage`, `SettingsPage`) → 1파일 1컴포넌트로 분리.
 - [ ] hash routing(`#/tools/crop` 등) 전부 정리. 잠시 `react-router-dom` 끼워서 path 기반으로 통일 → Next 라우팅에 그대로 매핑.
-- [ ] **글로벌 CSS 셀렉터 전수 감사**. `.nav`, `.card`, `.btn`, `.section` 처럼 흔한 이름 namespacing. (실제 사고: 사이드바 `.nav` 가 랜딩 `.nav` 까지 column flex 강제.)
+- [x] **글로벌 CSS 셀렉터 전수 감사**. → `docs/css-global-audit.md`. leak 후보 5건(`.nav`, `.brand-mark`, `.brand-mark::after`, `.brand-name`, `.swatch`) 모두 `.app`/`.sidebar` 스코프로 격리. 흔한 이름(`.card`, `.btn` 등)은 Phase 4에서 CSS Modules 로 자연 해소.
 - [x] `@ts-nocheck` 파일 목록화 + 타입 회복 우선순위 매기기. → `docs/ts-nocheck-inventory.md` (27개, P0~P4 분류)
 - [x] `WLD (4)/` 시안은 그대로 무시. → `tsconfig.json` exclude + `.eslintrc.cjs` ignorePatterns 양쪽 반영 확인
 
