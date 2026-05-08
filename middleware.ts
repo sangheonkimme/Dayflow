@@ -46,8 +46,7 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    // _next, _vercel, 정적 파일은 제외
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
-  ],
+  // /dashboard/* 만 보호. 나머지(/, /login, /tools/* 등)는 미들웨어를 통과시켜
+  // 매 요청마다 Supabase auth 왕복이 붙는 비용을 제거.
+  matcher: ["/dashboard/:path*"],
 };
