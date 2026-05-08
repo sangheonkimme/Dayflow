@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Icon } from "@/components/Icon";
+import styles from "@/screens/home/timers/timers.module.css";
 
 export function Stopwatch() {
   const [ms, setMs] = useState(0);
@@ -17,7 +18,7 @@ export function Stopwatch() {
   const cs = Math.floor((ms % 1000) / 10);
 
   return (
-    <div className="timer-card stopwatch col-4">
+    <div className={`${styles.timerCard} ${styles.stopwatch} col-4`}>
       <div className="card-head">
         <div className="card-title" style={{ color: "#2c5e8b" }}>
           <Icon name="zap" size={16} />
@@ -25,8 +26,8 @@ export function Stopwatch() {
         </div>
         {running && <span className="tag live">REC</span>}
       </div>
-      <div className="timer-display">
-        <div className="timer-circle">
+      <div className={styles.timerDisplay}>
+        <div className={styles.timerCircle}>
           <svg width="170" height="170">
             <circle
               cx="85"
@@ -37,14 +38,14 @@ export function Stopwatch() {
               fill="none"
             />
           </svg>
-          <div className="timer-time" style={{ fontSize: 28 }}>
+          <div className={styles.timerTime} style={{ fontSize: 28 }}>
             {String(m).padStart(2, "0")}:{String(s).padStart(2, "0")}.
             {String(cs).padStart(2, "0")}
             <small>{running ? "측정중" : "정지"}</small>
           </div>
         </div>
       </div>
-      <div className="timer-controls">
+      <div className={styles.timerControls}>
         <button
           className="timer-btn primary"
           onClick={() => setRunning(!running)}
@@ -70,7 +71,7 @@ export function Stopwatch() {
           <Icon name="reset" size={12} />
         </button>
       </div>
-      <div className="timer-foot">랩 {laps.length}개</div>
+      <div className={styles.timerFoot}>랩 {laps.length}개</div>
     </div>
   );
 }

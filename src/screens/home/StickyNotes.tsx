@@ -11,6 +11,7 @@ import { useDailyLog } from "@/data/daily-log";
 import { usePinnedInfo } from "@/data/pinned-info";
 import { MOODS, emojiToMood, moodToEmoji } from "@/data/lookups";
 import { usePreferences } from "@/data/preferences";
+import styles from "./StickyNotes.module.css";
 
 // ============================================================
 // STICKY NOTES — hero feature (with DeskPile beneath)
@@ -43,18 +44,20 @@ export function StickyNotes() {
   };
 
   return (
-    <div className="notes-card col-9">
-      <div className="notes-head">
-        <div className="notes-title">
+    <div className={`${styles.notesCard} col-9`}>
+      <div className={styles.notesHead}>
+        <div className={styles.notesTitle}>
           <h2>스티커 메모</h2>
           <span className="hand">붙여두면 잊지 않아요</span>
         </div>
-        <div className="notes-controls">
-          <div className="color-pick" title="새 메모 색상">
+        <div className={styles.notesControls}>
+          <div className={styles.colorPick} title="새 메모 색상">
             {(["yellow", "pink", "blue"] as const).map((c) => (
               <div
                 key={c}
-                className={"swatch" + (activeColor === c ? " active" : "")}
+                className={
+                  styles.swatch + (activeColor === c ? ` ${styles.active}` : "")
+                }
                 style={{
                   background:
                     c === "yellow"
@@ -68,7 +71,7 @@ export function StickyNotes() {
             ))}
           </div>
           <button
-            className="add-note"
+            className={styles.addNote}
             onClick={addNote}
             disabled={notes.length >= 3}
           >
@@ -78,7 +81,7 @@ export function StickyNotes() {
         </div>
       </div>
 
-      <div className="notes-board">
+      <div className={styles.notesBoard}>
         {notes.map((n) => (
           <StickyCard
             key={n.id}
@@ -89,7 +92,7 @@ export function StickyNotes() {
         ))}
         {notes.length < 3 && (
           <div
-            className="sticky empty"
+            className={`${styles.sticky} ${styles.empty}`}
             onClick={addNote}
             style={{ width: 220, minHeight: 200 }}
           >
@@ -98,7 +101,7 @@ export function StickyNotes() {
         )}
       </div>
 
-      <div className="notes-foot">
+      <div className={styles.notesFoot}>
         <span>스티커 메모는 최대 3개까지 추가할 수 있어요.</span>
         <span className="hand">{notes.length} / 3</span>
       </div>
@@ -120,14 +123,14 @@ function StickyCard({ note, onRemove, onPatch }) {
   });
 
   return (
-    <div className={"sticky " + note.color}>
-      <button className="sticky-close" onClick={() => onRemove(note.id)}>
+    <div className={`${styles.sticky} ${styles[note.color]}`}>
+      <button className={styles.stickyClose} onClick={() => onRemove(note.id)}>
         <Icon name="x" size={12} />
       </button>
-      <div className="sticky-title">
-        <span className="sticky-title-emoji">{note.emoji}</span>
+      <div className={styles.stickyTitle}>
+        <span className={styles.stickyTitleEmoji}>{note.emoji}</span>
         <input
-          className="sticky-title-input"
+          className={styles.stickyTitleInput}
           value={titleField.value}
           onChange={(e) => titleField.setDraft(e.target.value)}
           onBlur={titleField.commit}
@@ -140,7 +143,7 @@ function StickyCard({ note, onRemove, onPatch }) {
         onBlur={textField.commit}
         placeholder="메모를 입력하세요..."
       />
-      <div className="sticky-foot">
+      <div className={styles.stickyFoot}>
         <span>— {stickyAuthorLabel(note)}</span>
         <span>{stickyDateLabel(note)}</span>
       </div>
@@ -187,16 +190,18 @@ function DeskPile() {
   const [titleEditing, setTitleEditing] = useState(false);
 
   return (
-    <div className="desk-pile">
-      <div className="desk-pile-row">
-        <div className="journal-paper">
-          <div className="journal-head">
-            <div className="journal-tab">오늘의 한 줄</div>
-            <div className="mood-pick">
+    <div className={styles.deskPile}>
+      <div className={styles.deskPileRow}>
+        <div className={styles.journalPaper}>
+          <div className={styles.journalHead}>
+            <div className={styles.journalTab}>오늘의 한 줄</div>
+            <div className={styles.moodPick}>
               {MOODS.map((m) => (
                 <button
                   key={m.emoji}
-                  className={"mood-btn" + (mood === m.emoji ? " on" : "")}
+                  className={
+                    styles.moodBtn + (mood === m.emoji ? ` ${styles.on}` : "")
+                  }
                   onClick={() => setMood(m.emoji)}
                   title={m.label}
                 >
@@ -205,10 +210,10 @@ function DeskPile() {
               ))}
             </div>
           </div>
-          <div className="journal-body">
-            <span className="journal-mood">{mood}</span>
+          <div className={styles.journalBody}>
+            <span className={styles.journalMood}>{mood}</span>
             <textarea
-              className="journal-input"
+              className={styles.journalInput}
               value={journalDraft}
               onChange={(e) => setJournalDraft(e.target.value)}
               onBlur={commitJournal}
@@ -216,20 +221,19 @@ function DeskPile() {
               rows={2}
             />
           </div>
-          <div className="journal-foot">
+          <div className={styles.journalFoot}>
             <span className="hand">
               {new Date().getMonth() + 1}월 {new Date().getDate()}일
             </span>
-            <span className="journal-count">{journalDraft.length} / 80</span>
+            <span className={styles.journalCount}>{journalDraft.length} / 80</span>
           </div>
         </div>
 
-        <div className="pin-board">
-          <div className="pin-board-head">
+        <div className={styles.pinBoard}>
+          <div className={styles.pinBoardHead}>
             {titleEditing ? (
               <input
                 autoFocus
-                className="pin-board-title-in"
                 value={titleField.value}
                 onChange={(e) => titleField.setDraft(e.target.value)}
                 onBlur={() => {
@@ -266,11 +270,11 @@ function DeskPile() {
                 {boardTitle}
               </h3>
             )}
-            <button className="pin-add" onClick={addPin}>
+            <button className={styles.pinAdd} onClick={addPin}>
               <Icon name="plus" size={11} />핀 추가
             </button>
           </div>
-          <div className="pin-cards">
+          <div className={styles.pinCards}>
             {pins.map((p) => (
               <PinCard
                 key={p.id}
@@ -317,9 +321,9 @@ function PinCard({ pin, onRemove, onUpdate }) {
   };
 
   return (
-    <div className="pin-card" onClick={() => setEditing(true)}>
+    <div className={styles.pinCard} onClick={() => setEditing(true)}>
       <button
-        className="pin-close"
+        className={styles.pinClose}
         onClick={(e) => {
           e.stopPropagation();
           onRemove();
@@ -330,7 +334,7 @@ function PinCard({ pin, onRemove, onUpdate }) {
       {editing ? (
         <>
           <input
-            className="pin-label-in"
+            className={styles.pinLabelIn}
             value={labelField.value}
             onChange={(e) => labelField.setDraft(e.target.value)}
             onBlur={labelField.commit}
@@ -338,7 +342,7 @@ function PinCard({ pin, onRemove, onUpdate }) {
             placeholder="라벨"
           />
           <input
-            className="pin-value-in"
+            className={styles.pinValueIn}
             value={valueField.value}
             onChange={(e) => valueField.setDraft(e.target.value)}
             onClick={(e) => e.stopPropagation()}
@@ -350,9 +354,9 @@ function PinCard({ pin, onRemove, onUpdate }) {
         </>
       ) : (
         <>
-          <div className="pin-label">{pin.label}</div>
-          <div className="pin-value">{pin.value}</div>
-          <button className="pin-copy" onClick={copy}>
+          <div className={styles.pinLabel}>{pin.label}</div>
+          <div className={styles.pinValue}>{pin.value}</div>
+          <button className={styles.pinCopy} onClick={copy}>
             {copied ? (
               <>
                 <Icon name="check" size={10} /> 복사됨

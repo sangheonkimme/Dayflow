@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Icon } from "@/components/Icon";
+import styles from "@/screens/home/timers/timers.module.css";
 
 export function Pomodoro() {
   const FOCUS = 25 * 60,
@@ -38,7 +39,7 @@ export function Pomodoro() {
   const pct = remaining / total;
 
   return (
-    <div className="timer-card pomodoro col-4">
+    <div className={`${styles.timerCard} ${styles.pomodoro} col-4`}>
       <div className="card-head">
         <div className="card-title" style={{ color: "var(--red)" }}>
           <Icon name="flame" size={16} />
@@ -51,20 +52,20 @@ export function Pomodoro() {
         style={{ justifyContent: "center", gap: 6, marginBottom: 4 }}
       >
         <span
-          className={"preset" + (mode === "focus" ? " on" : "")}
+          className={styles.preset + (mode === "focus" ? " " + styles.on : "")}
           onClick={() => switchMode("focus")}
         >
           집중 25
         </span>
         <span
-          className={"preset" + (mode === "break" ? " on" : "")}
+          className={styles.preset + (mode === "break" ? " " + styles.on : "")}
           onClick={() => switchMode("break")}
         >
           휴식 5
         </span>
       </div>
-      <div className="timer-display">
-        <div className="timer-circle">
+      <div className={styles.timerDisplay}>
+        <div className={styles.timerCircle}>
           <svg width="170" height="170">
             <circle
               cx="85"
@@ -87,13 +88,13 @@ export function Pomodoro() {
               style={{ transition: "stroke-dashoffset 0.3s" }}
             />
           </svg>
-          <div className="timer-time">
+          <div className={styles.timerTime}>
             {mm}:{ss}
             <small>{mode === "focus" ? "집중 시간" : "휴식 시간"}</small>
           </div>
         </div>
       </div>
-      <div className="timer-controls">
+      <div className={styles.timerControls}>
         <button
           className="timer-btn primary"
           onClick={() => setRunning(!running)}
@@ -102,7 +103,7 @@ export function Pomodoro() {
           {running ? "일시정지" : "시작"}
         </button>
       </div>
-      <div className="timer-foot">오늘 — {sessions * 25}분 집중</div>
+      <div className={styles.timerFoot}>오늘 — {sessions * 25}분 집중</div>
     </div>
   );
 }

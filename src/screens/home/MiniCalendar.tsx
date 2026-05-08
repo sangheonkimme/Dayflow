@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { Icon } from "@/components/Icon";
 import { DOW } from "@/lib/date";
+import styles from "./MiniCalendar.module.css";
 import {
   useEvents,
   daysWithEventsInMonth,
@@ -55,7 +56,7 @@ export function MiniCalendar({
   };
 
   return (
-    <div className="cal-card col-5">
+    <div className={`${styles.calCard} col-5`}>
       <div className="card-head">
         <div>
           <div className="card-title">
@@ -75,7 +76,7 @@ export function MiniCalendar({
           </button>
         </div>
       </div>
-      <div className="cal-grid">
+      <div className={styles.calGrid}>
         {dow.map((d) => (
           <div key={d} className="dow">
             {d}
@@ -88,7 +89,7 @@ export function MiniCalendar({
             <div
               key={i}
               className={
-                "cal-day" +
+                styles.calDay +
                 (c.muted ? " muted" : "") +
                 (isToday ? " today" : "") +
                 (has ? " has" : "")

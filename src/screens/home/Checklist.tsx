@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Icon } from "@/components/Icon";
 import { useChecklist } from "@/data/checklist";
+import styles from "./Checklist.module.css";
 
 export function Checklist() {
   const { data: tasks, upsert, remove: removeTask } = useChecklist();
@@ -23,7 +24,7 @@ export function Checklist() {
   };
 
   return (
-    <div className="checklist-card col-3">
+    <div className={`${styles.checklistCard} col-3`}>
       <div className="card-head">
         <div>
           <div className="card-title">
@@ -34,7 +35,7 @@ export function Checklist() {
             완료 {done}/{tasks.length}개
           </div>
         </div>
-        <div className="progress-ring">
+        <div className={styles.progressRing}>
           <svg width="60" height="60">
             <circle
               cx="30"
@@ -57,11 +58,11 @@ export function Checklist() {
               style={{ transition: "stroke-dashoffset 0.4s" }}
             />
           </svg>
-          <div className="pct">{pct}%</div>
+          <div className={styles.pct}>{pct}%</div>
         </div>
       </div>
 
-      <div className="add-task">
+      <div className={styles.addTask}>
         <input
           placeholder="할 일을 입력하고 Enter"
           value={input}
@@ -73,22 +74,22 @@ export function Checklist() {
         </button>
       </div>
 
-      <ul className="tasks">
+      <ul className={styles.tasks}>
         {tasks.map((t) => (
           <li
             key={t.id}
-            className={"task" + (t.done ? " done" : "")}
+            className={`${styles.task}${t.done ? ` ${styles.done}` : ""}`}
             onClick={() => toggle(t.id)}
           >
-            <span className="check">
+            <span className={styles.check}>
               <Icon name="check" size={12} />
             </span>
             <div style={{ flex: 1 }}>
-              <div className="task-label">{t.text}</div>
-              <div className="task-meta">{t.time}</div>
+              <div className={styles.taskLabel}>{t.text}</div>
+              <div className={styles.taskMeta}>{t.time}</div>
             </div>
             <button
-              className="task-del"
+              className={styles.taskDel}
               onClick={(e) => {
                 e.stopPropagation();
                 remove(t.id);

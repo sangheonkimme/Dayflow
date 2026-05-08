@@ -564,8 +564,8 @@
   }
   .pin-close,
   .sticky-close,
-  .pin-copy,
-  .task-del {
+  .pin-copy {
     opacity: 0.6;
   }
+  /* .task-del moved to Checklist.module.css (Phase 4b) */
 }

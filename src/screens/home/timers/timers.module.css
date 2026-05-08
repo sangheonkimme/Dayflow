@@ -1,0 +1,108 @@
+/* ============== TIMERS ============== */
+.timerCard {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  position: relative;
+  overflow: hidden;
+}
+.timerCard.pomodoro {
+  background: linear-gradient(180deg, #fff5f0 0%, #fde7dc 100%);
+}
+.timerCard.stopwatch {
+  background: linear-gradient(180deg, #f0f6ff 0%, #e1ecf9 100%);
+}
+
+.timerDisplay {
+  display: grid;
+  place-items: center;
+  margin: 8px 0 14px;
+  position: relative;
+}
+.timerCircle {
+  width: 170px;
+  height: 170px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  position: relative;
+}
+.timerCircle svg {
+  position: absolute;
+  inset: 0;
+  transform: rotate(-90deg);
+}
+.timerTime {
+  font-family: var(--mono);
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-align: center;
+  line-height: 1;
+}
+.timerTime small {
+  display: block;
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--ink-mute);
+  margin-top: 4px;
+  letter-spacing: 0.06em;
+}
+.timerCard.pomodoro .timerTime {
+  color: var(--red);
+}
+
+.timerControls {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+/* .timer-btn 기본 정의는 styles.css 의 글로벌. 여기서는 timer 카드 종류별
+   primary 색상 오버라이드만 로컬 결합으로 둠. */
+.timerCard.pomodoro :global(.timer-btn.primary) {
+  background: var(--red);
+  border-color: var(--red);
+  color: white;
+}
+.timerCard.stopwatch :global(.timer-btn.primary) {
+  background: #2c5e8b;
+  border-color: #2c5e8b;
+  color: white;
+}
+
+.timerFoot {
+  margin-top: 12px;
+  font-size: 11px;
+  color: var(--ink-mute);
+  text-align: center;
+}
+.presetRow {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.preset {
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 4px 10px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid var(--line);
+  border-radius: 99px;
+  cursor: pointer;
+}
+.preset:hover {
+  background: #fff;
+  border-color: var(--ink);
+}
+.preset.on {
+  background: var(--ink);
+  color: var(--yellow);
+  border-color: var(--ink);
+}

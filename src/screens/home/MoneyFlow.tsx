@@ -9,6 +9,7 @@ import {
   inferIcon,
   inferPayday,
 } from "@/data/transactions";
+import styles from "./MoneyFlow.module.css";
 
 export function MoneyFlow({ onAdd, onOpenLedger, onEditTxn }) {
   const { all: txnsAll } = useTransactions();
@@ -34,7 +35,7 @@ export function MoneyFlow({ onAdd, onOpenLedger, onEditTxn }) {
   const won = formatWon;
 
   return (
-    <div className="money-card col-7">
+    <div className={`${styles.moneyCard} col-7`}>
       <div className="card-head">
         <div>
           <div className="card-title">
@@ -50,22 +51,22 @@ export function MoneyFlow({ onAdd, onOpenLedger, onEditTxn }) {
         </button>
       </div>
 
-      <div className="money-summary">
-        <div className="money-stat income">
+      <div className={styles.moneySummary}>
+        <div className={`${styles.moneyStat} ${styles.moneyStatIncome}`}>
           <div className="lbl">월급 (실수령)</div>
           <div className="val">{won(income)}</div>
           <div style={{ fontSize: 10, color: "var(--ink-mute)", marginTop: 2 }}>
             매월 25일 입금
           </div>
         </div>
-        <div className="money-stat expense">
+        <div className={`${styles.moneyStat} ${styles.moneyStatExpense}`}>
           <div className="lbl">이번 달 지출</div>
           <div className="val">{won(expense)}</div>
           <div style={{ fontSize: 10, color: "var(--ink-mute)", marginTop: 2 }}>
             예산 {budgetPct}% 사용
           </div>
         </div>
-        <div className="money-stat">
+        <div className={styles.moneyStat}>
           <div className="lbl">남은 예산</div>
           <div
             className="val"
@@ -79,14 +80,14 @@ export function MoneyFlow({ onAdd, onOpenLedger, onEditTxn }) {
         </div>
       </div>
 
-      <div className="budget-meter">
-        <div className="budget-meter-track">
+      <div className={styles.budgetMeter}>
+        <div className={styles.budgetMeterTrack}>
           <div
-            className="budget-meter-fill"
+            className={styles.budgetMeterFill}
             style={{ width: budgetPct + "%" }}
           />
         </div>
-        <div className="budget-meter-labels">
+        <div className={styles.budgetMeterLabels}>
           <span>0</span>
           <span>
             <b>{budgetPct}%</b> 사용 중
@@ -95,7 +96,7 @@ export function MoneyFlow({ onAdd, onOpenLedger, onEditTxn }) {
         </div>
       </div>
 
-      <div className="bars">
+      <div className={styles.bars}>
         {data.map((d, i) => (
           <div
             key={i}
@@ -110,29 +111,29 @@ export function MoneyFlow({ onAdd, onOpenLedger, onEditTxn }) {
             }}
           >
             <div
-              className="bar in"
+              className={`${styles.bar} ${styles.barIn}`}
               style={{ height: `${(d.in / max) * 60}%` }}
             />
             <div
-              className="bar out"
+              className={`${styles.bar} ${styles.barOut}`}
               style={{ height: `${(d.out / max) * 40}%` }}
             />
           </div>
         ))}
       </div>
-      <div className="bars-axis">
+      <div className={styles.barsAxis}>
         {months.map((m) => (
           <span key={m}>{m}</span>
         ))}
       </div>
 
-      <div className="txns">
+      <div className={styles.txns}>
         {txns.map((t) => (
-          <div key={t.id} className="txn">
-            <div className="txn-ico">
+          <div key={t.id} className={styles.txn}>
+            <div className={styles.txnIco}>
               <Icon name={inferIcon(t)} size={14} />
             </div>
-            <div className="txn-label">
+            <div className={styles.txnLabel}>
               {t.label}{" "}
               {inferPayday(t) && (
                 <span
@@ -149,7 +150,13 @@ export function MoneyFlow({ onAdd, onOpenLedger, onEditTxn }) {
               )}
               <small>{t.note}</small>
             </div>
-            <div className={"txn-amount " + t.type}>{fmt(t.amount)}</div>
+            <div
+              className={`${styles.txnAmount} ${
+                t.type === "in" ? styles.txnAmountIn : styles.txnAmountOut
+              }`}
+            >
+              {fmt(t.amount)}
+            </div>
             <button
               className="txn-edit-btn"
               onClick={() => onEditTxn && onEditTxn(t)}

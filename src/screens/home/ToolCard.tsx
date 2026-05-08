@@ -1,12 +1,13 @@
 import { Icon } from "@/components/Icon";
+import styles from "./ToolCard.module.css";
 
 export function ToolCard({ icon, title, desc, items, onClick }) {
   return (
-    <div className="tool-card col-4" onClick={onClick}>
-      <div className="tool-arrow">
+    <div className={`${styles.toolCard} col-4`} onClick={onClick}>
+      <div className={styles.toolArrow}>
         <Icon name="arrow" size={16} />
       </div>
-      <div className="tool-icon">
+      <div className={styles.toolIcon}>
         <Icon name={icon} size={18} />
       </div>
       <h3>{title}</h3>

@@ -1,0 +1,154 @@
+/* ===== CHECKLIST (CSS Module) ===== */
+
+.checklistCard {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+.checklistCard::before {
+  content: "";
+  position: absolute;
+  top: -8px;
+  right: 24px;
+  width: 56px;
+  height: 18px;
+  background: rgba(255, 194, 77, 0.45);
+  border: 1px solid rgba(180, 140, 40, 0.35);
+  transform: rotate(4deg);
+}
+
+.progressRing {
+  width: 60px;
+  height: 60px;
+  position: relative;
+}
+.progressRing svg {
+  transform: rotate(-90deg);
+}
+.progressRing .pct {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.addTask {
+  display: flex;
+  gap: 6px;
+  margin: 14px 0 12px;
+}
+.addTask input {
+  flex: 1;
+  height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  background: var(--bg-paper);
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 13px;
+  outline: none;
+}
+.addTask input:focus {
+  border-color: var(--ink);
+}
+.addTask button {
+  width: 36px;
+  height: 36px;
+  background: var(--ink);
+  color: var(--yellow);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+
+.tasks {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+.task {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--bg-paper);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.12s;
+}
+.task:hover {
+  background: #fff;
+}
+.task.done {
+  opacity: 0.55;
+}
+.task.done .taskLabel {
+  text-decoration: line-through;
+}
+.task .check {
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  border: 1.5px solid var(--line-strong);
+  background: #fff;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+.task.done .check {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--yellow);
+}
+.task .check svg {
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.task.done .check svg {
+  opacity: 1;
+}
+.taskLabel {
+  flex: 1;
+  font-weight: 500;
+}
+.taskMeta {
+  font-size: 11px;
+  color: var(--ink-mute);
+}
+.taskDel {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--ink-mute);
+  padding: 4px;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.task:hover .taskDel {
+  opacity: 1;
+}
+.taskDel:hover {
+  color: var(--red);
+}
+
+/* Touch-friendly sizing on coarse pointers (moved from mobile.css) */
+@media (pointer: coarse) {
+  .taskDel {
+    opacity: 0.6;
+  }
+}

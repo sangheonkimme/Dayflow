@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Icon } from "@/components/Icon";
 import { TIMER_PRESETS } from "@/data/lookups";
+import styles from "@/screens/home/timers/timers.module.css";
 
 export function GeneralTimer() {
   const [duration, setDuration] = useState(5 * 60);
@@ -37,7 +38,7 @@ export function GeneralTimer() {
   const pct = duration ? remaining / duration : 0;
 
   return (
-    <div className="timer-card col-4">
+    <div className={`${styles.timerCard} col-4`}>
       <div className="card-head">
         <div className="card-title">
           <Icon name="target" size={16} />
@@ -47,8 +48,8 @@ export function GeneralTimer() {
           <Icon name="settings" size={14} />
         </button>
       </div>
-      <div className="timer-display">
-        <div className="timer-circle">
+      <div className={styles.timerDisplay}>
+        <div className={styles.timerCircle}>
           <svg width="170" height="170">
             <circle
               cx="85"
@@ -71,13 +72,13 @@ export function GeneralTimer() {
               style={{ transition: "stroke-dashoffset 0.3s" }}
             />
           </svg>
-          <div className="timer-time">
+          <div className={styles.timerTime}>
             {mm}:{ss}
             <small>총 {Math.floor(duration / 60)}:00</small>
           </div>
         </div>
       </div>
-      <div className="timer-controls">
+      <div className={styles.timerControls}>
         <button
           className="timer-btn primary"
           onClick={() => setRunning(!running)}
@@ -96,12 +97,12 @@ export function GeneralTimer() {
           초기화
         </button>
       </div>
-      <div className="timer-foot">빠른 설정 — 클릭 한 번으로 시간 지정</div>
-      <div className="preset-row">
+      <div className={styles.timerFoot}>빠른 설정 — 클릭 한 번으로 시간 지정</div>
+      <div className={styles.presetRow}>
         {presets.map((p) => (
           <span
             key={p}
-            className={"preset" + (activePreset === p ? " on" : "")}
+            className={styles.preset + (activePreset === p ? " " + styles.on : "")}
             onClick={() => setPreset(p)}
           >
             {p}M
