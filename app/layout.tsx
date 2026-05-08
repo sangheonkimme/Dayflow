@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "@/styles/styles.css";
 import "@/styles/landing.css";
+import { Providers } from "@/shared/query/providers";
 
 export const metadata: Metadata = {
   title: {
@@ -24,7 +25,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko">
-      <body>{children}</body>
+      <body>
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }

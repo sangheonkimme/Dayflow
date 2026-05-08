@@ -1,5 +1,7 @@
+"use client";
 // ============================================================
-// Providers — 앱 최상단 마운트 (main.tsx → <Providers><App/></Providers>)
+// Providers — Next.js app/layout.tsx 의 클라이언트 경계.
+// QueryClientProvider 를 RSC 트리 위에 둘 수 없으므로 'use client' 필요.
 // ============================================================
 
 import { ReactNode } from "react";
