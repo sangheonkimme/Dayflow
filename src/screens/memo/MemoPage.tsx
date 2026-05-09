@@ -1,9 +1,16 @@
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { Icon } from "@/components/Icon";
 import { useMemos } from "@/data/memos";
 import { FOLDERS, ALL_TAGS } from "@/data/memos";
 import { memoExcerpt, memoWordCount, memoUpdatedLabel } from "@/data/memos";
 import { useDraftField } from "@/lib/useDraftField";
+import { useEditor, EditorContent } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import Image from "@tiptap/extension-image";
+import Link from "@tiptap/extension-link";
+import TaskList from "@tiptap/extension-task-list";
+import TaskItem from "@tiptap/extension-task-item";
+import { Markdown } from "tiptap-markdown";
 import styles from "./MemoPage.module.css";
 
 // ============================================================
@@ -282,57 +289,125 @@ function MemoEditor({
     value: active.title,
     onCommit: onUpdateTitle,
   });
-  const bodyField = useDraftField<string>({
-    value: active.body,
-    onCommit: onUpdateBody,
-  });
-  const bodyRef = useRef<HTMLTextAreaElement>(null);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
 
-  // 마크다운 토큰을 현재 커서 위치에 삽입.
-  const insert = (
-    before: string,
-    after: string = "",
-    placeholder: string = "",
-  ) => {
-    const ta = bodyRef.current;
-    if (!ta) return;
-    const start = ta.selectionStart ?? 0;
-    const end = ta.selectionEnd ?? 0;
-    const current = bodyField.value;
-    const selected = current.slice(start, end) || placeholder;
-    const next =
-      current.slice(0, start) + before + selected + after + current.slice(end);
-    bodyField.setDraft(next);
-    // 다음 tick 에 커서 이동
-    requestAnimationFrame(() => {
-      ta.focus();
-      const cursor = start + before.length + selected.length;
-      ta.setSelectionRange(cursor, cursor);
-    });
+  // 본문 편집은 Tiptap (ProseMirror) — 한국어 IME 는 ProseMirror 가 자체 처리.
+  // 자동 저장은 update 이벤트 + 디바운스(800ms) 로 onUpdateBody(markdown) 호출.
+  // active.id 가 바뀌면 부모(MemoPage) 가 key prop 으로 컴포넌트를 remount 한다.
+
+  const onUpdateBodyRef = useRef(onUpdateBody);
+  useEffect(() => {
+    onUpdateBodyRef.current = onUpdateBody;
+  }, [onUpdateBody]);
+
+  const flushTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pendingMarkdownRef = useRef<string | null>(null);
+
+  const flushBody = () => {
+    if (flushTimerRef.current) {
+      clearTimeout(flushTimerRef.current);
+      flushTimerRef.current = null;
+    }
+    if (pendingMarkdownRef.current !== null) {
+      onUpdateBodyRef.current(pendingMarkdownRef.current);
+      pendingMarkdownRef.current = null;
+    }
   };
 
-  const insertLinePrefix = (prefix: string) => {
-    const ta = bodyRef.current;
-    if (!ta) return;
-    const start = ta.selectionStart ?? 0;
-    const current = bodyField.value;
-    const lineStart = current.lastIndexOf("\n", start - 1) + 1;
-    const next =
-      current.slice(0, lineStart) + prefix + current.slice(lineStart);
-    bodyField.setDraft(next);
-    requestAnimationFrame(() => {
-      ta.focus();
-      const cursor = start + prefix.length;
-      ta.setSelectionRange(cursor, cursor);
-    });
+  const editor = useEditor({
+    immediatelyRender: false,
+    extensions: [
+      StarterKit,
+      Image,
+      Link.configure({ openOnClick: false }),
+      TaskList,
+      TaskItem.configure({ nested: true }),
+      Markdown.configure({ html: false, breaks: true }),
+    ],
+    content: active.body,
+    editorProps: {
+      attributes: {
+        class: styles.memoBody,
+        spellcheck: "false",
+      },
+    },
+    onUpdate: ({ editor: ed }) => {
+      // tiptap-markdown 이 storage.markdown.getMarkdown() 을 제공.
+      const storage = ed.storage as unknown as {
+        markdown?: { getMarkdown?: () => string };
+      };
+      const md = storage.markdown?.getMarkdown?.() ?? "";
+      pendingMarkdownRef.current = md;
+      if (flushTimerRef.current) clearTimeout(flushTimerRef.current);
+      flushTimerRef.current = setTimeout(() => {
+        flushBody();
+      }, 800);
+    },
+  });
+
+  // 메모 전환 / 언마운트 시 강제 flush. 단 이 컴포넌트는 부모에서 key 로 remount
+  // 되므로 사실상 언마운트 시점에만 호출된다.
+  useEffect(() => {
+    return () => {
+      flushBody();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // 툴바 active state 트리거용 — editor selection 변경 시 리렌더.
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    if (!editor) return;
+    const rerender = () => setTick((n) => n + 1);
+    editor.on("selectionUpdate", rerender);
+    editor.on("transaction", rerender);
+    return () => {
+      editor.off("selectionUpdate", rerender);
+      editor.off("transaction", rerender);
+    };
+  }, [editor]);
+
+  const cmdHeading = () =>
+    editor?.chain().focus().toggleHeading({ level: 2 }).run();
+  const cmdBold = () => editor?.chain().focus().toggleBold().run();
+  const cmdItalic = () => editor?.chain().focus().toggleItalic().run();
+  const cmdBulletList = () => editor?.chain().focus().toggleBulletList().run();
+  const cmdTaskList = () => editor?.chain().focus().toggleTaskList().run();
+  const cmdBlockquote = () => editor?.chain().focus().toggleBlockquote().run();
+  const cmdImage = () => {
+    if (!editor) return;
+    const src = window.prompt("이미지 URL을 입력하세요");
+    if (!src) return;
+    editor.chain().focus().setImage({ src }).run();
   };
+  const cmdLink = () => {
+    if (!editor) return;
+    const previous = editor.getAttributes("link").href as string | undefined;
+    const href = window.prompt("링크 URL을 입력하세요", previous ?? "https://");
+    if (href === null) return;
+    if (href === "") {
+      editor.chain().focus().extendMarkRange("link").unsetLink().run();
+      return;
+    }
+    editor
+      .chain()
+      .focus()
+      .extendMarkRange("link")
+      .setLink({ href })
+      .run();
+  };
+
+  const isActive = (name: string, attrs?: Record<string, unknown>) =>
+    editor ? editor.isActive(name, attrs) : false;
 
   const copyShareLink = () => {
     const url = `${window.location.origin}/dashboard/memo?id=${active.id}`;
     navigator.clipboard?.writeText(url);
   };
+
+  // body 통계는 editor 의 plain text 기준으로 계산 (마크다운 토큰 제외).
+  const plainText = editor?.getText() ?? "";
 
   return (
     <>
@@ -398,21 +473,24 @@ function MemoEditor({
         <button
           type="button"
           title="제목"
-          onClick={() => insertLinePrefix("# ")}
+          className={isActive("heading", { level: 2 }) ? styles.on : ""}
+          onClick={cmdHeading}
         >
           <Icon name="h1" size={14} />
         </button>
         <button
           type="button"
           title="굵게"
-          onClick={() => insert("**", "**", "굵게")}
+          className={isActive("bold") ? styles.on : ""}
+          onClick={cmdBold}
         >
           <Icon name="bold" size={14} />
         </button>
         <button
           type="button"
           title="기울임"
-          onClick={() => insert("*", "*", "기울임")}
+          className={isActive("italic") ? styles.on : ""}
+          onClick={cmdItalic}
         >
           <Icon name="italic" size={14} />
         </button>
@@ -420,36 +498,36 @@ function MemoEditor({
         <button
           type="button"
           title="목록"
-          onClick={() => insertLinePrefix("- ")}
+          className={isActive("bulletList") ? styles.on : ""}
+          onClick={cmdBulletList}
         >
           <Icon name="list" size={14} />
         </button>
         <button
           type="button"
           title="체크리스트"
-          onClick={() => insertLinePrefix("- [ ] ")}
+          className={isActive("taskList") ? styles.on : ""}
+          onClick={cmdTaskList}
         >
           <Icon name="check" size={14} />
         </button>
         <button
           type="button"
           title="인용"
-          onClick={() => insertLinePrefix("> ")}
+          className={isActive("blockquote") ? styles.on : ""}
+          onClick={cmdBlockquote}
         >
           <Icon name="quote" size={14} />
         </button>
         <span className={styles.tbSep} />
-        <button
-          type="button"
-          title="이미지"
-          onClick={() => insert("![", "](URL)", "alt")}
-        >
+        <button type="button" title="이미지" onClick={cmdImage}>
           <Icon name="image" size={14} />
         </button>
         <button
           type="button"
           title="링크"
-          onClick={() => insert("[", "](URL)", "텍스트")}
+          className={isActive("link") ? styles.on : ""}
+          onClick={cmdLink}
         >
           <Icon name="link" size={14} />
         </button>
@@ -476,31 +554,22 @@ function MemoEditor({
           ))}
           <button className={styles.memoTagAdd}>+ 태그</button>
         </div>
-        <textarea
-          ref={bodyRef}
-          className={styles.memoBody}
-          value={bodyField.value}
-          onChange={(e) => bodyField.setDraft(e.target.value)}
-          onBlur={bodyField.commit}
-          placeholder="여기에 메모를 적어보세요. 마크다운을 지원합니다 — # 제목, **굵게**, - 목록…"
-          spellCheck={false}
-        />
+        <EditorContent editor={editor} className={styles.memoBodyHost} />
       </div>
 
       <div className={styles.memoFoot}>
         <span className="hand">손글씨처럼, 부담없이.</span>
         <div className={styles.memoFootStats}>
           <span>
-            <b>{bodyField.value.length}</b>자
+            <b>{plainText.length}</b>자
           </span>
           <span className={styles.dotSep}>·</span>
           <span>
-            <b>{bodyField.value.split(/\s+/).filter(Boolean).length}</b>단어
+            <b>{plainText.split(/\s+/).filter(Boolean).length}</b>단어
           </span>
           <span className={styles.dotSep}>·</span>
           <span>
-            읽는 시간{" "}
-            <b>{Math.max(1, Math.round(bodyField.value.length / 400))}</b>분
+            읽는 시간 <b>{Math.max(1, Math.round(plainText.length / 400))}</b>분
           </span>
         </div>
       </div>

@@ -396,6 +396,10 @@
   background: var(--card-elev);
   color: var(--ink);
 }
+.memoToolbar button.on {
+  background: var(--ink);
+  color: var(--yellow);
+}
 .tbSep {
   width: 1px;
   height: 18px;
@@ -520,12 +524,20 @@
   border-color: var(--ink);
 }
 
+/* host wrapper for Tiptap EditorContent — Tiptap 은 내부에 .ProseMirror div 를 만든다. */
+.memoBodyHost {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 240px;
+}
+
+/* memoBody 는 EditorContent 의 .ProseMirror 에 직접 적용 (editorProps.attributes.class) */
 .memoBody {
   flex: 1;
   background: transparent;
   border: none;
   outline: none;
-  resize: none;
   font-family: var(--sans);
   font-size: 14.5px;
   line-height: 32px; /* line up with paper rule lines */
@@ -534,10 +546,100 @@
   width: 100%;
   padding: 0;
   min-height: 240px;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
-.memoBody::placeholder {
+
+/* ProseMirror element 단위 스타일 — paper aesthetic 유지 (line-rule 32px 정렬) */
+.memoBody :global(p),
+.memoBody :global(ul),
+.memoBody :global(ol),
+.memoBody :global(blockquote),
+.memoBody :global(pre) {
+  margin: 0;
+  line-height: 32px;
+}
+.memoBody :global(h1),
+.memoBody :global(h2),
+.memoBody :global(h3) {
+  margin: 0;
+  line-height: 32px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+.memoBody :global(h1) {
+  font-size: 22px;
+}
+.memoBody :global(h2) {
+  font-size: 18px;
+}
+.memoBody :global(h3) {
+  font-size: 16px;
+}
+.memoBody :global(ul),
+.memoBody :global(ol) {
+  padding-left: 22px;
+}
+.memoBody :global(blockquote) {
+  border-left: 3px solid var(--line-strong);
+  padding-left: 12px;
+  color: var(--ink-soft);
+  font-style: italic;
+}
+.memoBody :global(code) {
+  font-family: var(--mono);
+  font-size: 0.9em;
+  background: rgba(0, 0, 0, 0.05);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+.memoBody :global(pre) {
+  font-family: var(--mono);
+  background: rgba(0, 0, 0, 0.05);
+  padding: 8px 12px;
+  border-radius: 6px;
+  overflow-x: auto;
+}
+.memoBody :global(pre code) {
+  background: transparent;
+  padding: 0;
+}
+.memoBody :global(a) {
+  color: #2c6fb1;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.memoBody :global(img) {
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+  margin: 4px 0;
+}
+/* tiptap task list — 체크박스 정렬 */
+.memoBody :global(ul[data-type="taskList"]) {
+  list-style: none;
+  padding-left: 0;
+}
+.memoBody :global(ul[data-type="taskList"] li) {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+.memoBody :global(ul[data-type="taskList"] li > label) {
+  flex-shrink: 0;
+  margin-top: 8px;
+}
+.memoBody :global(ul[data-type="taskList"] li > div) {
+  flex: 1;
+}
+.memoBody :global(p.is-editor-empty:first-child::before) {
+  content: attr(data-placeholder);
   color: var(--ink-mute);
   font-style: italic;
+  float: left;
+  height: 0;
+  pointer-events: none;
 }
 
 .memoFoot {
