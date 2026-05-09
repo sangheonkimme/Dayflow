@@ -1,4 +1,5 @@
 import { useState } from "react";
+import styles from "@/screens/mobile/mobile.module.css";
 import { EditProfileSheet } from "@/screens/mobile/sheets/EditProfileSheet";
 import { ChangePasswordSheet } from "@/screens/mobile/sheets/ChangePasswordSheet";
 import { SectionHeader } from "@/screens/mobile/shared/SectionHeader";
@@ -31,7 +32,7 @@ export const ProfileScreen = ({ onBack, onUpgrade }: any) => {
       }}
     >
       {ico && (
-        <div className="dfm-tool-ico" style={{ width: 32, height: 32 }}>
+        <div className={styles.dfmToolIco} style={{ width: 32, height: 32 }}>
           <Ico name={ico} size={14} />
         </div>
       )}
@@ -61,7 +62,7 @@ export const ProfileScreen = ({ onBack, onUpgrade }: any) => {
         onBack={onBack}
         action={
           <button
-            className="dfm-icon-btn"
+            className={styles.dfmIconBtn}
             aria-label="편집"
             onClick={() => setEditOpen(true)}
           >
@@ -72,7 +73,7 @@ export const ProfileScreen = ({ onBack, onUpgrade }: any) => {
 
       {/* hero card — avatar + name + plan */}
       <div
-        className="dfm-card"
+        className={styles.dfmCard}
         style={{
           background: "var(--yellow)",
           borderColor: "var(--yellow-edge)",
@@ -141,7 +142,7 @@ export const ProfileScreen = ({ onBack, onUpgrade }: any) => {
         {stats.map((s, i) => (
           <div
             key={i}
-            className="dfm-card"
+            className={styles.dfmCard}
             style={{ padding: "12px 10px", textAlign: "center" }}
           >
             <div
@@ -176,7 +177,7 @@ export const ProfileScreen = ({ onBack, onUpgrade }: any) => {
       {/* upgrade banner */}
       <button
         onClick={onUpgrade}
-        className="dfm-card"
+        className={styles.dfmCard}
         style={{
           marginBottom: 14,
           padding: 14,
@@ -216,7 +217,7 @@ export const ProfileScreen = ({ onBack, onUpgrade }: any) => {
 
       {/* account */}
       <SectionHeader title="계정" />
-      <div className="dfm-card" style={{ padding: 0, marginBottom: 14 }}>
+      <div className={styles.dfmCard} style={{ padding: 0, marginBottom: 14 }}>
         <Row
           ico="bell"
           title="이메일"
@@ -235,7 +236,7 @@ export const ProfileScreen = ({ onBack, onUpgrade }: any) => {
 
       {/* data */}
       <SectionHeader title="데이터" />
-      <div className="dfm-card" style={{ padding: 0, marginBottom: 14 }}>
+      <div className={styles.dfmCard} style={{ padding: 0, marginBottom: 14 }}>
         <Row
           ico="cloud"
           title="iCloud 동기화"
@@ -258,7 +259,7 @@ export const ProfileScreen = ({ onBack, onUpgrade }: any) => {
 
       {/* about */}
       <SectionHeader title="앱 정보" />
-      <div className="dfm-card" style={{ padding: 0, marginBottom: 14 }}>
+      <div className={styles.dfmCard} style={{ padding: 0, marginBottom: 14 }}>
         <Row
           title="버전"
           right={
@@ -278,7 +279,7 @@ export const ProfileScreen = ({ onBack, onUpgrade }: any) => {
         <Row title="문의하기" sub="help@dayflow.app" onClick={() => {}} last />
       </div>
 
-      <div className="dfm-card" style={{ padding: 0, marginBottom: 14 }}>
+      <div className={styles.dfmCard} style={{ padding: 0, marginBottom: 14 }}>
         <Row title="로그아웃" onClick={() => signOut()} danger last />
       </div>
 

@@ -7,6 +7,7 @@ import { inferIcon } from "@/data/transactions";
 import { Ico } from "@/screens/mobile/shared/Ico";
 import { SectionHeader } from "@/screens/mobile/shared/SectionHeader";
 import { SwipeRow } from "@/screens/mobile/shared/SwipeRow";
+import styles from "@/screens/mobile/mobile.module.css";
 
 export const MobileLedger = () => {
   const [scope, setScope] = useState("all"); // all | out | in
@@ -90,8 +91,8 @@ export const MobileLedger = () => {
   return (
     <>
       {/* HERO */}
-      <div className="dfm-led-hero">
-        <div className="dfm-led-month">
+      <div className={styles.dfmLedHero}>
+        <div className={styles.dfmLedMonth}>
           <span>
             <b>2026 · 11월</b>
           </span>
@@ -99,32 +100,32 @@ export const MobileLedger = () => {
             <Ico name="chevL" size={12} /> 11월 <Ico name="chevR" size={12} />
           </span>
         </div>
-        <div className="dfm-led-balance">
-          <span className="won">₩</span>
+        <div className={styles.dfmLedBalance}>
+          <span className={styles.won}>₩</span>
           {balance.toLocaleString()}
         </div>
-        <div className="dfm-led-sub">
+        <div className={styles.dfmLedSub}>
           전월 대비 <b>+{deltaPct}%</b> · 월급일까지 D-11
         </div>
 
-        <div className="dfm-led-stats">
-          <div className="dfm-led-stat in">
-            <div className="lbl">수입</div>
-            <div className="val">+{(income / 10000).toFixed(0)}만</div>
-            <div className="delta">↗ 정기 1건</div>
+        <div className={styles.dfmLedStats}>
+          <div className={`${styles.dfmLedStat} ${styles.in}`}>
+            <div className={styles.lbl}>수입</div>
+            <div className={styles.val}>+{(income / 10000).toFixed(0)}만</div>
+            <div className={styles.delta}>↗ 정기 1건</div>
           </div>
-          <div className="dfm-led-divider" />
-          <div className="dfm-led-stat out">
-            <div className="lbl">지출</div>
-            <div className="val">-{(expense / 10000).toFixed(0)}만</div>
-            <div className="delta">↘ 23건</div>
+          <div className={styles.dfmLedDivider} />
+          <div className={`${styles.dfmLedStat} ${styles.out}`}>
+            <div className={styles.lbl}>지출</div>
+            <div className={styles.val}>-{(expense / 10000).toFixed(0)}만</div>
+            <div className={styles.delta}>↘ 23건</div>
           </div>
         </div>
 
-        <div className="dfm-trend">
-          <div className="dfm-trend-head">
+        <div className={styles.dfmTrend}>
+          <div className={styles.dfmTrendHead}>
             <span>월별 흐름 · 11개월</span>
-            <div className="dfm-trend-legend">
+            <div className={styles.dfmTrendLegend}>
               <span>
                 <i style={{ background: "#b9e7c9" }} />
                 수입
@@ -135,23 +136,26 @@ export const MobileLedger = () => {
               </span>
             </div>
           </div>
-          <div className="dfm-trend-bars">
+          <div className={styles.dfmTrendBars}>
             {trend.map((d, i) => (
-              <div key={i} className={`dfm-trend-col ${d.now ? "now" : ""}`}>
+              <div
+                key={i}
+                className={`${styles.dfmTrendCol} ${d.now ? styles.now : ""}`}
+              >
                 <div
-                  className="b-in"
+                  className={styles.bIn}
                   style={{ height: `${(d.in / trendMax) * 100}%` }}
                 />
                 <div
-                  className="b-out"
+                  className={styles.bOut}
                   style={{ height: `${(d.out / trendMax) * 100}%` }}
                 />
               </div>
             ))}
           </div>
-          <div className="dfm-trend-labels">
+          <div className={styles.dfmTrendLabels}>
             {trend.map((d, i) => (
-              <span key={i} className={d.now ? "now" : ""}>
+              <span key={i} className={d.now ? styles.now : ""}>
                 {d.m}
               </span>
             ))}
@@ -161,8 +165,8 @@ export const MobileLedger = () => {
 
       {/* CATEGORY DONUT */}
       <SectionHeader title="카테고리 분석" action="자세히" />
-      <div className="dfm-cats-card">
-        <div className="dfm-donut-wrap">
+      <div className={styles.dfmCatsCard}>
+        <div className={styles.dfmDonutWrap}>
           <svg
             width="110"
             height="110"
@@ -199,22 +203,22 @@ export const MobileLedger = () => {
               });
             })()}
           </svg>
-          <div className="dfm-donut-center">
+          <div className={styles.dfmDonutCenter}>
             <div>
-              <div className="lbl">총 지출</div>
-              <div className="val">{(catTotal / 10000).toFixed(0)}만</div>
+              <div className={styles.lbl}>총 지출</div>
+              <div className={styles.val}>{(catTotal / 10000).toFixed(0)}만</div>
             </div>
           </div>
         </div>
-        <div className="dfm-cat-list">
+        <div className={styles.dfmCatList}>
           {cats.slice(0, 5).map((c, i) => (
-            <div key={i} className="dfm-cat-row">
-              <span className="swatch" style={{ background: c.color }} />
-              <span className="name">{c.name}</span>
-              <span className="pct">
+            <div key={i} className={styles.dfmCatRow}>
+              <span className={styles.swatch} style={{ background: c.color }} />
+              <span className={styles.name}>{c.name}</span>
+              <span className={styles.pct}>
                 {Math.round((c.val / catTotal) * 100)}%
               </span>
-              <span className="amt">{(c.val / 10000).toFixed(0)}만</span>
+              <span className={styles.amt}>{(c.val / 10000).toFixed(0)}만</span>
             </div>
           ))}
         </div>
@@ -223,46 +227,48 @@ export const MobileLedger = () => {
       {/* TXN LIST */}
       <SectionHeader title="거래 내역" action="검색" />
 
-      <div className="dfm-chips">
+      <div className={styles.dfmChips}>
         <button
-          className={`dfm-chip ${scope === "all" ? "on" : ""}`}
+          className={`${styles.dfmChip} ${scope === "all" ? styles.on : ""}`}
           onClick={() => setScope("all")}
         >
-          전체 <span className="count">23</span>
+          전체 <span className={styles.count}>23</span>
         </button>
         <button
-          className={`dfm-chip ${scope === "out" ? "on" : ""}`}
+          className={`${styles.dfmChip} ${scope === "out" ? styles.on : ""}`}
           onClick={() => setScope("out")}
         >
-          지출 <span className="count">22</span>
+          지출 <span className={styles.count}>22</span>
         </button>
         <button
-          className={`dfm-chip ${scope === "in" ? "on" : ""}`}
+          className={`${styles.dfmChip} ${scope === "in" ? styles.on : ""}`}
           onClick={() => setScope("in")}
         >
-          수입 <span className="count">1</span>
+          수입 <span className={styles.count}>1</span>
         </button>
-        <button className="dfm-chip">
-          정기 <span className="count">3</span>
+        <button className={styles.dfmChip}>
+          정기 <span className={styles.count}>3</span>
         </button>
-        <button className="dfm-chip">
-          미분류 <span className="count">2</span>
+        <button className={styles.dfmChip}>
+          미분류 <span className={styles.count}>2</span>
         </button>
       </div>
 
       {days.map((d, di) => (
-        <div key={di} className="dfm-day">
-          <div className="dfm-day-head">
-            <div className="date">
+        <div key={di} className={styles.dfmDay}>
+          <div className={styles.dfmDayHead}>
+            <div className={styles.date}>
               {d.date}
               <small>{d.dow}</small>
             </div>
-            <div className={`total ${d.total < 0 ? "expense" : ""}`}>
+            <div
+              className={`${styles.total} ${d.total < 0 ? styles.expense : ""}`}
+            >
               {d.total > 0 ? "+" : ""}
               {d.total.toLocaleString()}
             </div>
           </div>
-          <div className="dfm-day-rows">
+          <div className={styles.dfmDayRows}>
             {d.items.map((it, i) => (
               <SwipeRow
                 key={i}
@@ -282,17 +288,19 @@ export const MobileLedger = () => {
                 ]}
               >
                 <div
-                  className="dfm-money-row"
+                  className={styles.dfmMoneyRow}
                   onClick={() => openTxnDetail(it)}
                 >
-                  <div className="ico">
+                  <div className={styles.ico}>
                     <Ico name={it.ico} size={16} />
                   </div>
-                  <div className="who">
+                  <div className={styles.who}>
                     {it.name}
                     <small>{it.sub}</small>
                   </div>
-                  <div className={`val ${it.income ? "income" : "expense"}`}>
+                  <div
+                    className={`${styles.val} ${it.income ? styles.income : styles.expense}`}
+                  >
                     {it.amt > 0 ? "+" : ""}
                     {it.amt.toLocaleString()}
                   </div>

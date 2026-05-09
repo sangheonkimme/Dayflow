@@ -1,5 +1,6 @@
 import { Ico } from "@/screens/mobile/shared/Ico";
 import { DfmSwitch } from "@/screens/mobile/shared/DfmSwitch";
+import styles from "@/screens/mobile/mobile.module.css";
 
 export const NotifToggleRow = ({ ico, title, sub, value, onChange, last }: any) => {
   return (
@@ -13,7 +14,7 @@ export const NotifToggleRow = ({ ico, title, sub, value, onChange, last }: any) 
       }}
     >
       {ico && (
-        <div className="dfm-tool-ico" style={{ width: 32, height: 32 }}>
+        <div className={styles.dfmToolIco} style={{ width: 32, height: 32 }}>
           <Ico name={ico} size={14} />
         </div>
       )}

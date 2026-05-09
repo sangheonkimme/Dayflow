@@ -1,4 +1,5 @@
 import { Ico } from "@/screens/mobile/shared/Ico";
+import styles from "@/screens/mobile/mobile.module.css";
 
 export const SubHeader = ({ title, onBack, action }: any) => {
   return (
@@ -10,7 +11,7 @@ export const SubHeader = ({ title, onBack, action }: any) => {
         marginBottom: 14,
       }}
     >
-      <button className="dfm-icon-btn" onClick={onBack} aria-label="뒤로">
+      <button className={styles.dfmIconBtn} onClick={onBack} aria-label="뒤로">
         <Ico name="chevL" size={18} />
       </button>
       <b style={{ flex: 1, fontSize: 17, letterSpacing: "-0.01em" }}>{title}</b>

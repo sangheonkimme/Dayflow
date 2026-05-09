@@ -1,5 +1,17 @@
 import { useState, useRef } from "react";
 import { SwipeIcon } from "@/screens/mobile/shared/SwipeIcon";
+import styles from "@/screens/mobile/mobile.module.css";
+
+const ACT_CLASS: Record<string, string | undefined> = {
+  delete: styles.actDelete,
+  edit: styles.actEdit,
+  neutral: styles.actNeutral,
+  yellow: styles.actYellow,
+  pink: styles.actPink,
+  blue: styles.actBlue,
+  mint: styles.actMint,
+  red: styles.actRed,
+};
 
 export const SwipeRow = ({
   children,
@@ -138,24 +150,28 @@ export const SwipeRow = ({
   };
 
   return (
-    <div className={"dfm-swipe" + (removing ? " removing" : "")}>
+    <div className={styles.dfmSwipe + (removing ? " " + styles.removing : "")}>
       {acts.length > 0 && (
-        <div className="dfm-swipe-actions" style={{ width: totalWidth }}>
-          {acts.map((a, i) => (
-            <button
-              key={i}
-              className={`dfm-swipe-action act-${a.color || "neutral"}`}
-              onClick={(e) => handleAction(e, a)}
-              aria-label={a.label}
-            >
-              <SwipeIcon name={a.icon} />
-              <span>{a.label}</span>
-            </button>
-          ))}
+        <div className={styles.dfmSwipeActions} style={{ width: totalWidth }}>
+          {acts.map((a, i) => {
+            const colorKey = a.color || "neutral";
+            const colorCls = ACT_CLASS[colorKey] ?? styles.actNeutral;
+            return (
+              <button
+                key={i}
+                className={`${styles.dfmSwipeAction} ${colorCls}`}
+                onClick={(e) => handleAction(e, a)}
+                aria-label={a.label}
+              >
+                <SwipeIcon name={a.icon} />
+                <span>{a.label}</span>
+              </button>
+            );
+          })}
         </div>
       )}
       <div
-        className={"dfm-swipe-content" + (animating ? " anim" : "")}
+        className={styles.dfmSwipeContent + (animating ? " " + styles.anim : "")}
         style={{ transform: `translateX(${dx}px)` }}
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import styles from "@/screens/mobile/mobile.module.css";
 import { NotifToggleRow } from "@/screens/mobile/shared/NotifToggleRow";
 import { SectionHeader } from "@/screens/mobile/shared/SectionHeader";
 import { Ico } from "@/screens/mobile/shared/Ico";
@@ -43,7 +44,7 @@ export const ThemeScreen = ({ onBack }: any) => {
 
       {/* live preview */}
       <div
-        className="dfm-card"
+        className={styles.dfmCard}
         style={{
           background: previewBg,
           color: previewInk,
@@ -121,7 +122,7 @@ export const ThemeScreen = ({ onBack }: any) => {
 
       {/* mode */}
       <SectionHeader title="모드" />
-      <div className="dfm-card" style={{ padding: 6, marginBottom: 14 }}>
+      <div className={styles.dfmCard} style={{ padding: 6, marginBottom: 14 }}>
         <div
           style={{
             display: "grid",
@@ -161,7 +162,7 @@ export const ThemeScreen = ({ onBack }: any) => {
 
       {/* accent */}
       <SectionHeader title="포인트 컬러" />
-      <div className="dfm-card" style={{ padding: 14, marginBottom: 14 }}>
+      <div className={styles.dfmCard} style={{ padding: 14, marginBottom: 14 }}>
         <div
           style={{
             display: "flex",
@@ -229,7 +230,7 @@ export const ThemeScreen = ({ onBack }: any) => {
 
       {/* font family */}
       <SectionHeader title="폰트" />
-      <div className="dfm-card" style={{ padding: 0, marginBottom: 14 }}>
+      <div className={styles.dfmCard} style={{ padding: 0, marginBottom: 14 }}>
         {[
           {
             id: "hand",
@@ -300,7 +301,7 @@ export const ThemeScreen = ({ onBack }: any) => {
 
       {/* font size */}
       <SectionHeader title="글자 크기" />
-      <div className="dfm-card" style={{ padding: 16, marginBottom: 14 }}>
+      <div className={styles.dfmCard} style={{ padding: 16, marginBottom: 14 }}>
         <div
           style={{
             display: "flex",
@@ -384,7 +385,7 @@ export const ThemeScreen = ({ onBack }: any) => {
 
       {/* density */}
       <SectionHeader title="목록 간격" />
-      <div className="dfm-card" style={{ padding: 6, marginBottom: 14 }}>
+      <div className={styles.dfmCard} style={{ padding: 6, marginBottom: 14 }}>
         <div
           style={{
             display: "grid",
@@ -445,7 +446,7 @@ export const ThemeScreen = ({ onBack }: any) => {
 
       {/* misc */}
       <SectionHeader title="기타" />
-      <div className="dfm-card" style={{ padding: 0, marginBottom: 24 }}>
+      <div className={styles.dfmCard} style={{ padding: 0, marginBottom: 24 }}>
         <NotifToggleRow
           ico="doc"
           title="종이 질감 배경"

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import styles from "@/screens/mobile/mobile.module.css";
 import { SectionHeader } from "@/screens/mobile/shared/SectionHeader";
 import { Ico } from "@/screens/mobile/shared/Ico";
 import { SubHeader } from "@/screens/mobile/shared/SubHeader";
@@ -136,7 +137,7 @@ export const SubscriptionsScreen = ({ onBack, onAdd }: any) => {
         title="구독 관리"
         onBack={onBack}
         action={
-          <button className="dfm-icon-btn" aria-label="추가" onClick={onAdd}>
+          <button className={styles.dfmIconBtn} aria-label="추가" onClick={onAdd}>
             <Ico name="plus" size={18} />
           </button>
         }
@@ -144,7 +145,7 @@ export const SubscriptionsScreen = ({ onBack, onAdd }: any) => {
 
       {/* hero summary */}
       <div
-        className="dfm-card"
+        className={styles.dfmCard}
         style={{
           background: "var(--yellow)",
           borderColor: "var(--yellow-edge)",
@@ -221,7 +222,7 @@ export const SubscriptionsScreen = ({ onBack, onAdd }: any) => {
 
       {/* upcoming */}
       <SectionHeader title="다가오는 결제" />
-      <div className="dfm-card" style={{ padding: 0, marginBottom: 14 }}>
+      <div className={styles.dfmCard} style={{ padding: 0, marginBottom: 14 }}>
         {upcoming.map((s, i) => (
           <div
             key={i}
@@ -235,7 +236,7 @@ export const SubscriptionsScreen = ({ onBack, onAdd }: any) => {
             }}
           >
             <div
-              className="dfm-tool-ico"
+              className={styles.dfmToolIco}
               style={{
                 width: 32,
                 height: 32,
@@ -293,7 +294,7 @@ export const SubscriptionsScreen = ({ onBack, onAdd }: any) => {
       </div>
 
       {/* list */}
-      <div className="dfm-card" style={{ padding: 0 }}>
+      <div className={styles.dfmCard} style={{ padding: 0 }}>
         {visible.map((s, i) => (
           <div
             key={i}
@@ -308,7 +309,7 @@ export const SubscriptionsScreen = ({ onBack, onAdd }: any) => {
             }}
           >
             <div
-              className="dfm-tool-ico"
+              className={styles.dfmToolIco}
               style={{
                 width: 36,
                 height: 36,

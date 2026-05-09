@@ -11,6 +11,7 @@ import { daysWithEventsInMonth } from "@/data/events";
 import { Ico } from "@/screens/mobile/shared/Ico";
 import { SectionHeader } from "@/screens/mobile/shared/SectionHeader";
 import { SwipeRow } from "@/screens/mobile/shared/SwipeRow";
+import styles from "@/screens/mobile/mobile.module.css";
 
 export const MobileHome = ({ onNavigate, onAddTxn, onAddEvent }: any) => {
   const {
@@ -94,39 +95,39 @@ export const MobileHome = ({ onNavigate, onAddTxn, onAddEvent }: any) => {
   return (
     <>
       <SectionHeader title="오늘의 메모" action="전체" />
-      <div className="dfm-notes-rail-wrap">
-        <div className="dfm-notes-rail">
-          <div className="dfm-note yellow">
-            <div className="dfm-note-title">이번 주 회고</div>
-            <div className="dfm-note-body">
+      <div className={styles.dfmNotesRailWrap}>
+        <div className={styles.dfmNotesRail}>
+          <div className={`${styles.dfmNote} ${styles.yellow}`}>
+            <div className={styles.dfmNoteTitle}>이번 주 회고</div>
+            <div className={styles.dfmNoteBody}>
               디자인 리뷰 잘 마무리. 다음 주는 앱 버전 마이그레이션 작업이 메인.
             </div>
-            <div className="dfm-note-foot">
+            <div className={styles.dfmNoteFoot}>
               <span>월 11/24</span>
               <span>·</span>
             </div>
           </div>
-          <div className="dfm-note pink">
-            <div className="dfm-note-title">살 것</div>
-            <div className="dfm-note-body">
+          <div className={`${styles.dfmNote} ${styles.pink}`}>
+            <div className={styles.dfmNoteTitle}>살 것</div>
+            <div className={styles.dfmNoteBody}>
               우유 · 계란 · 시리얼 · 바나나. 빵집 들러서 캄파뉴 한 덩이도.
             </div>
-            <div className="dfm-note-foot">
+            <div className={styles.dfmNoteFoot}>
               <span>화 11/25</span>
               <span>5</span>
             </div>
           </div>
-          <div className="dfm-note mint">
-            <div className="dfm-note-title">아이디어</div>
-            <div className="dfm-note-body">
+          <div className={`${styles.dfmNote} ${styles.mint}`}>
+            <div className={styles.dfmNoteTitle}>아이디어</div>
+            <div className={styles.dfmNoteBody}>
               Dayflow에 위젯 화면 — 잠금화면에서 오늘 예산 한 줄로 보이게.
             </div>
-            <div className="dfm-note-foot">
+            <div className={styles.dfmNoteFoot}>
               <span>오늘</span>
               <span>💡</span>
             </div>
           </div>
-          <div className="dfm-note add">+ 새 메모</div>
+          <div className={`${styles.dfmNote} ${styles.add}`}>+ 새 메모</div>
         </div>
       </div>
 
@@ -134,12 +135,14 @@ export const MobileHome = ({ onNavigate, onAddTxn, onAddEvent }: any) => {
         title="오늘 할 일"
         action={`${doneCount} / ${todos.length}`}
       />
-      <div className="dfm-card">
-        <div className="dfm-checklist">
+      <div className={styles.dfmCard}>
+        <div className={styles.dfmChecklist}>
           {todos.map((t, i) => (
             <SwipeRow key={i} onDelete={() => removeTodo(i)}>
-              <div className="dfm-check-row" onClick={() => toggle(i)}>
-                <div className={`dfm-check-box ${t.done ? "on" : ""}`}>
+              <div className={styles.dfmCheckRow} onClick={() => toggle(i)}>
+                <div
+                  className={`${styles.dfmCheckBox} ${t.done ? styles.on : ""}`}
+                >
                   {t.done && (
                     <svg width="12" height="10" viewBox="0 0 12 10">
                       <path
@@ -153,19 +156,21 @@ export const MobileHome = ({ onNavigate, onAddTxn, onAddEvent }: any) => {
                     </svg>
                   )}
                 </div>
-                <div className={`dfm-check-text ${t.done ? "done" : ""}`}>
+                <div
+                  className={`${styles.dfmCheckText} ${t.done ? styles.done : ""}`}
+                >
                   {t.text}
                 </div>
-                <div className="dfm-check-tag">{t.tag}</div>
+                <div className={styles.dfmCheckTag}>{t.tag}</div>
               </div>
             </SwipeRow>
           ))}
           <div
-            className="dfm-check-row dfm-todo-add"
+            className={`${styles.dfmCheckRow} ${styles.dfmTodoAdd}`}
             onClick={(e) => e.stopPropagation()}
           >
             <div
-              className="dfm-check-box add"
+              className={`${styles.dfmCheckBox} ${styles.add}`}
               onClick={addTodo}
               role="button"
               aria-label="할 일 추가"
@@ -180,7 +185,7 @@ export const MobileHome = ({ onNavigate, onAddTxn, onAddEvent }: any) => {
               </svg>
             </div>
             <input
-              className="dfm-todo-input"
+              className={styles.dfmTodoInput}
               value={newTodo}
               onChange={(e) => setNewTodo(e.target.value)}
               onKeyDown={(e) => {
@@ -197,45 +202,45 @@ export const MobileHome = ({ onNavigate, onAddTxn, onAddEvent }: any) => {
         action="자세히"
         onAction={() => onNavigate?.("ledger")}
       />
-      <div className="dfm-money">
-        <div className="dfm-money-h">
+      <div className={styles.dfmMoney}>
+        <div className={styles.dfmMoneyH}>
           <div>
-            <div className="label">11월 잔액</div>
-            <div className="amount">+₩ 842,300</div>
+            <div className={styles.label}>11월 잔액</div>
+            <div className={styles.amount}>+₩ 842,300</div>
           </div>
-          <div className="delta">+12.4%</div>
+          <div className={styles.delta}>+12.4%</div>
         </div>
-        <div className="dfm-money-bar">
+        <div className={styles.dfmMoneyBar}>
           <span style={{ width: "42%", background: "#ffd84d" }} />
           <span style={{ width: "26%", background: "#ffb38a" }} />
           <span style={{ width: "16%", background: "#b9e7c9" }} />
           <span style={{ width: "10%", background: "#d4c1f0" }} />
           <span style={{ width: "6%", background: "#d8d2c2" }} />
         </div>
-        <div className="dfm-money-legend">
+        <div className={styles.dfmMoneyLegend}>
           <span>
-            <span className="lg-dot" style={{ background: "#ffd84d" }} />
+            <span className={styles.lgDot} style={{ background: "#ffd84d" }} />
             식비
           </span>
           <span>
-            <span className="lg-dot" style={{ background: "#ffb38a" }} />
+            <span className={styles.lgDot} style={{ background: "#ffb38a" }} />
             교통
           </span>
           <span>
-            <span className="lg-dot" style={{ background: "#b9e7c9" }} />
+            <span className={styles.lgDot} style={{ background: "#b9e7c9" }} />
             쇼핑
           </span>
           <span>
-            <span className="lg-dot" style={{ background: "#d4c1f0" }} />
+            <span className={styles.lgDot} style={{ background: "#d4c1f0" }} />
             구독
           </span>
           <span>
-            <span className="lg-dot" style={{ background: "#d8d2c2" }} />
+            <span className={styles.lgDot} style={{ background: "#d8d2c2" }} />
             기타
           </span>
         </div>
 
-        <div className="dfm-money-list">
+        <div className={styles.dfmMoneyList}>
           {txns.map((t, i) => (
             <SwipeRow
               key={i}
@@ -254,15 +259,17 @@ export const MobileHome = ({ onNavigate, onAddTxn, onAddEvent }: any) => {
                 },
               ]}
             >
-              <div className="dfm-money-row" onClick={() => openTxnDetail(t)}>
-                <div className="ico">
+              <div className={styles.dfmMoneyRow} onClick={() => openTxnDetail(t)}>
+                <div className={styles.ico}>
                   <Ico name={t.ico} size={16} />
                 </div>
-                <div className="who">
+                <div className={styles.who}>
                   {t.name}
                   <small>{t.sub}</small>
                 </div>
-                <div className={"val " + (t.amount < 0 ? "expense" : "income")}>
+                <div
+                  className={`${styles.val} ${t.amount < 0 ? styles.expense : styles.income}`}
+                >
                   {t.amount < 0 ? "-" : "+"}
                   {Math.abs(t.amount).toLocaleString()}
                 </div>
@@ -277,10 +284,10 @@ export const MobileHome = ({ onNavigate, onAddTxn, onAddEvent }: any) => {
         action="전체 캘린더"
         onAction={() => onNavigate?.("calendar")}
       />
-      <div className="dfm-cal">
-        <div className="dfm-cal-h">
-          <div className="month">2026 · 11월</div>
-          <div className="dfm-cal-nav">
+      <div className={styles.dfmCal}>
+        <div className={styles.dfmCalH}>
+          <div className={styles.month}>2026 · 11월</div>
+          <div className={styles.dfmCalNav}>
             <button>
               <Ico name="chevL" size={14} />
             </button>
@@ -289,9 +296,9 @@ export const MobileHome = ({ onNavigate, onAddTxn, onAddEvent }: any) => {
             </button>
           </div>
         </div>
-        <div className="dfm-cal-grid">
+        <div className={styles.dfmCalGrid}>
           {DOW.map((d, i) => (
-            <div key={i} className="dfm-cal-dow">
+            <div key={i} className={styles.dfmCalDow}>
               {d}
             </div>
           ))}
@@ -301,7 +308,14 @@ export const MobileHome = ({ onNavigate, onAddTxn, onAddEvent }: any) => {
             return (
               <div
                 key={i}
-                className={`dfm-cal-day ${c.muted ? "muted" : ""} ${isToday ? "today" : ""} ${hasEvent ? "has-event" : ""}`}
+                className={[
+                  styles.dfmCalDay,
+                  c.muted ? styles.muted : "",
+                  isToday ? styles.today : "",
+                  hasEvent ? styles.hasEvent : "",
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
               >
                 {c.d}
               </div>

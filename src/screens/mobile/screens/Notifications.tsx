@@ -1,4 +1,5 @@
 import { useState } from "react";
+import styles from "@/screens/mobile/mobile.module.css";
 import { SectionHeader } from "@/screens/mobile/shared/SectionHeader";
 import { Ico } from "@/screens/mobile/shared/Ico";
 import { SubHeader } from "@/screens/mobile/shared/SubHeader";
@@ -27,7 +28,7 @@ export const NotificationsScreen = ({ onBack }: any) => {
 
       {/* master push status */}
       <div
-        className="dfm-card"
+        className={styles.dfmCard}
         style={{
           marginBottom: 14,
           display: "flex",
@@ -37,7 +38,7 @@ export const NotificationsScreen = ({ onBack }: any) => {
         }}
       >
         <div
-          className="dfm-tool-ico"
+          className={styles.dfmToolIco}
           style={{
             width: 40,
             height: 40,
@@ -86,7 +87,7 @@ export const NotificationsScreen = ({ onBack }: any) => {
       {/* digests */}
       <SectionHeader title="요약 리포트" />
       <div
-        className="dfm-card"
+        className={styles.dfmCard}
         style={{
           padding: 0,
           marginBottom: 14,
@@ -112,7 +113,7 @@ export const NotificationsScreen = ({ onBack }: any) => {
       {/* triggers */}
       <SectionHeader title="가계부" />
       <div
-        className="dfm-card"
+        className={styles.dfmCard}
         style={{
           padding: 0,
           marginBottom: 14,
@@ -146,7 +147,7 @@ export const NotificationsScreen = ({ onBack }: any) => {
 
       <SectionHeader title="캘린더" />
       <div
-        className="dfm-card"
+        className={styles.dfmCard}
         style={{
           padding: 0,
           marginBottom: 14,
@@ -171,7 +172,7 @@ export const NotificationsScreen = ({ onBack }: any) => {
 
       {/* quiet hours */}
       <SectionHeader title="방해 금지" />
-      <div className="dfm-card" style={{ padding: 0, marginBottom: 14 }}>
+      <div className={styles.dfmCard} style={{ padding: 0, marginBottom: 14 }}>
         <NotifToggleRow
           ico="moon"
           title="방해 금지 모드"
@@ -240,7 +241,7 @@ export const NotificationsScreen = ({ onBack }: any) => {
 
       {/* sound */}
       <SectionHeader title="알림음" />
-      <div className="dfm-card" style={{ padding: 0, marginBottom: 14 }}>
+      <div className={styles.dfmCard} style={{ padding: 0, marginBottom: 14 }}>
         {["기본", "차임", "조약돌", "물방울", "무음"].map((opt, i, arr) => (
           <div
             key={opt}

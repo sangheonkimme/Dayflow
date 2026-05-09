@@ -3,6 +3,7 @@ import { DOW } from "@/lib/date";
 import { useEvents, useEventsByDate } from "@/data/events";
 import { Ico } from "@/screens/mobile/shared/Ico";
 import { SectionHeader } from "@/screens/mobile/shared/SectionHeader";
+import styles from "@/screens/mobile/mobile.module.css";
 
 export const MobileCalEvents = () => {
   const d = new Date();
@@ -10,7 +11,7 @@ export const MobileCalEvents = () => {
   const events = useEventsByDate(todayKey);
   if (!events.length) {
     return (
-      <div className="dfm-cal-events">
+      <div className={styles.dfmCalEvents}>
         <div
           style={{ padding: "10px 0", fontSize: 12, color: "var(--ink-mute)" }}
         >
@@ -20,14 +21,14 @@ export const MobileCalEvents = () => {
     );
   }
   return (
-    <div className="dfm-cal-events">
+    <div className={styles.dfmCalEvents}>
       {events.slice(0, 3).map((ev) => (
-        <div key={ev.id} className="dfm-cal-event">
-          <span className="time">
+        <div key={ev.id} className={styles.dfmCalEvent}>
+          <span className={styles.time}>
             {ev.allDay ? "종일" : ev.startTime || ""}
           </span>
           <div
-            className="pill"
+            className={styles.pill}
             style={ev.color ? { borderLeftColor: ev.color } : undefined}
           >
             {ev.title}
@@ -84,10 +85,10 @@ export const MobileCalendar = () => {
   return (
     <div>
       <SectionHeader title="11월 일정" />
-      <div className="dfm-cal">
-        <div className="dfm-cal-h">
-          <div className="month">2026 · 11월</div>
-          <div className="dfm-cal-nav">
+      <div className={styles.dfmCal}>
+        <div className={styles.dfmCalH}>
+          <div className={styles.month}>2026 · 11월</div>
+          <div className={styles.dfmCalNav}>
             <button>
               <Ico name="chevL" size={14} />
             </button>
@@ -96,9 +97,9 @@ export const MobileCalendar = () => {
             </button>
           </div>
         </div>
-        <div className="dfm-cal-grid">
+        <div className={styles.dfmCalGrid}>
           {dayNames.map((d, i) => (
-            <div key={i} className="dfm-cal-dow">
+            <div key={i} className={styles.dfmCalDow}>
               {d}
             </div>
           ))}
@@ -113,7 +114,15 @@ export const MobileCalendar = () => {
               <div
                 key={i}
                 onClick={() => !muted && setSel(d)}
-                className={`dfm-cal-day ${muted ? "muted" : ""} ${isToday ? "today" : ""} ${ev ? "has-event" : ""} ${isSel ? "selected" : ""}`}
+                className={[
+                  styles.dfmCalDay,
+                  muted ? styles.muted : "",
+                  isToday ? styles.today : "",
+                  ev ? styles.hasEvent : "",
+                  isSel ? styles.selected : "",
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
                 style={{ cursor: muted ? "default" : "pointer" }}
               >
                 {real}
@@ -179,7 +188,7 @@ export const MobileCalendar = () => {
       {/* day timeline / list */}
       {selEvents.length === 0 ? (
         <div
-          className="dfm-card"
+          className={styles.dfmCard}
           style={{
             display: "flex",
             flexDirection: "column",
@@ -231,7 +240,7 @@ export const MobileCalendar = () => {
                 )}
               </div>
               <div
-                className="dfm-card"
+                className={styles.dfmCard}
                 style={{
                   flex: 1,
                   padding: "12px 14px",

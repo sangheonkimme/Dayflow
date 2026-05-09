@@ -1,5 +1,6 @@
 import { Ico } from "@/screens/mobile/shared/Ico";
 import { SectionHeader } from "@/screens/mobile/shared/SectionHeader";
+import styles from "@/screens/mobile/mobile.module.css";
 
 export const MobileMenu = ({ onNavigate, onProfile }: any) => {
   const links = [
@@ -14,7 +15,7 @@ export const MobileMenu = ({ onNavigate, onProfile }: any) => {
   return (
     <div>
       <div
-        className="dfm-card"
+        className={styles.dfmCard}
         onClick={onProfile}
         style={{
           display: "flex",
@@ -49,7 +50,7 @@ export const MobileMenu = ({ onNavigate, onProfile }: any) => {
         <Ico name="chevR" size={16} />
       </div>
       <SectionHeader title="바로가기" />
-      <div className="dfm-card" style={{ padding: 0 }}>
+      <div className={styles.dfmCard} style={{ padding: 0 }}>
         {links.map(([icoName, ttl, sub, route], i) => (
           <div
             key={i}
@@ -66,7 +67,7 @@ export const MobileMenu = ({ onNavigate, onProfile }: any) => {
             }}
           >
             <div
-              className="dfm-tool-ico"
+              className={styles.dfmToolIco}
               style={{ width: 36, height: 36, fontSize: 16 }}
             >
               <Ico name={icoName} size={16} />
