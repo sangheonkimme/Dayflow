@@ -71,6 +71,10 @@ export function useRepositoryQuery<T extends { id: string | number }>(
     ...options.upsertOptions,
     onSettled: (...args) => {
       qc.setQueryData(queryKey, repo.store.getSnapshot());
+      // DataSource 가 placeholder mock → real supabase 로 swap 되는 시나리오에서
+      // upsert 대상 repo 와 화면이 구독 중인 store 인스턴스가 다를 수 있음.
+      // 강제 invalidate 로 다음 render 에서 init() 재실행 → store 동기화.
+      qc.invalidateQueries({ queryKey });
       options.upsertOptions?.onSettled?.(...args);
     },
   });
@@ -80,6 +84,7 @@ export function useRepositoryQuery<T extends { id: string | number }>(
     ...options.removeOptions,
     onSettled: (...args) => {
       qc.setQueryData(queryKey, repo.store.getSnapshot());
+      qc.invalidateQueries({ queryKey });
       options.removeOptions?.onSettled?.(...args);
     },
   });

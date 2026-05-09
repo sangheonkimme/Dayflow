@@ -301,7 +301,8 @@ function SubsPage({ onAdd }: { onAdd?: () => void }) {
         </div>
       </div>
 
-      {/* INSIGHT — 데모 데이터 — 실제 구독이 하나도 없을 땐 노출 안 함. */}
+      {/* INSIGHT — "새는 돈, 점검해볼까요?" 섹션
+          용도/문구 미정 상태로 임시 비활성화. 데이터 모델 정해지면 복구 (2026-05-09).
       {SUBS.length > 0 && (
       <div className={`card card-pad ${styles.insightCard}`} style={{ marginTop: 18 }}>
         <div className={styles.insightStamp}>SAVE TIPS</div>
@@ -340,6 +341,7 @@ function SubsPage({ onAdd }: { onAdd?: () => void }) {
         </ul>
       </div>
       )}
+      */}
 
       {editing && (
         <SubEditModal
