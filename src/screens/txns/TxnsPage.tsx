@@ -191,7 +191,9 @@ function TxnsPage({ onAdd, onEditTxn }) {
               style={
                 cat === c
                   ? undefined
-                  : { borderLeft: `3px solid ${(TRANSACTION_CATEGORIES as Record<string, string>)[c]}` }
+                  : {
+                      borderLeft: `3px solid ${(TRANSACTION_CATEGORIES as Record<string, string>)[c]}`,
+                    }
               }
             >
               {c}
@@ -252,7 +254,9 @@ function TxnsPage({ onAdd, onEditTxn }) {
                   <div className={styles.txnDayLabel}>{dateLabel(date)}</div>
                   <div className={styles.txnDaySums}>
                     {dayIn > 0 && (
-                      <span className={styles.tdIn}>+₩{dayIn.toLocaleString()}</span>
+                      <span className={styles.tdIn}>
+                        +₩{dayIn.toLocaleString()}
+                      </span>
                     )}
                     {dayOut > 0 && (
                       <span className={styles.tdOut}>
@@ -288,14 +292,19 @@ function TxnsPage({ onAdd, onEditTxn }) {
                         className={styles.trCatTag}
                         style={{
                           background:
-                            (t.cat && (TRANSACTION_CATEGORIES as Record<string, string>)[t.cat]) ||
+                            (t.cat &&
+                              (
+                                TRANSACTION_CATEGORIES as Record<string, string>
+                              )[t.cat]) ||
                             "var(--ink-soft)",
                         }}
                       >
                         {t.cat}
                       </span>
                     </div>
-                    <div className={`${styles.thlCol} ${styles.pay}`}>{t.pay}</div>
+                    <div className={`${styles.thlCol} ${styles.pay}`}>
+                      {t.pay}
+                    </div>
                     <div
                       className={`${styles.thlCol} ${styles.amt} ${
                         t.type === "in" ? styles.in : styles.out
@@ -336,7 +345,11 @@ function TxnsPage({ onAdd, onEditTxn }) {
                 <span
                   className="folder-chip"
                   style={{
-                    background: active.cat ? (TRANSACTION_CATEGORIES as Record<string, string>)[active.cat] : undefined,
+                    background: active.cat
+                      ? (TRANSACTION_CATEGORIES as Record<string, string>)[
+                          active.cat
+                        ]
+                      : undefined,
                     color: "#fff",
                     marginTop: 10,
                   }}

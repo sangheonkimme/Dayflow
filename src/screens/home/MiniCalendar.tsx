@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Icon } from "@/components/Icon";
 import { DOW } from "@/lib/date";
 import styles from "./MiniCalendar.module.css";
@@ -14,14 +14,17 @@ export function MiniCalendar({
   quickMemo,
   setQuickMemo,
   addQuickMemo,
+  onRemoveMemo,
   onEditEvent,
-}) {
+}: any) {
   const today = new Date();
   const yr = today.getFullYear(),
     mo = today.getMonth();
   const firstDay = new Date(yr, mo, 1).getDay();
   const daysInMonth = new Date(yr, mo + 1, 0).getDate();
   const daysPrev = new Date(yr, mo, 0).getDate();
+  // 선택된 날짜 (현재 달 기준 day, null = 오늘 + 임박 일정 노출)
+  const [selectedDay, setSelectedDay] = useState<number | null>(null);
 
   const cells: { d: number; muted?: boolean }[] = [];
   for (let i = firstDay - 1; i >= 0; i--)
@@ -36,8 +39,17 @@ export function MiniCalendar({
     [events, yr, mo],
   );
   const upcoming = useMemo(() => upcomingEvents(events, 2, today), [events]);
+  const monthKey = `${yr}-${String(mo + 1).padStart(2, "0")}`;
+  const selectedEvents = useMemo(() => {
+    if (selectedDay == null) return [];
+    const dateStr = `${monthKey}-${String(selectedDay).padStart(2, "0")}`;
+    return events
+      .filter((e) => e.date === dateStr)
+      .sort((a, b) => (a.startTime ?? "").localeCompare(b.startTime ?? ""));
+  }, [events, selectedDay, monthKey]);
+  const visibleEvents = selectedDay == null ? upcoming : selectedEvents;
   const monthEventCount = events.filter((e) =>
-    e.date.startsWith(`${yr}-${String(mo + 1).padStart(2, "0")}-`),
+    e.date.startsWith(monthKey + "-"),
   ).length;
   const dow = DOW;
 
@@ -85,14 +97,29 @@ export function MiniCalendar({
         {cells.map((c, i) => {
           const isToday = !c.muted && c.d === today.getDate();
           const has = !c.muted && eventDays.has(c.d);
+          const isSelected = !c.muted && selectedDay === c.d;
           return (
             <div
               key={i}
+              role={c.muted ? undefined : "button"}
+              tabIndex={c.muted ? -1 : 0}
+              onClick={() => {
+                if (c.muted) return;
+                setSelectedDay(selectedDay === c.d ? null : c.d);
+              }}
+              onKeyDown={(e) => {
+                if (c.muted) return;
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setSelectedDay(selectedDay === c.d ? null : c.d);
+                }
+              }}
               className={
                 styles.calDay +
                 (c.muted ? " muted" : "") +
                 (isToday ? " today" : "") +
-                (has ? " has" : "")
+                (has ? " has" : "") +
+                (isSelected ? " selected" : "")
               }
             >
               {c.d}
@@ -110,7 +137,38 @@ export function MiniCalendar({
           gap: 8,
         }}
       >
-        {upcoming.map((ev, i) => (
+        {selectedDay != null && (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              fontSize: 11,
+              color: "var(--ink-mute)",
+              marginBottom: 2,
+            }}
+          >
+            <span>
+              {mo + 1}월 {selectedDay}일 일정 · {selectedEvents.length}개
+            </span>
+            <button
+              className="upc-edit-btn"
+              onClick={() => setSelectedDay(null)}
+              title="선택 해제"
+              style={{ fontSize: 11, padding: "2px 6px" }}
+            >
+              ✕
+            </button>
+          </div>
+        )}
+        {visibleEvents.length === 0 && selectedDay != null && (
+          <div
+            style={{ fontSize: 12, color: "var(--ink-mute)", padding: "6px 0" }}
+          >
+            등록된 일정이 없어요
+          </div>
+        )}
+        {visibleEvents.map((ev, i) => (
           <div
             key={ev.id}
             className="upc row"
@@ -130,7 +188,9 @@ export function MiniCalendar({
                 {formatTime(ev)}
               </div>
             </div>
-            {i === 0 && <span className="tag live">곧</span>}
+            {selectedDay == null && i === 0 && (
+              <span className="tag live">곧</span>
+            )}
             <button
               className="upc-edit-btn"
               onClick={() => onEditEvent && onEditEvent(ev)}
@@ -144,12 +204,27 @@ export function MiniCalendar({
       <div className={styles.quickMemo}>
         <span className={styles.hand}>한 줄 메모</span>
         <input
-          placeholder="떠오른 생각을 빠르게 적어두세요"
+          placeholder={
+            (memos?.length ?? 0) >= 3
+              ? "최대 3개 — 기존 메모를 지우고 추가하세요"
+              : "떠오른 생각을 빠르게 적어두세요"
+          }
           value={quickMemo || ""}
           onChange={(e) => setQuickMemo && setQuickMemo(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && addQuickMemo && addQuickMemo()}
+          onKeyDown={(e) =>
+            e.key === "Enter" &&
+            (memos?.length ?? 0) < 3 &&
+            addQuickMemo &&
+            addQuickMemo()
+          }
+          disabled={(memos?.length ?? 0) >= 3}
         />
-        <button onClick={() => addQuickMemo && addQuickMemo()}>저장</button>
+        <button
+          onClick={() => addQuickMemo && addQuickMemo()}
+          disabled={(memos?.length ?? 0) >= 3}
+        >
+          저장
+        </button>
       </div>
       {memos && memos.length > 0 && (
         <div
@@ -160,10 +235,13 @@ export function MiniCalendar({
             gap: 4,
           }}
         >
-          {memos.slice(0, 2).map((m, i) => (
+          {memos.map((m: string, i: number) => (
             <div
               key={i}
               style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 6,
                 fontSize: 12,
                 color: "var(--ink-soft)",
                 padding: "4px 8px",
@@ -172,9 +250,36 @@ export function MiniCalendar({
                 borderLeft: "3px solid var(--yellow-edge)",
               }}
             >
-              · {m}
+              <span style={{ flex: 1 }}>· {m}</span>
+              {onRemoveMemo && (
+                <button
+                  onClick={() => onRemoveMemo(i)}
+                  title="삭제"
+                  style={{
+                    border: "none",
+                    background: "transparent",
+                    color: "var(--ink-mute)",
+                    cursor: "pointer",
+                    padding: 0,
+                    fontSize: 11,
+                    lineHeight: 1,
+                  }}
+                >
+                  ✕
+                </button>
+              )}
             </div>
           ))}
+          <div
+            style={{
+              fontSize: 10,
+              color: "var(--ink-mute)",
+              textAlign: "right",
+              marginTop: 2,
+            }}
+          >
+            {memos.length} / 3
+          </div>
         </div>
       )}
     </div>

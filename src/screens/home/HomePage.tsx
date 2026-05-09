@@ -38,8 +38,12 @@ export function HomePage({
   ]);
   const addQuickMemo = () => {
     if (!quickMemo.trim()) return;
-    setMemos([quickMemo, ...memos].slice(0, 3));
+    if (memos.length >= 3) return; // 정원 초과 시 무시 — 입력창도 disabled
+    setMemos([quickMemo, ...memos]);
     setQuickMemo("");
+  };
+  const removeMemo = (idx: number) => {
+    setMemos(memos.filter((_, i) => i !== idx));
   };
 
   return (
@@ -114,6 +118,7 @@ export function HomePage({
             quickMemo={quickMemo}
             setQuickMemo={setQuickMemo}
             addQuickMemo={addQuickMemo}
+            onRemoveMemo={removeMemo}
             onEditEvent={openEvent}
           />
         )}

@@ -11,7 +11,7 @@ import {
 } from "@/data/transactions";
 import styles from "./MoneyFlow.module.css";
 
-export function MoneyFlow({ onAdd, onOpenLedger, onEditTxn }) {
+export function MoneyFlow({ onAdd, onOpenLedger, onEditTxn }: any) {
   const { all: txnsAll } = useTransactions();
 
   const {
@@ -25,9 +25,18 @@ export function MoneyFlow({ onAdd, onOpenLedger, onEditTxn }) {
   const summary = useMemo(() => currentMonthSummary(txnsAll), [txnsAll]);
   const txns = useMemo(() => selectRecent(txnsAll, 4), [txnsAll]);
 
-  const income = summary.income || 3200000;
+  // 월급(실수령) — 이번 달의 payday(급여) in-flow 만 합산.
+  // summary.income 은 모든 in-flow(환급, 송금 등 포함) 라 라벨과 의미가 달라
+  // 별도 selector 로 분리. 0 일 땐 시안 fallback.
+  const monthlyPayday = useMemo(() => {
+    return txnsAll
+      .filter((t) => t.date.startsWith(summary.key) && inferPayday(t))
+      .reduce((s, t) => s + t.amount, 0);
+  }, [txnsAll, summary.key]);
+  const income = monthlyPayday || 3200000;
   const expense = summary.expense;
-  const balance = summary.net;
+  // 남은 예산 = 월급 기준. summary.net 은 (모든 in - 모든 out) 이라 부적절.
+  const balance = income - expense;
   const budgetPct = income > 0 ? Math.round((expense / income) * 100) : 0;
   const daysToPayday = 28;
 

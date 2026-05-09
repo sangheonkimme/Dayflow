@@ -146,7 +146,11 @@ function SalaryCalcPage() {
           <div className={`card card-pad ${styles.salaryCard}`}>
             <div className={styles.salaryCardHead}>
               <h3>급여 정보 입력</h3>
-              <button className={styles.salaryReset} onClick={reset} title="초기화">
+              <button
+                className={styles.salaryReset}
+                onClick={reset}
+                title="초기화"
+              >
                 <Icon name="repeat" size={14} />
               </button>
             </div>
@@ -305,7 +309,9 @@ function SalaryCalcPage() {
             <div className={styles.payslipGroup}>
               <div className={`${styles.pgRow} ${styles.pgRowHead}`}>
                 <span>소득세</span>
-                <b className={styles.purple}>{won(r.incomeTax + r.localTax)} 원</b>
+                <b className={styles.purple}>
+                  {won(r.incomeTax + r.localTax)} 원
+                </b>
               </div>
               <div className={`${styles.pgRow} ${styles.sub}`}>
                 <span>

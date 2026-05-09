@@ -66,6 +66,14 @@
 .calDay:global(.today.has)::after {
   background: var(--yellow);
 }
+.calDay:global(.selected) {
+  outline: 2px solid var(--yellow);
+  outline-offset: -2px;
+  background: var(--bg-paper);
+}
+.calDay:global(.today.selected) {
+  outline-color: var(--yellow);
+}
 
 /* Quick memo footer — Phase 4b: migrated from styles.css `.quick-memo` */
 .quickMemo {

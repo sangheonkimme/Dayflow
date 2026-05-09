@@ -297,10 +297,7 @@ function CropFocus() {
               ))}
             </div>
             {[...Array(8)].map((_, i) => (
-              <span
-                key={i}
-                className={`${styles.cropH} ${styles[`h${i}`]}`}
-              />
+              <span key={i} className={`${styles.cropH} ${styles[`h${i}`]}`} />
             ))}
           </div>
         </div>
