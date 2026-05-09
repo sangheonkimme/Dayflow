@@ -11,9 +11,6 @@ export default defineConfig({
   resolve: {
     alias: [
       { find: "@/screens", replacement: r("./src/screens") },
-      { find: "@/widgets", replacement: r("./src/widgets") },
-      { find: "@/features", replacement: r("./src/features") },
-      { find: "@/shared", replacement: r("./src/shared") },
       { find: "@", replacement: r("./src") },
     ],
   },

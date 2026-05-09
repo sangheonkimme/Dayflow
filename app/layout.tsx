@@ -11,7 +11,7 @@ import "@/styles/landing.css";
 import "@/styles/pages.css";
 // 페이지·라우트별 CSS 는 각자 page.tsx / *Client.tsx 에서 직접 임포트
 // (Phase 4b 분할 — 글로벌 번들 축소 + 라우트 단위 leak 격리).
-import { Providers } from "@/shared/query/providers";
+import { Providers } from "@/lib/providers";
 
 // Phase 4: Google Fonts 를 next/font 로 직렬화. @import 위치 사고 영구 차단.
 // 변수로 노출 → CSS 의 var(--font-sans) 등이 그대로 참조.

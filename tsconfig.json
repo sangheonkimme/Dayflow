@@ -24,12 +24,8 @@
     "plugins": [{ "name": "next" }],
     "baseUrl": ".",
     "paths": {
-      "@/app/*": ["src/app/*"],
-      "@/lib/*": ["lib/*", "src/lib/*"],
+      "@/lib/*": ["src/lib/*"],
       "@/screens/*": ["src/screens/*"],
-      "@/widgets/*": ["src/widgets/*"],
-      "@/features/*": ["src/features/*"],
-      "@/shared/*": ["src/shared/*"],
       "@/*": ["src/*"]
     }
   },

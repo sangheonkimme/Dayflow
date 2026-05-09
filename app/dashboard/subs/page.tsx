@@ -1,7 +1,7 @@
 import { HydrationBoundary } from "@tanstack/react-query";
 import { prefetch } from "@/server/prefetch";
-import { queryKeys } from "@/server/queries/keys";
-import { fetchSubscriptions } from "@/server/queries/subscriptions";
+import { queryKeys } from "@/server/keys";
+import { fetchSubscriptions } from "@/server/subscriptions";
 import SubsClient from "./SubsClient";
 
 export default async function Page() {

@@ -31,7 +31,7 @@ import { useEvents } from "@/data/events";
 import { useDataModeStore } from "@/store/dataMode";
 import { useModalStore } from "@/store/modal";
 import { configureDataSource, getReadyPromise } from "@/data/source";
-import { queryClient } from "@/shared/query/queryClient";
+import { queryClient } from "@/lib/query-client";
 import type { AccentColor } from "@/types";
 
 const SearchOverlay = lazy(() =>

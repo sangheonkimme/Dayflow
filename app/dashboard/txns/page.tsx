@@ -1,7 +1,7 @@
 import { HydrationBoundary } from "@tanstack/react-query";
 import { prefetch } from "@/server/prefetch";
-import { queryKeys } from "@/server/queries/keys";
-import { fetchTransactions } from "@/server/queries/transactions";
+import { queryKeys } from "@/server/keys";
+import { fetchTransactions } from "@/server/transactions";
 import TxnsClient from "./TxnsClient";
 
 export default async function Page() {
