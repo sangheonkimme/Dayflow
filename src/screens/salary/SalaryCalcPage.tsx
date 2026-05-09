@@ -6,8 +6,23 @@ import styles from "./SalaryCalcPage.module.css";
 // ============================================================
 // SALARY CALCULATOR PAGE — 연봉 계산기
 // ============================================================
-// 2026년 기준 한국 4대보험 + 소득세 간단 계산기
-// (실제 세무 계산이 아닌, UI 데모용 근사치)
+// 2025년 기준 4대보험 공제율 + 간이세액표 적용. 로직은
+// worklife-dashboard 의 salaryCalculator 와 동기화 (2026-05-09).
+
+// 2025년 기준 공제율
+const RATES = {
+  NATIONAL_PENSION: 0.045,
+  HEALTH_INSURANCE: 0.03545,
+  LONG_TERM_CARE_RATE: 0.1295, // 건강보험료의 12.95%
+  EMPLOYMENT_INSURANCE: 0.009,
+  LOCAL_INCOME_TAX_RATE: 0.1,
+  SMALL_COMPANY_TAX_REDUCTION: 0.9,
+};
+
+// 국민연금 상한 (2025년: 월 590만원)
+const NATIONAL_PENSION_MAX = 5900000;
+// 건강보험 상한 (실무상 거의 적용 안 됨 — 안전 가드)
+const HEALTH_INSURANCE_MAX = 100000000;
 
 function calcSalary({
   grossYearly,
@@ -16,8 +31,15 @@ function calcSalary({
   dependents,
   kids8to20,
   smeReduction,
+}: {
+  grossYearly: number;
+  severanceIncluded: boolean;
+  nonTaxYearly: number;
+  dependents: number;
+  kids8to20: number;
+  smeReduction: boolean;
 }) {
-  // 퇴직금 포함이면 연봉의 1/13으로 분리
+  // 1. 퇴직금 포함이면 연봉의 1/13 으로 분리 (Dayflow 고유 기능 유지)
   const baseYearly = severanceIncluded
     ? Math.floor((grossYearly * 12) / 13)
     : grossYearly;
@@ -25,30 +47,48 @@ function calcSalary({
   const monthlyNonTax = Math.max(0, Math.floor(nonTaxYearly / 12));
   const taxableMonthly = Math.max(0, monthlyGross - monthlyNonTax);
 
-  // 4대 보험 (2026년 기준 근사치)
-  const np = Math.floor(taxableMonthly * 0.045); // 국민연금 4.5%
-  const hi = Math.floor(taxableMonthly * 0.03545); // 건강보험 3.545%
-  const ltc = Math.floor(hi * 0.1295); // 장기요양 12.95% of 건강
-  const ei = Math.floor(taxableMonthly * 0.009); // 고용보험 0.9%
+  // 2. 4대 보험 (상한 적용)
+  const npBase = Math.min(taxableMonthly, NATIONAL_PENSION_MAX);
+  const hiBase = Math.min(taxableMonthly, HEALTH_INSURANCE_MAX);
+  const np = Math.floor(npBase * RATES.NATIONAL_PENSION);
+  const hi = Math.floor(hiBase * RATES.HEALTH_INSURANCE);
+  const ltc = Math.floor(hi * RATES.LONG_TERM_CARE_RATE);
+  const ei = Math.floor(taxableMonthly * RATES.EMPLOYMENT_INSURANCE);
   const insurance = np + hi + ltc + ei;
 
-  // 간이세액 (아주 단순화)
+  // 3. 간이세액표 — 4대보험 공제 후 금액 기준 (2025년)
+  const afterInsurance = taxableMonthly - insurance;
   let baseIncomeTax = 0;
-  if (taxableMonthly > 1060000) {
-    const t = taxableMonthly;
-    if (t <= 1500000) baseIncomeTax = (t - 1060000) * 0.06;
-    else if (t <= 3000000) baseIncomeTax = 26400 + (t - 1500000) * 0.15;
-    else if (t <= 4500000) baseIncomeTax = 251400 + (t - 3000000) * 0.24;
-    else if (t <= 7000000) baseIncomeTax = 611400 + (t - 4500000) * 0.35;
-    else if (t <= 12000000) baseIncomeTax = 1486400 + (t - 7000000) * 0.38;
-    else baseIncomeTax = 3386400 + (t - 12000000) * 0.4;
+  if (afterInsurance > 0) {
+    if (afterInsurance <= 1060000) {
+      baseIncomeTax = afterInsurance * 0.04;
+    } else if (afterInsurance <= 2220000) {
+      baseIncomeTax = 42400 + (afterInsurance - 1060000) * 0.05;
+    } else if (afterInsurance <= 4220000) {
+      baseIncomeTax = 100400 + (afterInsurance - 2220000) * 0.07;
+    } else if (afterInsurance <= 6220000) {
+      baseIncomeTax = 240400 + (afterInsurance - 4220000) * 0.1;
+    } else if (afterInsurance <= 10000000) {
+      baseIncomeTax = 440400 + (afterInsurance - 6220000) * 0.15;
+    } else if (afterInsurance <= 15000000) {
+      baseIncomeTax = 1007400 + (afterInsurance - 10000000) * 0.2;
+    } else {
+      baseIncomeTax = 2007400 + (afterInsurance - 15000000) * 0.25;
+    }
   }
-  // 부양가족 공제 (간이)
-  const depDeduct = Math.max(0, dependents - 1) * 12500 + kids8to20 * 12500;
+  // 부양가족(본인 제외) + 자녀 공제 — 1인당 12,500원
+  const depDeduct =
+    Math.max(0, dependents - 1) * 12500 + Math.max(0, kids8to20) * 12500;
   let incomeTax = Math.max(0, Math.floor(baseIncomeTax - depDeduct));
-  // 중소기업 청년 감면 90% (간이)
-  if (smeReduction) incomeTax = Math.floor(incomeTax * 0.1);
-  const localTax = Math.floor(incomeTax * 0.1);
+
+  // 4. 중소기업 취업자 소득세 감면 (90%)
+  if (smeReduction) {
+    const reduction = Math.floor(incomeTax * RATES.SMALL_COMPANY_TAX_REDUCTION);
+    incomeTax = incomeTax - reduction;
+  }
+
+  // 5. 지방소득세 — 감면 후 소득세의 10%
+  const localTax = Math.floor(incomeTax * RATES.LOCAL_INCOME_TAX_RATE);
 
   const totalDeduct = insurance + incomeTax + localTax;
   const net = monthlyGross - totalDeduct;
