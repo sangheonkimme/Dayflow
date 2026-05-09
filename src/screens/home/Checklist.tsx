@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Icon } from "@/components/Icon";
 import { useChecklist } from "@/data/checklist";
 import styles from "./Checklist.module.css";
+
+const MAX_TASKS = 7;
 
 export function Checklist() {
   const { data: tasks, upsert, remove: removeTask } = useChecklist();
@@ -11,14 +13,23 @@ export function Checklist() {
   const pct = tasks.length ? Math.round((done / tasks.length) * 100) : 0;
   const r = 24,
     c = 2 * Math.PI * r;
+  const isFull = tasks.length >= MAX_TASKS;
 
-  const toggle = (id) => {
+  // 미완료 → 완료 순서로 분리. 같은 그룹 내 입력 순서는 유지.
+  const { pending, completed } = useMemo(() => {
+    const pending = tasks.filter((t) => !t.done);
+    const completed = tasks.filter((t) => t.done);
+    return { pending, completed };
+  }, [tasks]);
+
+  const toggle = (id: number) => {
     const t = tasks.find((x) => x.id === id);
     if (t) upsert({ ...t, done: !t.done });
   };
-  const remove = (id) => removeTask(id);
+  const remove = (id: number) => removeTask(id);
   const add = () => {
     if (!input.trim()) return;
+    if (isFull) return;
     upsert({ id: Date.now(), text: input, done: false, time: "지금" });
     setInput("");
   };
@@ -32,7 +43,10 @@ export function Checklist() {
             오늘 체크리스트
           </div>
           <div className="card-sub">
-            완료 {done}/{tasks.length}개
+            완료 {done}/{tasks.length}개{" "}
+            <span style={{ color: "var(--ink-mute)" }}>
+              (최대 {MAX_TASKS}개)
+            </span>
           </div>
         </div>
         <div className={styles.progressRing}>
@@ -64,21 +78,55 @@ export function Checklist() {
 
       <div className={styles.addTask}>
         <input
-          placeholder="할 일을 입력하고 Enter"
+          placeholder={
+            isFull
+              ? `최대 ${MAX_TASKS}개 — 기존 항목을 완료/삭제하세요`
+              : "할 일을 입력하고 Enter"
+          }
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && add()}
+          disabled={isFull}
         />
-        <button onClick={add}>
+        <button onClick={add} disabled={isFull}>
           <Icon name="plus" size={14} />
         </button>
       </div>
 
       <ul className={styles.tasks}>
-        {tasks.map((t) => (
+        {pending.map((t) => (
           <li
             key={t.id}
-            className={`${styles.task}${t.done ? ` ${styles.done}` : ""}`}
+            className={styles.task}
+            onClick={() => toggle(t.id)}
+          >
+            <span className={styles.check}>
+              <Icon name="check" size={12} />
+            </span>
+            <div style={{ flex: 1 }}>
+              <div className={styles.taskLabel}>{t.text}</div>
+              <div className={styles.taskMeta}>{t.time}</div>
+            </div>
+            <button
+              className={styles.taskDel}
+              onClick={(e) => {
+                e.stopPropagation();
+                remove(t.id);
+              }}
+            >
+              <Icon name="trash" size={14} />
+            </button>
+          </li>
+        ))}
+        {completed.length > 0 && pending.length > 0 && (
+          <li className={styles.divider} aria-hidden="true">
+            <span>완료</span>
+          </li>
+        )}
+        {completed.map((t) => (
+          <li
+            key={t.id}
+            className={`${styles.task} ${styles.done}`}
             onClick={() => toggle(t.id)}
           >
             <span className={styles.check}>
