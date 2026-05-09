@@ -240,8 +240,9 @@ function DeskPile() {
   );
 }
 
-function PinCard({ pin, onRemove, onUpdate }) {
-  const [editing, setEditing] = useState(false);
+function PinCard({ pin, onRemove, onUpdate }: any) {
+  // editing: null(보기) | "label"(라벨 편집) | "value"(내용 편집)
+  const [editing, setEditing] = useState<null | "label" | "value">(null);
   const [copied, setCopied] = useState(false);
 
   const labelField = useDraftField<string>({
@@ -257,21 +258,21 @@ function PinCard({ pin, onRemove, onUpdate }) {
     },
   });
 
-  const copy = (e) => {
+  const copy = (e: React.MouseEvent) => {
     e.stopPropagation();
     navigator.clipboard?.writeText(pin.value);
     setCopied(true);
     setTimeout(() => setCopied(false), 1100);
   };
 
-  const finishEditing = () => {
+  const close = () => {
     labelField.commit();
     valueField.commit();
-    setEditing(false);
+    setEditing(null);
   };
 
   return (
-    <div className={styles.pinCard} onClick={() => setEditing(true)}>
+    <div className={styles.pinCard}>
       <button
         className={styles.pinClose}
         onClick={(e) => {
@@ -281,43 +282,79 @@ function PinCard({ pin, onRemove, onUpdate }) {
       >
         <Icon name="x" size={10} />
       </button>
-      {editing ? (
-        <>
-          <input
-            className={styles.pinLabelIn}
-            value={labelField.value}
-            onChange={(e) => labelField.setDraft(e.target.value)}
-            onBlur={labelField.commit}
-            onClick={(e) => e.stopPropagation()}
-            placeholder="라벨"
-          />
-          <input
-            className={styles.pinValueIn}
-            value={valueField.value}
-            onChange={(e) => valueField.setDraft(e.target.value)}
-            onClick={(e) => e.stopPropagation()}
-            onBlur={finishEditing}
-            onKeyDown={(e) => e.key === "Enter" && finishEditing()}
-            placeholder="내용"
-            autoFocus
-          />
-        </>
+
+      {/* 라벨 — 보기/편집 모두 같은 자리에 렌더해 클릭 영역 분리 */}
+      {editing === "label" ? (
+        <input
+          className={styles.pinLabelIn}
+          value={labelField.value}
+          onChange={(e) => labelField.setDraft(e.target.value)}
+          onBlur={close}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === "Escape") {
+              (e.target as HTMLInputElement).blur();
+            }
+          }}
+          placeholder="라벨"
+          autoFocus
+        />
       ) : (
-        <>
-          <div className={styles.pinLabel}>{pin.label}</div>
-          <div className={styles.pinValue}>{pin.value}</div>
-          <button className={styles.pinCopy} onClick={copy}>
-            {copied ? (
-              <>
-                <Icon name="check" size={10} /> 복사됨
-              </>
-            ) : (
-              <>
-                <Icon name="copy" size={10} /> 복사
-              </>
-            )}
-          </button>
-        </>
+        <div
+          className={styles.pinLabel}
+          onClick={() => setEditing("label")}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") setEditing("label");
+          }}
+          title="클릭하여 라벨 편집"
+        >
+          {pin.label}
+        </div>
+      )}
+
+      {/* 값 — 동일 패턴 */}
+      {editing === "value" ? (
+        <input
+          className={styles.pinValueIn}
+          value={valueField.value}
+          onChange={(e) => valueField.setDraft(e.target.value)}
+          onBlur={close}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === "Escape") {
+              (e.target as HTMLInputElement).blur();
+            }
+          }}
+          placeholder="내용"
+          autoFocus
+        />
+      ) : (
+        <div
+          className={styles.pinValue}
+          onClick={() => setEditing("value")}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") setEditing("value");
+          }}
+          title="클릭하여 내용 편집"
+        >
+          {pin.value}
+        </div>
+      )}
+
+      {editing == null && (
+        <button className={styles.pinCopy} onClick={copy}>
+          {copied ? (
+            <>
+              <Icon name="check" size={10} /> 복사됨
+            </>
+          ) : (
+            <>
+              <Icon name="copy" size={10} /> 복사
+            </>
+          )}
+        </button>
       )}
     </div>
   );
