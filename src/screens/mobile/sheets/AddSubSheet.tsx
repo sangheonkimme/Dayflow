@@ -127,7 +127,7 @@ export const AddSubSheet = ({ open, onClose }: any) => {
             }}
           >
             <div
-              className="dfm-tool-ico"
+              className={styles.dfmToolIco}
               style={{
                 width: 36,
                 height: 36,

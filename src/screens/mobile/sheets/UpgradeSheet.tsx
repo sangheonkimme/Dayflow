@@ -134,7 +134,7 @@ export const UpgradeSheet = ({ open, onClose }: any) => {
 
               {/* features */}
               <div
-                className="dfm-card"
+                className={styles.dfmCard}
                 style={{ padding: 0, marginBottom: 18 }}
               >
                 {features.map((f, i) => (
@@ -152,7 +152,7 @@ export const UpgradeSheet = ({ open, onClose }: any) => {
                     }}
                   >
                     <div
-                      className="dfm-tool-ico"
+                      className={styles.dfmToolIco}
                       style={{
                         width: 32,
                         height: 32,
@@ -362,7 +362,7 @@ export const UpgradeSheet = ({ open, onClose }: any) => {
               </small>
 
               <div
-                className="dfm-card"
+                className={styles.dfmCard}
                 style={{
                   padding: "14px 16px",
                   marginBottom: 18,

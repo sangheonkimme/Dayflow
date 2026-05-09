@@ -7,9 +7,9 @@
 
 // 대시보드 공통 chrome 스타일.
 // LoanSearch.module.css 는 SearchOverlay/LoanCalcPage 가 lazy 로드 시 자동 동반.
-// mobile.css/mobile-app.css 도 모바일 분기 시 layout 이 MobileApp 을 띄우므로 동일.
+// mobile-app.css 는 Phase 4b stage-7 에서 mobile.module.css 로 완전 이전됨 (git rm).
+// mobile.css 는 데스크탑 chrome 의 모바일 미디어쿼리 — 글로벌 잔존.
 import "@/styles/mobile.css";
-import "@/styles/mobile-app.css";
 
 import { lazy, Suspense, useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";

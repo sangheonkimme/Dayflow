@@ -423,7 +423,7 @@ export const SearchSheet = ({ open, onClose, onJump }: any) => {
                       }}
                     >
                       <div
-                        className="dfm-tool-ico"
+                        className={styles.dfmToolIco}
                         style={{
                           width: 32,
                           height: 32,
@@ -485,7 +485,7 @@ export const SearchSheet = ({ open, onClose, onJump }: any) => {
                   >
                     {kind}
                   </div>
-                  <div className="dfm-card" style={{ padding: 0 }}>
+                  <div className={styles.dfmCard} style={{ padding: 0 }}>
                     {items.map((it, i) => (
                       <button
                         key={i}
@@ -508,7 +508,7 @@ export const SearchSheet = ({ open, onClose, onJump }: any) => {
                         }}
                       >
                         <div
-                          className="dfm-tool-ico"
+                          className={styles.dfmToolIco}
                           style={{
                             width: 32,
                             height: 32,
