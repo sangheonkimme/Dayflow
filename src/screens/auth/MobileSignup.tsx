@@ -26,6 +26,7 @@ export const SignupScreen = ({
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [confirmMsg, setConfirmMsg] = useState<string | null>(null);
+  const [step, setStep] = useState(0);
 
   const handleSubmit = async () => {
     if (submitting) return;
@@ -469,7 +470,6 @@ export const SignupScreen = ({
   }
 
   // ─────── C · Two-step (email first, then details) ───────
-  const [step, setStep] = useState(0);
   return (
     <div
       style={{
