@@ -12,11 +12,13 @@ Vite SPA 잔재는 모두 제거됨 (vitest 포함). 글로벌 `src/styles/style
 
 ## Commands
 
-- `npm run dev` — Next.js dev server (`next dev -p 5173`).
-- `npm run build` — `next build`. Type errors fail the build.
-- `npm run start` — production 서버 (`next start -p 5173`).
-- `npm run typecheck` — `tsc --noEmit`. ts-nocheck 신규 추가는 ESLint 가 차단.
-- `npm run lint` — ESLint (`--max-warnings 0`).
+> 패키지 매니저는 **pnpm 10** (corepack 으로 활성화). `package.json` 의 `packageManager` 필드가 진실. npm/yarn 사용 금지.
+
+- `pnpm dev` — Next.js dev server (`next dev -p 5173`).
+- `pnpm build` — `next build`. Type errors fail the build.
+- `pnpm start` — production 서버 (`next start -p 5173`).
+- `pnpm typecheck` — `tsc --noEmit`. ts-nocheck 신규 추가는 ESLint 가 차단.
+- `pnpm lint` — ESLint (`--max-warnings 0`).
 
 > 테스트 러너 없음 (vitest 제거). 검증은 typecheck + lint + build + 수동 동작 확인.
 
