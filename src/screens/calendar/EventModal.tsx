@@ -102,6 +102,15 @@ function EventEdit({ onClose, editing, onDelete, onSave }) {
   const [allDay, setAllDay] = useState(editing?.allDay || false);
   const [cat, setCat] = useState(editing?.cat || "업무");
   const [color, setColor] = useState(editing?.color || "var(--red)");
+  const [date, setDate] = useState(
+    editing?.date || new Date().toISOString().slice(0, 10),
+  );
+  const [repeat, setRepeat] = useState(editing?.repeat || "none");
+  const [startTime, setStartTime] = useState(editing?.startTime || "14:00");
+  const [endTime, setEndTime] = useState(editing?.endTime || "15:00");
+  const [place, setPlace] = useState(editing?.place || "");
+  const [memo, setMemo] = useState(editing?.memo || "");
+  const [alarm, setAlarm] = useState(editing?.alarm || "15");
   const [confirmDel, setConfirmDel] = useState(false);
 
   return (
@@ -140,14 +149,16 @@ function EventEdit({ onClose, editing, onDelete, onSave }) {
             <label>날짜</label>
             <input
               type="date"
-              defaultValue={
-                editing?.date || new Date().toISOString().slice(0, 10)
-              }
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
             />
           </div>
           <div className="field">
             <label>반복</label>
-            <select defaultValue={editing?.repeat || "none"}>
+            <select
+              value={repeat}
+              onChange={(e) => setRepeat(e.target.value)}
+            >
               <option value="none">반복 안함</option>
               <option>매일</option>
               <option>매주</option>
@@ -185,8 +196,16 @@ function EventEdit({ onClose, editing, onDelete, onSave }) {
           </label>
           {!allDay && (
             <div className="field-row">
-              <input type="time" defaultValue={editing?.startTime || "14:00"} />
-              <input type="time" defaultValue={editing?.endTime || "15:00"} />
+              <input
+                type="time"
+                value={startTime}
+                onChange={(e) => setStartTime(e.target.value)}
+              />
+              <input
+                type="time"
+                value={endTime}
+                onChange={(e) => setEndTime(e.target.value)}
+              />
             </div>
           )}
         </div>
@@ -223,7 +242,8 @@ function EventEdit({ onClose, editing, onDelete, onSave }) {
         <div className="field">
           <label>장소</label>
           <input
-            defaultValue={editing?.place || ""}
+            value={place}
+            onChange={(e) => setPlace(e.target.value)}
             placeholder="예: 회의실 A / Zoom"
           />
         </div>
@@ -232,14 +252,15 @@ function EventEdit({ onClose, editing, onDelete, onSave }) {
           <label>메모</label>
           <textarea
             rows={2}
-            defaultValue={editing?.memo || ""}
+            value={memo}
+            onChange={(e) => setMemo(e.target.value)}
             placeholder="자료 / 준비물 / 참고사항"
           />
         </div>
 
         <div className="field">
           <label>알림</label>
-          <select defaultValue={editing?.alarm || "15"}>
+          <select value={alarm} onChange={(e) => setAlarm(e.target.value)}>
             <option value="0">없음</option>
             <option value="5">5분 전</option>
             <option value="15">15분 전</option>
@@ -281,7 +302,21 @@ function EventEdit({ onClose, editing, onDelete, onSave }) {
             <button
               className="timer-btn primary"
               onClick={() => {
-                onSave && onSave({ ...editing, title, cat, color, allDay });
+                onSave &&
+                  onSave({
+                    ...editing,
+                    title,
+                    cat,
+                    color,
+                    allDay,
+                    date,
+                    repeat,
+                    startTime,
+                    endTime,
+                    place,
+                    memo,
+                    alarm,
+                  });
                 onClose();
               }}
             >

@@ -1,12 +1,15 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Ico } from "@/screens/mobile/shared/Ico";
 import { useEvents } from "@/data/events";
 import styles from "@/screens/mobile/mobile.module.css";
 
 export const AddEventSheet = ({ open, onClose }: any) => {
+  const { upsert } = useEvents();
+  const todayStr = new Date().toISOString().slice(0, 10);
   const [title, setTitle] = useState("");
   const [cat, setCat] = useState("업무");
   const [allDay, setAllDay] = useState(false);
+  const [date, setDate] = useState(todayStr);
   const [start, setStart] = useState("10:00");
   const [end, setEnd] = useState("11:00");
   const [loc, setLoc] = useState("");
@@ -18,8 +21,27 @@ export const AddEventSheet = ({ open, onClose }: any) => {
     { name: "건강", color: "#b9e7c9" },
     { name: "기타", color: "#d4c1f0" },
   ];
-  const today = new Date();
-  const dateStr = `${today.getMonth() + 1}월 ${today.getDate()}일 (${"일월화수목금토"[today.getDay()]})`;
+  const dispDate = (() => {
+    const d = new Date(date);
+    return `${d.getMonth() + 1}월 ${d.getDate()}일 (${"일월화수목금토"[d.getDay()]})`;
+  })();
+
+  const handleSubmit = async () => {
+    if (!title.trim()) return;
+    await upsert({
+      id: `ev-${Date.now()}`,
+      title: title.trim(),
+      date,
+      cat,
+      color,
+      allDay,
+      ...(allDay ? {} : { startTime: start, endTime: end }),
+      ...(loc.trim() ? { place: loc.trim() } : {}),
+    } as any);
+    setTitle("");
+    setLoc("");
+    onClose?.();
+  };
 
   return (
     <>
@@ -31,7 +53,7 @@ export const AddEventSheet = ({ open, onClose }: any) => {
         <div className={styles.dfmSheetGrip} />
         <div className={styles.dfmSheetHead}>
           <div className={styles.ttl}>
-            새 일정 추가<small>{dateStr}</small>
+            새 일정 추가<small>{dispDate}</small>
           </div>
           <button className={styles.close} onClick={onClose}>
             <Ico name="plus" size={18} />
@@ -69,6 +91,35 @@ export const AddEventSheet = ({ open, onClose }: any) => {
                 fontWeight: 600,
                 border: "none",
                 background: "transparent",
+                color: "var(--ink)",
+                outline: "none",
+              }}
+            />
+          </div>
+
+          {/* date */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: 12,
+              padding: "14px 0",
+              borderBottom: "1px dashed var(--line)",
+            }}
+          >
+            <span style={{ fontSize: 13, fontWeight: 600 }}>날짜</span>
+            <input
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              style={{
+                padding: "8px 10px",
+                border: "1px solid var(--line)",
+                borderRadius: 10,
+                background: "var(--bg-paper)",
+                fontSize: 13,
+                fontFamily: "var(--mono)",
                 color: "var(--ink)",
                 outline: "none",
               }}
@@ -284,7 +335,9 @@ export const AddEventSheet = ({ open, onClose }: any) => {
               취소
             </button>
             <button
-              onClick={onClose}
+              type="button"
+              onClick={handleSubmit}
+              disabled={!title.trim()}
               style={{
                 flex: 2,
                 padding: "14px 0",
@@ -294,7 +347,8 @@ export const AddEventSheet = ({ open, onClose }: any) => {
                 color: "var(--bg-paper)",
                 fontWeight: 700,
                 fontSize: 13,
-                cursor: "pointer",
+                cursor: !title.trim() ? "not-allowed" : "pointer",
+                opacity: !title.trim() ? 0.5 : 1,
               }}
             >
               저장하기

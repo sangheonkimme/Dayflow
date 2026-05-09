@@ -58,4 +58,47 @@ describe("EventModal — quick & detailed save", () => {
     expect(arg.startTime).toMatch(/^\d{2}:\d{2}$/);
     expect(arg.endTime).toMatch(/^\d{2}:\d{2}$/);
   });
+
+  it("Edit: 날짜/시간/장소 수정이 onSave 페이로드에 반영된다", () => {
+    const onSave = vi.fn();
+    const editing = {
+      id: "ev-x",
+      title: "원본",
+      date: "2026-05-10",
+      startTime: "10:00",
+      endTime: "11:00",
+      cat: "업무",
+      color: "var(--red)",
+      place: "",
+      memo: "",
+      alarm: "15",
+    };
+    render(
+      <EventModal onClose={() => {}} onSave={onSave} editing={editing} />,
+    );
+
+    // 날짜 변경
+    const dateInput = document.querySelector(
+      'input[type="date"]',
+    ) as HTMLInputElement;
+    fireEvent.change(dateInput, { target: { value: "2026-06-15" } });
+
+    // 시간 변경
+    const times = document.querySelectorAll('input[type="time"]');
+    fireEvent.change(times[0], { target: { value: "13:30" } });
+    fireEvent.change(times[1], { target: { value: "14:30" } });
+
+    // 장소 입력
+    const placeInput = screen.getByPlaceholderText(/회의실/);
+    fireEvent.change(placeInput, { target: { value: "Zoom" } });
+
+    fireEvent.click(screen.getByRole("button", { name: "저장하기" }));
+
+    expect(onSave).toHaveBeenCalledTimes(1);
+    const arg = onSave.mock.calls[0][0];
+    expect(arg.date).toBe("2026-06-15");
+    expect(arg.startTime).toBe("13:30");
+    expect(arg.endTime).toBe("14:30");
+    expect(arg.place).toBe("Zoom");
+  });
 });
