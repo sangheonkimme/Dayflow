@@ -1,0 +1,17 @@
+/* TxnModal — Phase 4b: migrated from styles.css `.amount-display` */
+.amountDisplay {
+  font-family: var(--mono);
+  font-size: 28px;
+  font-weight: 700;
+  text-align: right;
+  padding: 14px 16px;
+  background: var(--bg-paper);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+.amountDisplay:global(.in) {
+  color: #2d7a3a;
+}
+.amountDisplay:global(.out) {
+  color: var(--red);
+}

@@ -3,6 +3,7 @@ import { Ico } from "@/screens/mobile/shared/Ico";
 import { useTransactions } from "@/data/transactions";
 import { useEvents } from "@/data/events";
 import { useMemos } from "@/data/memos";
+import styles from "@/screens/mobile/mobile.module.css";
 
 export const SearchSheet = ({ open, onClose, onJump }: any) => {
   const [q, setQ] = useState("");
@@ -243,14 +244,14 @@ export const SearchSheet = ({ open, onClose, onJump }: any) => {
   return (
     <>
       <div
-        className={`dfm-sheet-scrim ${open ? "on" : ""}`}
+        className={`${styles.dfmSheetScrim} ${open ? styles.on : ""}`}
         onClick={onClose}
       />
       <div
-        className={`dfm-sheet ${open ? "on" : ""}`}
+        className={`${styles.dfmSheet} ${open ? styles.on : ""}`}
         style={{ height: "92vh", maxHeight: "92vh" }}
       >
-        <div className="dfm-sheet-grip" />
+        <div className={styles.dfmSheetGrip} />
         {/* search bar */}
         <div
           style={{
@@ -320,7 +321,7 @@ export const SearchSheet = ({ open, onClose, onJump }: any) => {
         </div>
 
         <div
-          className="dfm-sheet-body"
+          className={styles.dfmSheetBody}
           style={{ padding: "12px 16px 22px", overflowY: "auto" }}
         >
           {!trimmed && (

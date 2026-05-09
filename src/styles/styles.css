@@ -214,8 +214,8 @@ body {
 }
 
 /* MoneyFlow page-specific styles moved to MoneyFlow.module.css (Phase 4b).
- * Modal/field/seg/cat-chip/color-chip/quick-memo classes below remain global because
- * they are reused by TxnModal, EventModal, ReceiptUploadModal, MiniCalendar, etc. */
+ * Modal/field/seg/cat-chip/color-chip classes below remain global because
+ * they are reused by TxnModal, EventModal, ReceiptUploadModal, etc. */
 
 /* Modal */
 .modal-overlay {
@@ -369,22 +369,7 @@ body {
   color: var(--yellow);
   border-color: var(--ink);
 }
-.amount-display {
-  font-family: var(--mono);
-  font-size: 28px;
-  font-weight: 700;
-  text-align: right;
-  padding: 14px 16px;
-  background: var(--bg-paper);
-  border: 1px solid var(--line);
-  border-radius: 10px;
-}
-.amount-display.in {
-  color: #2d7a3a;
-}
-.amount-display.out {
-  color: var(--red);
-}
+/* `.amount-display` rules moved to TxnModal.module.css (Phase 4b). */
 .color-chip-row {
   display: flex;
   gap: 8px;
@@ -401,41 +386,7 @@ body {
   box-shadow: 0 0 0 2px var(--bg);
 }
 
-/* Quick memo footer widget */
-.quick-memo {
-  margin-top: 12px;
-  padding: 10px 12px;
-  background: var(--bg-paper);
-  border: 1px dashed var(--line-strong);
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.quick-memo .hand {
-  font-family: var(--hand);
-  font-size: 16px;
-  color: var(--ink-mute);
-}
-.quick-memo input {
-  flex: 1;
-  border: none;
-  outline: none;
-  background: transparent;
-  font-family: inherit;
-  font-size: 13px;
-}
-.quick-memo button {
-  height: 28px;
-  padding: 0 10px;
-  background: var(--ink);
-  color: var(--yellow);
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 12px;
-  font-weight: 700;
-}
+/* `.quick-memo` rules moved to MiniCalendar.module.css (Phase 4b). */
 /* MoneyFlow .bars/.txn classes moved to MoneyFlow.module.css (Phase 4b). */
 
 /* TOOLS / CALENDAR — moved to ToolCard.module.css and MiniCalendar.module.css (Phase 4b) */

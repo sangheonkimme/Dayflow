@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Ico } from "@/screens/mobile/shared/Ico";
+import styles from "@/screens/mobile/mobile.module.css";
 
 export const EditProfileSheet = ({
   open,
@@ -21,21 +22,21 @@ export const EditProfileSheet = ({
   return (
     <>
       <div
-        className={`dfm-sheet-scrim ${open ? "on" : ""}`}
+        className={`${styles.dfmSheetScrim} ${open ? styles.on : ""}`}
         onClick={onClose}
       />
-      <div className={`dfm-sheet ${open ? "on" : ""}`}>
-        <div className="dfm-sheet-grip" />
-        <div className="dfm-sheet-head">
-          <div className="ttl">
+      <div className={`${styles.dfmSheet} ${open ? styles.on : ""}`}>
+        <div className={styles.dfmSheetGrip} />
+        <div className={styles.dfmSheetHead}>
+          <div className={styles.ttl}>
             프로필 수정<small>이름 · 아바타 · 소개</small>
           </div>
-          <button className="close" onClick={onClose}>
+          <button className={styles.close} onClick={onClose}>
             <Ico name="plus" size={18} />
           </button>
         </div>
 
-        <div className="dfm-sheet-body" style={{ padding: "0 18px 22px" }}>
+        <div className={styles.dfmSheetBody} style={{ padding: "0 18px 22px" }}>
           {/* avatar preview */}
           <div
             style={{

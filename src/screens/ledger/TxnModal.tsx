@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Icon } from "@/components/Icon";
 import { Modal } from "@/components/Modal";
+import styles from "./TxnModal.module.css";
 
 // ─────────────────────────────────────────────
 // Helper — natural-language quick parse
@@ -115,7 +116,7 @@ function TxnEdit({ onClose, editing, onDelete, onSave }) {
             수입
           </button>
         </div>
-        <div className={"amount-display " + type}>
+        <div className={`${styles.amountDisplay} ${type}`}>
           {type === "out" ? "-" : "+"}₩
           {parseInt(amt || "0", 10).toLocaleString()}
         </div>

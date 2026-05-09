@@ -66,3 +66,39 @@
 .calDay:global(.today.has)::after {
   background: var(--yellow);
 }
+
+/* Quick memo footer — Phase 4b: migrated from styles.css `.quick-memo` */
+.quickMemo {
+  margin-top: 12px;
+  padding: 10px 12px;
+  background: var(--bg-paper);
+  border: 1px dashed var(--line-strong);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.quickMemo .hand {
+  font-family: var(--hand);
+  font-size: 16px;
+  color: var(--ink-mute);
+}
+.quickMemo input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 13px;
+}
+.quickMemo button {
+  height: 28px;
+  padding: 0 10px;
+  background: var(--ink);
+  color: var(--yellow);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+}

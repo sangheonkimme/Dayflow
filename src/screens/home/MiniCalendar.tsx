@@ -141,8 +141,8 @@ export function MiniCalendar({
           </div>
         ))}
       </div>
-      <div className="quick-memo">
-        <span className="hand">한 줄 메모</span>
+      <div className={styles.quickMemo}>
+        <span className={styles.hand}>한 줄 메모</span>
         <input
           placeholder="떠오른 생각을 빠르게 적어두세요"
           value={quickMemo || ""}

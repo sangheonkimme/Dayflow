@@ -1,5 +1,6 @@
 import {    useState , useMemo , useEffect , useRef } from "react";
 import { Ico } from "@/screens/mobile/shared/Ico";
+import styles from "@/screens/mobile/mobile.module.css";
 
 export const UpgradeSheet = ({ open, onClose }: any) => {
   const [plan, setPlan] = useState("year"); // month | year
@@ -59,28 +60,28 @@ export const UpgradeSheet = ({ open, onClose }: any) => {
   return (
     <>
       <div
-        className={`dfm-sheet-scrim ${open ? "on" : ""}`}
+        className={`${styles.dfmSheetScrim} ${open ? styles.on : ""}`}
         onClick={onClose}
       />
       <div
-        className={`dfm-sheet ${open ? "on" : ""}`}
+        className={`${styles.dfmSheet} ${open ? styles.on : ""}`}
         style={{ height: "92vh", maxHeight: "92vh" }}
       >
-        <div className="dfm-sheet-grip" />
+        <div className={styles.dfmSheetGrip} />
         <div
-          className="dfm-sheet-head"
+          className={styles.dfmSheetHead}
           style={{ borderBottom: "none", paddingBottom: 4 }}
         >
-          <div className="ttl" style={{ visibility: "hidden" }}>
+          <div className={styles.ttl} style={{ visibility: "hidden" }}>
             x
           </div>
-          <button className="close" onClick={onClose}>
+          <button className={styles.close} onClick={onClose}>
             <Ico name="plus" size={18} />
           </button>
         </div>
 
         <div
-          className="dfm-sheet-body"
+          className={styles.dfmSheetBody}
           style={{ padding: "0 18px 22px", overflowY: "auto" }}
         >
           {!confirmed && (

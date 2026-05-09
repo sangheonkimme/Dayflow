@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { DOW } from "@/lib/date";
 import { Ico } from "@/screens/mobile/shared/Ico";
 import { inferIcon } from "@/data/transactions";
+import styles from "@/screens/mobile/mobile.module.css";
 
 export const ReceiptSheet = ({ txn, onClose }: any) => {
   const open = !!txn;
@@ -65,14 +66,14 @@ export const ReceiptSheet = ({ txn, onClose }: any) => {
   return (
     <>
       <div
-        className={`dfm-sheet-scrim ${open ? "on" : ""}`}
+        className={`${styles.dfmSheetScrim} ${open ? styles.on : ""}`}
         onClick={onClose}
       />
-      <div className={`dfm-sheet ${open ? "on" : ""}`}>
-        <div className="dfm-sheet-grip" />
-        <div className="dfm-sheet-head">
-          <div className="ttl">{data.income ? "수입 상세" : "결제 상세"}</div>
-          <button className="close" onClick={onClose}>
+      <div className={`${styles.dfmSheet} ${open ? styles.on : ""}`}>
+        <div className={styles.dfmSheetGrip} />
+        <div className={styles.dfmSheetHead}>
+          <div className={styles.ttl}>{data.income ? "수입 상세" : "결제 상세"}</div>
+          <button className={styles.close} onClick={onClose}>
             <svg width="14" height="14" viewBox="0 0 14 14">
               <path
                 d="M2 2l10 10M12 2L2 12"
@@ -84,11 +85,11 @@ export const ReceiptSheet = ({ txn, onClose }: any) => {
           </button>
         </div>
 
-        <div className="dfm-sheet-body">
-          <div className="dfm-receipt">
-            <div className="dfm-receipt-store">
-              <div className="name">{data.name || ""}</div>
-              <div className="meta">
+        <div className={styles.dfmSheetBody}>
+          <div className={styles.dfmReceipt}>
+            <div className={styles.dfmReceiptStore}>
+              <div className={styles.name}>{data.name || ""}</div>
+              <div className={styles.meta}>
                 {data.income ? "Dayflow · 수입 입력" : "사업자 123-45-67890"}{" "}
                 <br />
                 서울 강남구 테헤란로 152 · 02-1234-5678
@@ -97,22 +98,22 @@ export const ReceiptSheet = ({ txn, onClose }: any) => {
 
             <hr />
 
-            <div className="dfm-receipt-rows">
-              <div className="dfm-receipt-row">
-                <span className="lbl">
+            <div className={styles.dfmReceiptRows}>
+              <div className={styles.dfmReceiptRow}>
+                <span className={styles.lbl}>
                   {data.sub?.split("·")[0]?.trim() || "거래일시"}
                 </span>
-                <span className="val">
+                <span className={styles.val}>
                   2026.11.{data.name?.includes("급여") ? "11" : "14"}
                 </span>
               </div>
-              <div className="dfm-receipt-row">
-                <span className="lbl">분류</span>
-                <span className="val">{data.cat || "-"}</span>
+              <div className={styles.dfmReceiptRow}>
+                <span className={styles.lbl}>분류</span>
+                <span className={styles.val}>{data.cat || "-"}</span>
               </div>
-              <div className="dfm-receipt-row">
-                <span className="lbl">결제수단</span>
-                <span className="val">
+              <div className={styles.dfmReceiptRow}>
+                <span className={styles.lbl}>결제수단</span>
+                <span className={styles.val}>
                   {data.income ? "신한은행 입금" : "신한 체크카드"}
                 </span>
               </div>
@@ -120,14 +121,14 @@ export const ReceiptSheet = ({ txn, onClose }: any) => {
 
             <hr />
 
-            <div className="dfm-receipt-rows">
+            <div className={styles.dfmReceiptRows}>
               {items.map((it, i) => (
-                <div key={i} className="dfm-receipt-row">
-                  <span className="lbl">
+                <div key={i} className={styles.dfmReceiptRow}>
+                  <span className={styles.lbl}>
                     {it.name}
-                    <span className="qty">×{it.qty}</span>
+                    <span className={styles.qty}>×{it.qty}</span>
                   </span>
-                  <span className="val">
+                  <span className={styles.val}>
                     {it.price > 0 ? "" : "-"}
                     {Math.abs(it.price * it.qty).toLocaleString()}
                   </span>
@@ -135,54 +136,54 @@ export const ReceiptSheet = ({ txn, onClose }: any) => {
               ))}
             </div>
 
-            <div className="dfm-receipt-total">
+            <div className={styles.dfmReceiptTotal}>
               <span>합계</span>
               <span>
                 {data.income ? "+" : ""}₩{total.toLocaleString()}
               </span>
             </div>
 
-            <div className="dfm-receipt-pay">
+            <div className={styles.dfmReceiptPay}>
               <span>승인번호 30041892</span>
               <span>14:32:08</span>
             </div>
 
-            <div className="dfm-receipt-foot">
+            <div className={styles.dfmReceiptFoot}>
               감사합니다 · 교환·환불은 영수증 지참
               <br />
               www.dayflow.app · 자동 동기화됨
             </div>
 
-            <div className="dfm-receipt-barcode">
+            <div className={styles.dfmReceiptBarcode}>
               {bars.map((w, i) => (
                 <i key={i} style={{ width: w + "px" }} />
               ))}
             </div>
           </div>
 
-          <div className="dfm-meta-block">
+          <div className={styles.dfmMetaBlock}>
             <h4>메모</h4>
-            <div className={`dfm-memo ${data.memo ? "" : "empty"}`}>
+            <div className={`${styles.dfmMemo} ${data.memo ? "" : styles.empty}`}>
               {data.memo || "메모를 추가하면 영수증과 함께 저장돼요."}
             </div>
           </div>
 
-          <div className="dfm-meta-block">
+          <div className={styles.dfmMetaBlock}>
             <h4>태그</h4>
-            <div className="dfm-meta-tags">
+            <div className={styles.dfmMetaTags}>
               {(data.tags || ["#점심", "#팀회식", "#증빙필요"]).map((t, i) => (
-                <span key={i} className="tag">
+                <span key={i} className={styles.tag}>
                   {t}
                 </span>
               ))}
-              <span className="tag add">+ 태그</span>
+              <span className={`${styles.tag} ${styles.add}`}>+ 태그</span>
             </div>
           </div>
 
-          <div className="dfm-meta-block">
+          <div className={styles.dfmMetaBlock}>
             <h4>첨부 사진</h4>
-            <div className="dfm-photo-row">
-              <div className="dfm-photo">
+            <div className={styles.dfmPhotoRow}>
+              <div className={styles.dfmPhoto}>
                 <svg
                   viewBox="0 0 24 24"
                   fill="none"
@@ -194,18 +195,18 @@ export const ReceiptSheet = ({ txn, onClose }: any) => {
                   <path d="m3 17 5-5 5 5 4-4 4 4" />
                 </svg>
               </div>
-              <div className="dfm-photo add">+</div>
+              <div className={`${styles.dfmPhoto} ${styles.add}`}>+</div>
             </div>
           </div>
 
-          <div className="dfm-action-row">
-            <button className="dfm-action-btn">
+          <div className={styles.dfmActionRow}>
+            <button className={styles.dfmActionBtn}>
               <Ico name="refresh" size={14} /> 다시 분류
             </button>
-            <button className="dfm-action-btn primary">메모 편집</button>
+            <button className={`${styles.dfmActionBtn} ${styles.primary}`}>메모 편집</button>
           </div>
           <button
-            className="dfm-action-btn danger"
+            className={`${styles.dfmActionBtn} ${styles.danger}`}
             style={{ marginTop: 8, width: "100%" }}
           >
             거래 삭제

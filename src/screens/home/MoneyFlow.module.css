@@ -1,5 +1,5 @@
 /* MoneyFlow component styles (extracted from styles.css 1063~1427).
- * Shared modal/field/seg/cat-chip/color-chip/quick-memo classes are intentionally
+ * Shared modal/field/seg/cat-chip/color-chip classes are intentionally
  * left in styles.css because they are reused by TxnModal, EventModal, ReceiptUploadModal, etc. */
 
 .moneyCard {

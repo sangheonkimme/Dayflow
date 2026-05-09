@@ -1,5 +1,6 @@
 import {    useState , useMemo , useEffect , useRef } from "react";
 import { Ico } from "@/screens/mobile/shared/Ico";
+import styles from "@/screens/mobile/mobile.module.css";
 
 export const ChangePasswordSheet = ({
   open,
@@ -39,21 +40,21 @@ export const ChangePasswordSheet = ({
   return (
     <>
       <div
-        className={`dfm-sheet-scrim ${open ? "on" : ""}`}
+        className={`${styles.dfmSheetScrim} ${open ? styles.on : ""}`}
         onClick={onClose}
       />
-      <div className={`dfm-sheet ${open ? "on" : ""}`}>
-        <div className="dfm-sheet-grip" />
-        <div className="dfm-sheet-head">
-          <div className="ttl">
+      <div className={`${styles.dfmSheet} ${open ? styles.on : ""}`}>
+        <div className={styles.dfmSheetGrip} />
+        <div className={styles.dfmSheetHead}>
+          <div className={styles.ttl}>
             비밀번호 변경<small>이메일로 안전하게 재설정해요</small>
           </div>
-          <button className="close" onClick={onClose}>
+          <button className={styles.close} onClick={onClose}>
             <Ico name="plus" size={18} />
           </button>
         </div>
 
-        <div className="dfm-sheet-body" style={{ padding: "0 18px 22px" }}>
+        <div className={styles.dfmSheetBody} style={{ padding: "0 18px 22px" }}>
           {step === 0 && (
             <div style={{ padding: "8px 0 4px" }}>
               {/* hero */}
