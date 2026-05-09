@@ -1,8 +1,10 @@
 # Next.js 도입 마이그레이션 계획
 
-> 작성일: 2026-05-08
+> 작성일: 2026-05-08 / 최신 갱신: 2026-05-09
 > 대상: Vite + React 18 SPA → Next.js 15 (App Router) + React 19
 > 전환 방식: **인플레이스(in-place)** — 같은 레포에서 Vite 진입점만 걷어내고 Next로 갈아끼움. 별도 브랜치에서 Phase 단위로 진행, main 은 Vite 버전 유지하다 일괄 머지.
+
+> **현재 상태 (2026-05-09)**: Phase 0~5 본체 완료, main 푸시 완료. 폴더 평탄화(Phase 6) 완료. 잔여 작업: shadcn/ui · next/image · styles.css 추가 축소 · Vercel 배포.
 
 ---
 
@@ -69,6 +71,7 @@
 - [x] `npm run build` (next build) 통과. `/` Hello placeholder 정적 렌더, dev 서버 200 OK 확인.
 
 **Phase 1 인계 노트** (Phase 2 시작 전 필수)
+
 - `.env` 에 `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` 추가 필요. (현재 `VITE_*` 만 있음 → 레거시 fallback 으로 동작 중)
 - `src/App.tsx` 와 `src/screens/*` 는 Next 라우트로 미연결 상태. Phase 2 에서 라우트별 이식.
 - `pageExtensions` 옵션 안 씀 — Phase 2 완료 후에도 src/screens/ 가 남아있으면 명시적 제거 또는 폴더 이전.
@@ -92,42 +95,54 @@
 - [x] mock 모드 클라 전용. RSC 항상 Supabase, 미인증 시 빈 배열.
 - [x] middleware `/dashboard/*` 미인증 → `/login?next=...` redirect.
 
-### Phase 4 — 스타일 마이그레이션 (4a 완료)
+### Phase 4 — 스타일 마이그레이션 ✅
 
 **4a (완료)**
-- [x] Tailwind v3 도입 — `tailwind.config.ts` 토큰과 `:root` 변수 1:1 매핑, preflight off.
-- [x] `next/font` (Plus_Jakarta_Sans, Gaegu, JetBrains_Mono) — Google Fonts `@import` 사고 영구 차단.
 
-**4b (진행 중)**
+- [x] Tailwind v3 도입 — `tailwind.config.ts` 토큰과 `:root` 변수 1:1 매핑.
+- [x] `next/font` (Plus_Jakarta_Sans, Gaegu, JetBrains_Mono) — Google Fonts `@import` 사고 영구 차단.
+- [x] **Tailwind preflight 활성화** (commit `ba64e14`, 2026-05-09).
+
+**4b (완료)**
+
 - [x] **1차** 5 dashboard 페이지(memo/subs/txns/salary/loan-search) → `*.module.css` (~2,612 lines)
 - [x] **2차** image-tools (1,433 lines) + flows 재라우팅 (auth → calendar/receipt)
 - [x] **3차** home 6개 컴포넌트(StickyNotes/Checklist/MoneyFlow/MiniCalendar/ToolCard/timers) (~1,400 lines)
 - [x] tools layout, Sidebar+Topbar(Shell), Modal section (~450 lines)
-- [x] CLAUDE.md 동기화 (현 스택 반영)
-- [ ] **남은 큰 항목**:
-  - `flows.css` (1017 lines) → CalendarPage.module.css + ReceiptUploadModal.module.css 로 분리 (in-flight)
-  - `mobile.css` (571 lines) → 데스크탑 chrome 미디어쿼리, 페이지별 분배 또는 글로벌 보존 (in-flight)
-  - **`mobile-app.css` (1750 lines + 25 mobile components 6400 lines)** — 단일 PR 위험. 4-단계 분할 권장:
-    1. mobile.module.css 파일만 생성 (사용처 미수정, 발판)
-    2. shared/ + tabs/ 컴포넌트 변환 (Home/Ledger/Calendar/Menu + SwipeRow/Ico/SectionHeader 등)
-    3. sheets/ 9개 변환
-    4. screens/ 4개 + MobileApp.tsx + layout.tsx import 제거 + git rm mobile-app.css
-    각 단계마다 next build + 모바일 뷰 시각 확인.
-  - 잔존 `styles.css` (~540 lines) 의 GRID(`.card`/`.col-*`) 추가 분할 검토
-- [ ] **shadcn/ui 도입** — 시안 매핑 비용 검토 후. 별도 라운드.
-- [ ] `next/image` 로 이미지 최적화.
-- [ ] **모든 module 이전 완료 시 Tailwind preflight 활성화** + `app/globals.css` reset 통합.
-- [ ] 글로벌 `src/styles/styles.css` 를 토큰 + reset (~200줄) 로 축소 + preflight 활성화.
-- [ ] shadcn/ui 도입 (시안 매핑 비용 검토 후).
+- [x] `flows.css` (1017 lines) → CalendarPage.module.css + ReceiptUploadModal.module.css 분리.
+- [x] **`mobile-app.css` (1750 lines)** 7-단계 분할 완료 (commit `f27ef50`, 2026-05-09).
+  - shared/tabs/screens/sheets 컴포넌트 module 전환 → mobile-app.css `git rm`.
+- [x] CLAUDE.md 동기화 (현 스택 반영).
+
+**4b 잔여 (선택사항 — 기능 영향 없음)**
+
+- [ ] 글로벌 `src/styles/styles.css` (~990줄) 토큰+reset (~200줄) 로 축소.
+- [ ] `mobile.css` (571 lines) — 데스크탑 chrome 미디어쿼리. 페이지별 분배 또는 글로벌 보존 결정.
+- [ ] `pages.css` / `landing.css` 검토 (의도적 글로벌 — 유지 가능).
+- [ ] **shadcn/ui 도입** — 시안 매핑 비용 검토 후 별도 라운드.
 - [ ] `next/image` 로 이미지 최적화.
 
 ### Phase 5 — 정리·배포
 
 - [x] **main 머지 완료 (2026-05-09)** — Phase 1~4a 본체 + origin PR #19 dead code 정리 통합. main 푸시 완료.
-- [ ] vitest 4 rolldown 파서 호환 fix (현재 테스트 깨짐) 또는 vitest 3 다운그레이드.
-- [ ] `@ts-nocheck` 전부 제거 (27개, `docs/ts-nocheck-inventory.md` P0~P4 순서).
-- [ ] 글로벌 CSS 잔해 삭제 — Phase 4b 와 동시 진행.
-- [ ] 배포 — Vercel(권장) 또는 self-host. `.env.production` 의 `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` 설정.
+- [x] vitest 3 다운그레이드 (rolldown 파서 호환 회피).
+- [x] **`@ts-nocheck` 27 → 0 회복 완료** (`docs/ts-nocheck-inventory.md` 참고).
+- [x] `react-hooks/rules-of-hooks` 1건 fix (commit `8ebef45`).
+- [ ] **Vercel 배포** — `.env.production` 의 `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` 설정. 리전은 `icn1` (서울) 고정 (commit `5220ee0`).
+- [ ] 잔여 lint 정리 (a11y 105건 — label-has-associated-control 40 / anchor-is-valid 34 / autofocus 17 등).
+
+### Phase 6 — 폴더 평탄화 ✅ (2026-05-09)
+
+목표: 마이그레이션 잔재로 늘어난 디렉토리 통합. import 동선 단순화.
+
+- [x] `lib/supabase/{client,server}.ts` (root) → `src/lib/supabase/` 흡수. `src/lib/supabase.ts` → `src/lib/supabase/index.ts` 로 호환 유지.
+- [x] `src/shared/query/*` → `src/lib/{query-client,providers}` (3 import 갱신).
+- [x] `src/server/queries/*` → `src/server/` 한 단계 평탄화 (23 import 갱신).
+- [x] `tsconfig.json` / `vitest.config.ts` paths 정리 — 사용 안 하던 `@/widgets`, `@/features`, `@/shared`, `@/app` alias 제거.
+- [x] `archive/community/` 삭제 (import 0건 확인).
+- [x] `dist/` 작업트리 정리 (Vite 빌드 잔재).
+
+커밋: `cd1c734` (이동) + `e767e41` (후속 import 갱신 + archive 제거).
 
 ---
 
@@ -155,7 +170,7 @@
 
 ## 6. 미정 / 추후 결정
 
-- Tailwind vs CSS Modules 비중 — Phase 4 첫 페이지 옮길 때 결정.
-- shadcn/ui 도입 시점 — Phase 4 시작 시 vs 모든 페이지 이식 후. 기본 버튼·모달이 시안과 얼마나 다른지에 달림.
-- 배포 타겟 — Vercel(편함, lock-in) vs self-host(런타임 비용 통제). 유저 규모 확인 후.
+- Tailwind vs CSS Modules 비중 — **결정**: 페이지 chrome 은 CSS Modules, 신규 leaf UI 만 Tailwind. preflight 활성화로 reset 통일됨.
+- shadcn/ui 도입 시점 — 보류. 시안 디자인이 강해 매핑 비용 큼. 신규 라운드 단위에서 선택 도입.
+- 배포 타겟 — **Vercel 채택**. `vercel.json` 리전 `icn1` 고정 (commit `5220ee0`). 첫 deploy 대기 중.
 - i18n — 현 시점 한국어만. 영어 마케팅 페이지 필요해지면 `next-intl` 검토.
