@@ -43,11 +43,6 @@
 - [ ] `src/pages/mobile/shared/TxnDetailBridge.ts`
 - [ ] `src/pages/mobile/shared/Ico.tsx`
 
-## P4 — 테스트 (런타임은 vitest가 잡으므로 후순위)
-
-- [ ] `src/pages/ledger/__tests__/TxnModal.save.test.tsx`
-- [ ] `src/pages/calendar/__tests__/EventModal.save.test.tsx`
-
 ---
 
 ## 운영 규칙

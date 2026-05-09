@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 > Next 16 으로 dev/build 둘 다 Turbopack 이 기본. middleware 파일은 deprecation warning 이 뜨지만 edge 런타임 보존을 위해 `proxy.ts` 로 이전하지 않음 (Supabase auth cold start 영향 회피). `eslint-config-next` 는 ESLint 9 flat config 이행 전까지 v15 에 고정.
 
-Vite SPA 시절의 잔재가 일부 남아있다 — `vitest.config.ts` (vitest 가 vite plugin 의존), 글로벌 `src/styles/styles.css` chrome 일부. 마이그레이션은 `docs/nextjs-migration-plan.md` Phase 0~5 로 추적.
+Vite SPA 잔재는 모두 제거됨 (vitest 포함). 글로벌 `src/styles/styles.css` chrome 일부만 점진 마이그레이션 대상. 진행 상태는 `docs/nextjs-migration-plan.md` 참고.
 
 ## Commands
 
@@ -17,9 +17,10 @@ Vite SPA 시절의 잔재가 일부 남아있다 — `vitest.config.ts` (vitest 
 - `npm run start` — production 서버 (`next start -p 5173`).
 - `npm run typecheck` — `tsc --noEmit`. ts-nocheck 신규 추가는 ESLint 가 차단.
 - `npm run lint` — ESLint (`--max-warnings 0`).
-- `npm test` / `npm run test:watch` — vitest 3 + jsdom + Testing Library.
 
-Path alias `@/*` → `src/*`. tsconfig 와 vitest.config 양쪽 동기화 필요. `app/`, `lib/`, `middleware.ts` 는 레포 루트에 위치하고 별도 alias 없이 상대/절대 import.
+> 테스트 러너 없음 (vitest 제거). 검증은 typecheck + lint + build + 수동 동작 확인.
+
+Path alias `@/*` → `src/*`. `app/`, `lib/`, `middleware.ts` 는 레포 루트에 위치하고 별도 alias 없이 상대/절대 import.
 
 ## Environment
 
