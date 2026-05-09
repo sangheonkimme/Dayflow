@@ -163,6 +163,103 @@
   padding-top: 8px;
 }
 
+/* ===== Ledger 월별 추이 (bars) + 거래내역 (.txn) =====
+ * Phase 4b 에서 MoneyFlow.module.css 로 격리됐으나 LedgerPage 공용이라 복원.
+ * MoneyFlow 는 module 버전을 그대로 유지 (양쪽 공존 OK — 같은 시각 결과). */
+.bars {
+  display: flex;
+  align-items: stretch;
+  gap: 4px;
+  padding: 8px 0;
+}
+.bar {
+  flex: none;
+  background: var(--ink);
+  border-radius: 3px 3px 0 0;
+  position: relative;
+  opacity: 0.85;
+}
+.bar.in {
+  background: #4a8d5a;
+  opacity: 0.85;
+}
+.bar.out {
+  background: var(--red);
+  opacity: 0.7;
+}
+.bars-axis {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: var(--ink-mute);
+  font-family: var(--mono);
+  margin-top: 4px;
+}
+
+.txn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 6px;
+  border-bottom: 1px dashed var(--line);
+  font-size: 13px;
+}
+.txn:last-child {
+  border-bottom: none;
+}
+.txn:hover {
+  background: var(--bg-paper);
+}
+.txn:hover .txn-edit-btn {
+  opacity: 1;
+}
+.txn-ico {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--bg-paper);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.txn-label {
+  flex: 1;
+  min-width: 0;
+}
+.txn-label small {
+  display: block;
+  color: var(--ink-mute);
+  font-size: 11px;
+}
+.txn-amount {
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: 13px;
+}
+.txn-amount.in {
+  color: #2d7a3a;
+}
+.txn-amount.out {
+  color: var(--red);
+}
+.txn-edit-btn {
+  opacity: 0;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 4px 6px;
+  cursor: pointer;
+  color: var(--ink-mute);
+  transition: opacity 0.12s;
+  margin-left: 4px;
+}
+.txn-edit-btn:hover {
+  background: var(--ink);
+  color: var(--yellow);
+  border-color: var(--ink);
+}
+
 /* ===== Big calendar ===== */
 .big-cal {
   display: flex;
