@@ -103,6 +103,8 @@ export interface ChecklistTask {
   done: boolean;
   /** "오전 10:00" 등 표시용 */
   time?: string;
+  /** 완료 처리 시각 (ISO 8601). 완료 항목 정렬 키. */
+  completedAt?: string;
 }
 
 // ─────────────────────────────────────────────

@@ -26,6 +26,7 @@ export function toDomain(row: Row): ChecklistTask {
     text: row.content,
     done: row.done,
     time: formatKoreanTime(row.due_at),
+    completedAt: row.completed_at ?? undefined,
   };
 }
 
@@ -35,6 +36,7 @@ export function toRow(input: Partial<ChecklistTask>, userId: string): Insert {
     user_id: userId,
     content: input.text ?? "",
     done: input.done ?? false,
+    completed_at: input.completedAt ?? null,
     // due_at은 도메인 time(한국어)에서 역변환 어려움 — 입력은 별도 시간 picker로 처리 예정
   };
 }

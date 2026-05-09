@@ -15,16 +15,26 @@ export function Checklist() {
     c = 2 * Math.PI * r;
   const isFull = tasks.length >= MAX_TASKS;
 
-  // 미완료 → 완료 순서로 분리. 같은 그룹 내 입력 순서는 유지.
+  // 미완료 → 완료 순서로 분리.
+  // 미완료: 입력 순서 유지. 완료: completedAt 오름차순(먼저 완료한 게 위, 최근 완료가 하단).
   const { pending, completed } = useMemo(() => {
     const pending = tasks.filter((t) => !t.done);
-    const completed = tasks.filter((t) => t.done);
+    const completed = tasks
+      .filter((t) => t.done)
+      .slice()
+      .sort((a, b) => (a.completedAt ?? "").localeCompare(b.completedAt ?? ""));
     return { pending, completed };
   }, [tasks]);
 
   const toggle = (id: number) => {
     const t = tasks.find((x) => x.id === id);
-    if (t) upsert({ ...t, done: !t.done });
+    if (!t) return;
+    const nextDone = !t.done;
+    upsert({
+      ...t,
+      done: nextDone,
+      completedAt: nextDone ? new Date().toISOString() : undefined,
+    });
   };
   const remove = (id: number) => removeTask(id);
   const add = () => {

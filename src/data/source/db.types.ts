@@ -132,6 +132,7 @@ export type Database = {
       };
       checklist_items: {
         Row: {
+          completed_at: string | null;
           content: string;
           created_at: string;
           date: string;
@@ -142,6 +143,7 @@ export type Database = {
           user_id: string;
         };
         Insert: {
+          completed_at?: string | null;
           content: string;
           created_at?: string;
           date?: string;
@@ -152,6 +154,7 @@ export type Database = {
           user_id: string;
         };
         Update: {
+          completed_at?: string | null;
           content?: string;
           created_at?: string;
           date?: string;
