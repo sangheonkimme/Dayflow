@@ -153,7 +153,12 @@ export default function AppLayout({
       <div className="app">
         <Sidebar
           active={active}
-          onSelect={(key) => router.push(key === "home" ? "/dashboard" : `/dashboard/${key}`)}
+          onSelect={(key) => {
+            // 공개 도구는 별도 chrome(app/tools/layout.tsx)으로 라우팅.
+            if (key === "crop" || key === "pdf")
+              return router.push(`/tools/${key}`);
+            router.push(key === "home" ? "/dashboard" : `/dashboard/${key}`);
+          }}
         />
         <main className="main" data-screen-label={active}>
           <Suspense fallback={<PageFallback />}>{children}</Suspense>
@@ -182,9 +187,11 @@ export default function AppLayout({
           <SearchOverlay
             open={searchOpen}
             onClose={() => setSearchOpen(false)}
-            onNavigate={(key: string) =>
-              router.push(key === "home" ? "/dashboard" : `/dashboard/${key}`)
-            }
+            onNavigate={(key: string) => {
+              if (key === "crop" || key === "pdf")
+                return router.push(`/tools/${key}`);
+              router.push(key === "home" ? "/dashboard" : `/dashboard/${key}`);
+            }}
           />
         </Suspense>
       )}
