@@ -4,7 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Stack snapshot (2026-05-09)
 
-**Next.js 15 (App Router) + React 19 + TypeScript + Supabase (`@supabase/ssr`) + TanStack Query + Zustand + Tailwind v3 (preflight off, 점진 도입).**
+**Next.js 16 (App Router, Turbopack 기본) + React 19 + TypeScript + Supabase (`@supabase/ssr`) + TanStack Query + Zustand + Tailwind v3 (preflight off, 점진 도입).**
+
+> Next 16 으로 dev/build 둘 다 Turbopack 이 기본. middleware 파일은 deprecation warning 이 뜨지만 edge 런타임 보존을 위해 `proxy.ts` 로 이전하지 않음 (Supabase auth cold start 영향 회피). `eslint-config-next` 는 ESLint 9 flat config 이행 전까지 v15 에 고정.
 
 Vite SPA 시절의 잔재가 일부 남아있다 — `vitest.config.ts` (vitest 가 vite plugin 의존), 글로벌 `src/styles/styles.css` chrome 일부. 마이그레이션은 `docs/nextjs-migration-plan.md` Phase 0~5 로 추적.
 

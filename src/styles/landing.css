@@ -54,7 +54,7 @@
 .landing-root img { display: block; max-width: 100%; }
 .landing-root button { font-family: inherit; }
 
-.landing-root /* ============== NAV ============== */
+/* ============== NAV ============== */
 .nav-wrap {
   position: sticky; top: 0;
   z-index: 50;
@@ -112,7 +112,7 @@
 
 .landing-root .nav-cta { margin-left: auto; display: flex; gap: 8px; align-items: center; }
 
-.landing-root /* hamburger — hidden on desktop,
+/* hamburger — hidden on desktop,
 .landing-root shown ≤980 */
 .nav-burger {
   display: none;
@@ -143,7 +143,7 @@
 .landing-root .nav-burger.is-open span:nth-child(2) { opacity: 0; }
 .landing-root .nav-burger.is-open span:nth-child(3) { top: 19px; transform: rotate(-45deg); }
 
-.landing-root /* mobile drawer */
+/* mobile drawer */
 .mobile-menu {
   position: fixed;
   inset: 60px 0 0 0;
@@ -237,11 +237,11 @@
 .landing-root .btn-lg { padding: 14px 24px; font-size: 15px; border-radius: 12px; }
 .landing-root .btn-xl { padding: 16px 28px; font-size: 16px; border-radius: 14px; }
 
-.landing-root /* ============== HERO ============== */
+/* ============== HERO ============== */
 .section { padding: 80px 32px; max-width: 1200px; margin: 0 auto; position: relative; }
 .landing-root .section-narrow { max-width: 1080px; }
 
-.landing-root /* ==========================================================
+/* ==========================================================
    MOBILE HERO — paper-collage layout,
 .landing-root 640px and below
    ========================================================== */
@@ -654,7 +654,7 @@
 .landing-root .hm-handnote { display: none; }
 }
 
-.landing-root /* ==========================================================
+/* ==========================================================
    END mobile hero
    ========================================================== */
 
@@ -745,7 +745,7 @@
 }
 .landing-root .hero-meta .av:first-child { margin-left: 0; }
 
-.landing-root /* hero right — preview card */
+/* hero right — preview card */
 .hero-preview {
   position: relative;
   perspective: 1400px;
@@ -759,7 +759,7 @@
   transform: rotateX(0deg) rotateY(-3deg) rotate(0.5deg);
 }
 
-.landing-root /* paper decorations */
+/* paper decorations */
 .paper-tape {
   position: absolute;
   background: var(--tape);
@@ -832,7 +832,7 @@
   z-index: 7;
 }
 
-.landing-root /* ============== BROWSER WINDOW ============== */
+/* ============== BROWSER WINDOW ============== */
 .browser-frame {
   background: #2b2823;
   border-radius: 14px;
@@ -881,7 +881,7 @@
   position: relative;
 }
 
-.landing-root /* ============== HERO PREVIEW INSIDE BROWSER ============== */
+/* ============== HERO PREVIEW INSIDE BROWSER ============== */
 .preview-app {
   display: grid;
   grid-template-columns: 56px 1fr;
@@ -1011,7 +1011,7 @@
   z-index: 4;
 }
 
-.landing-root /* ============== SECTION HEADERS ============== */
+/* ============== SECTION HEADERS ============== */
 .section-eyebrow {
   font-size: 12px;
   font-weight: 700;
@@ -1052,7 +1052,7 @@
 .landing-root .section-head.center .section-title,
 .landing-root .section-head.center .section-sub { margin-left: auto; margin-right: auto; }
 
-.landing-root /* ============== FEATURES (4-up) ============== */
+/* ============== FEATURES (4-up) ============== */
 .features-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -1123,7 +1123,7 @@
 }
 .landing-root .feat-list .check svg { width: 9px; height: 9px; }
 
-.landing-root /* ============== INTERACTIVE DEMO ============== */
+/* ============== INTERACTIVE DEMO ============== */
 .demo {
   background: var(--card);
   border: 1px solid var(--line);
@@ -1207,7 +1207,7 @@
   overflow: hidden;
 }
 
-.landing-root /* quick add demo */
+/* quick add demo */
 .qa-input-row {
   display: flex; gap: 8px; align-items: stretch;
   margin-bottom: 16px;
@@ -1315,7 +1315,7 @@
 .landing-root .qa-item:hover .qa-del { opacity: 1; }
 .landing-root .qa-del:hover { color: var(--red); background: rgba(226, 92, 77, 0.1); }
 
-.landing-root /* spend demo */
+/* spend demo */
 .spend-stat {
   display: flex; align-items: baseline; gap: 8px;
   margin-bottom: 14px;
@@ -1373,7 +1373,7 @@
 .landing-root .spend-cat .name { flex: 1; font-size: 13px; font-weight: 600; }
 .landing-root .spend-cat .amt { font-family: var(--mono); font-size: 12px; color: var(--ink-soft); }
 
-.landing-root /* memo demo */
+/* memo demo */
 .demo-stage textarea {
   width: 100%;
   min-height: 220px;
@@ -1413,7 +1413,7 @@
 }
 .landing-root .memo-stat b { color: var(--ink); }
 
-.landing-root /* ============== STATS BAND ============== */
+/* ============== STATS BAND ============== */
 .stats-band {
   margin: 36px auto 0;
   max-width: 1080px;
@@ -1451,7 +1451,7 @@
   letter-spacing: 0.01em;
 }
 
-.landing-root /* ============== SCREENSHOT GALLERY ============== */
+/* ============== SCREENSHOT GALLERY ============== */
 .gallery {
   display: grid;
   grid-template-columns: 1.3fr 1fr;
@@ -1509,7 +1509,7 @@
 }
 .landing-root .gframe-cap b { color: var(--ink); }
 
-.landing-root /* mini ledger view */
+/* mini ledger view */
 .mini-ledger {
   padding: 18px;
   height: 100%;
@@ -1544,7 +1544,7 @@
 .landing-root .mli .amt.minus { color: var(--red); }
 .landing-root .mli .amt.plus { color: #4a8d5a; }
 
-.landing-root /* mobile mockup */
+/* mobile mockup */
 .phone {
   width: 240px;
   height: 480px;
@@ -1602,7 +1602,7 @@
   font-size: 11px;
 }
 
-.landing-root /* ============== TESTIMONIALS (postit) ============== */
+/* ============== TESTIMONIALS (postit) ============== */
 .testimonials {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -1659,7 +1659,7 @@
 .landing-root .postit .who b { display: block; font-size: 13px; font-weight: 700; color: var(--ink); }
 .landing-root .postit .who span { font-size: 11.5px; color: var(--ink-soft); }
 
-.landing-root /* ============== CTA BAND ============== */
+/* ============== CTA BAND ============== */
 .cta-band {
   background: var(--ink);
   color: var(--card);
@@ -1726,7 +1726,7 @@
   display: flex; justify-content: center; gap: 18px;
 }
 
-.landing-root /* ============== FAQ ============== */
+/* ============== FAQ ============== */
 .faq {
   max-width: 760px;
   margin: 0 auto;
@@ -1765,7 +1765,7 @@
   max-width: 620px;
 }
 
-.landing-root /* ============== FOOTER ============== */
+/* ============== FOOTER ============== */
 .footer {
   background: var(--bg-paper);
   border-top: 1px dashed var(--line-strong);
@@ -1828,7 +1828,7 @@
   font-family: var(--mono);
 }
 
-.landing-root /* ============== RESPONSIVE ============== */
+/* ============== RESPONSIVE ============== */
 @media (max-width: 980px) {
   .hero { grid-template-columns: 1fr; gap: 40px; padding: 40px 24px 60px; }
   .hero h1 { font-size: 44px; }
