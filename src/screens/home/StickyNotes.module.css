@@ -495,14 +495,21 @@
   box-shadow: 0 4px 10px rgba(60, 50, 30, 0.08);
 }
 .pinLabel {
+  display: block;
+  width: 100%;
   font-size: 10px;
   font-weight: 700;
+  line-height: 1.4;
   letter-spacing: 0.06em;
   color: var(--ink-mute);
   text-transform: uppercase;
   margin-bottom: 3px;
+  padding: 0;
+  cursor: text;
 }
 .pinValue {
+  display: block;
+  width: 100%;
   font-family: var(--mono);
   font-size: 12px;
   font-weight: 600;
@@ -510,6 +517,11 @@
   letter-spacing: -0.01em;
   word-break: break-all;
   line-height: 1.35;
+  /* 입력 모드와 동일한 박스 — 클릭 시 높이 점프 방지 */
+  padding: 0 0 2px;
+  border-bottom: 1px dashed transparent;
+  cursor: text;
+  min-height: calc(1.35em + 3px);
 }
 .pinClose {
   position: absolute;
@@ -566,6 +578,7 @@
 }
 .pinLabelIn,
 .pinValueIn {
+  display: block;
   width: 100%;
   background: transparent;
   border: none;
@@ -573,21 +586,26 @@
   font-family: inherit;
   color: var(--ink);
   padding: 0;
-  margin-bottom: 3px;
+  margin: 0 0 3px;
+  box-sizing: border-box;
 }
 .pinLabelIn {
   font-size: 10px;
   font-weight: 700;
+  line-height: 1.4;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--ink-mute);
+  /* .pinLabel 박스와 정확히 동일한 높이 */
 }
 .pinValueIn {
   font-family: var(--mono);
   font-size: 12px;
   font-weight: 600;
+  line-height: 1.35;
   border-bottom: 1px dashed var(--line-strong);
-  padding-bottom: 2px;
+  padding: 0 0 2px;
+  min-height: calc(1.35em + 3px);
 }
 
 @media (max-width: 1100px) {
