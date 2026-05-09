@@ -98,8 +98,25 @@
 - [x] Tailwind v3 도입 — `tailwind.config.ts` 토큰과 `:root` 변수 1:1 매핑, preflight off.
 - [x] `next/font` (Plus_Jakarta_Sans, Gaegu, JetBrains_Mono) — Google Fonts `@import` 사고 영구 차단.
 
-**4b (별도 세션 권장 — 페이지별 시각 회귀 검토 필수)**
-- [ ] 페이지별 `*.module.css` 로 점진 이전.
+**4b (진행 중)**
+- [x] **1차** 5 dashboard 페이지(memo/subs/txns/salary/loan-search) → `*.module.css` (~2,612 lines)
+- [x] **2차** image-tools (1,433 lines) + flows 재라우팅 (auth → calendar/receipt)
+- [x] **3차** home 6개 컴포넌트(StickyNotes/Checklist/MoneyFlow/MiniCalendar/ToolCard/timers) (~1,400 lines)
+- [x] tools layout, Sidebar+Topbar(Shell), Modal section (~450 lines)
+- [x] CLAUDE.md 동기화 (현 스택 반영)
+- [ ] **남은 큰 항목**:
+  - `flows.css` (1017 lines) → CalendarPage.module.css + ReceiptUploadModal.module.css 로 분리 (in-flight)
+  - `mobile.css` (571 lines) → 데스크탑 chrome 미디어쿼리, 페이지별 분배 또는 글로벌 보존 (in-flight)
+  - **`mobile-app.css` (1750 lines + 25 mobile components 6400 lines)** — 단일 PR 위험. 4-단계 분할 권장:
+    1. mobile.module.css 파일만 생성 (사용처 미수정, 발판)
+    2. shared/ + tabs/ 컴포넌트 변환 (Home/Ledger/Calendar/Menu + SwipeRow/Ico/SectionHeader 등)
+    3. sheets/ 9개 변환
+    4. screens/ 4개 + MobileApp.tsx + layout.tsx import 제거 + git rm mobile-app.css
+    각 단계마다 next build + 모바일 뷰 시각 확인.
+  - 잔존 `styles.css` (~540 lines) 의 GRID(`.card`/`.col-*`) 추가 분할 검토
+- [ ] **shadcn/ui 도입** — 시안 매핑 비용 검토 후. 별도 라운드.
+- [ ] `next/image` 로 이미지 최적화.
+- [ ] **모든 module 이전 완료 시 Tailwind preflight 활성화** + `app/globals.css` reset 통합.
 - [ ] 글로벌 `src/styles/styles.css` 를 토큰 + reset (~200줄) 로 축소 + preflight 활성화.
 - [ ] shadcn/ui 도입 (시안 매핑 비용 검토 후).
 - [ ] `next/image` 로 이미지 최적화.
