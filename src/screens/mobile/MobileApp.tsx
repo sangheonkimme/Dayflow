@@ -1,6 +1,8 @@
 "use client";
 import { useState } from "react";
 
+import styles from "@/screens/mobile/mobile.module.css";
+
 // 추출된 헬퍼/탭 (Phase 6c-1)
 import { Ico } from "@/screens/mobile/shared/Ico";
 import { MobileHome } from "@/screens/mobile/tabs/Home";
@@ -97,7 +99,7 @@ const MobileApp = ({ initialTab = "home" }: any) => {
           onBack={popMenu}
           action={
             <button
-              className="dfm-icon-btn"
+              className={styles.dfmIconBtn}
               onClick={() => setAddEventOpen(true)}
               aria-label="추가"
             >
@@ -146,53 +148,53 @@ const MobileApp = ({ initialTab = "home" }: any) => {
       : titleByTab[tab] || titleByTab.home;
 
   return (
-    <div className="dfm">
-      <div className="dfm-top">
-        <div className="dfm-greeting">
+    <div className={styles.dfm}>
+      <div className={styles.dfmTop}>
+        <div className={styles.dfmGreeting}>
           {tt.greet}
           <b>{tt.name}</b>
         </div>
-        <div className="dfm-top-actions">
+        <div className={styles.dfmTopActions}>
           <button
-            className="dfm-icon-btn"
+            className={styles.dfmIconBtn}
             onClick={() => setSearchOpen(true)}
             aria-label="검색"
           >
             <Ico name="search" size={18} />
           </button>
           <button
-            className="dfm-icon-btn"
+            className={styles.dfmIconBtn}
             onClick={() => navigate("notif")}
             aria-label="알림 설정"
           >
             <Ico name="bell" size={18} />
-            <span className="dot-badge"></span>
+            <span className={styles.dotBadge}></span>
           </button>
         </div>
       </div>
 
-      <div className="dfm-body">{Page}</div>
+      <div className={styles.dfmBody}>{Page}</div>
 
-      <div className="dfm-tabbar">
+      <div className={styles.dfmTabbar}>
         <button
-          className={`dfm-tab ${tab === "home" ? "active" : ""}`}
+          className={`${styles.dfmTab} ${tab === "home" ? styles.active : ""}`}
           onClick={() => goTab("home")}
         >
           <Ico name="home" />
-          <span className="label">홈</span>
+          <span className={styles.label}>홈</span>
         </button>
         <button
-          className={`dfm-tab ${tab === "ledger" ? "active" : ""}`}
+          className={`${styles.dfmTab} ${tab === "ledger" ? styles.active : ""}`}
           onClick={() => goTab("ledger")}
         >
           <Ico name="wallet" />
-          <span className="label">가계부</span>
+          <span className={styles.label}>가계부</span>
         </button>
-        <button className="dfm-tab fab" onClick={onFab}>
-          <span className="fab-btn">
+        <button className={`${styles.dfmTab} ${styles.fab}`} onClick={onFab}>
+          <span className={styles.fabBtn}>
             <Ico name="plus" size={24} />
           </span>
-          <span className="label">
+          <span className={styles.label}>
             {tab === "calendar" ||
             (tab === "menu" && menuStack[menuStack.length - 1] === "calendar")
               ? "일정"
@@ -200,18 +202,18 @@ const MobileApp = ({ initialTab = "home" }: any) => {
           </span>
         </button>
         <button
-          className={`dfm-tab ${tab === "calendar" ? "active" : ""}`}
+          className={`${styles.dfmTab} ${tab === "calendar" ? styles.active : ""}`}
           onClick={() => goTab("calendar")}
         >
           <Ico name="cal" />
-          <span className="label">캘린더</span>
+          <span className={styles.label}>캘린더</span>
         </button>
         <button
-          className={`dfm-tab ${tab === "menu" ? "active" : ""}`}
+          className={`${styles.dfmTab} ${tab === "menu" ? styles.active : ""}`}
           onClick={() => goTab("menu")}
         >
           <Ico name="menu" />
-          <span className="label">메뉴</span>
+          <span className={styles.label}>메뉴</span>
         </button>
       </div>
 
