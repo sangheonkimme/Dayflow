@@ -1,5 +1,26 @@
 /* ============================================================
-   MOBILE RESPONSIVE — Dayflow Dashboard
+   MOBILE / RESPONSIVE — Dayflow Dashboard (global overrides)
+
+   Phase 4b 정리 (2026-05):
+   - Modal 관련 미디어쿼리는 src/components/Modal.css 로 이전.
+   - Sidebar/Topbar/Brand/Nav 글로벌 셀렉터(`.sidebar`, `.nav-item`,
+     `.topbar`, `.brand`, `.nav`, `.nav-group`, `.side-foot`,
+     `.side-section-label`) 는 Shell 이 CSS Module 로 이전(Phase 4b)
+     되어 더 이상 매칭되지 않으므로 제거.
+   - `.tweaks-panel` / `.edit-mode-panel` 도 실제 컴포넌트는 `.twk-*`
+     클래스를 사용하므로 제거.
+   - Mobile chrome 은 layout 에서 `useMediaQuery('(max-width: 768px)')`
+     기준으로 `<MobileApp />` 으로 통째로 갈아탄다 (mobile-app.css).
+     따라서 데스크탑 chrome 의 모바일 변환 규칙은 769–900px 범위에서만
+     의미가 있었고, Shell 모듈화 이후 그 범위의 사이드바 변환은 일시적으로
+     누락된 상태(추후 Shell.module.css 미디어쿼리로 보충 예정).
+
+   여기에 남는 규칙은 **여전히 글로벌인** styles.css / pages.css 의
+   페이지 chrome 클래스 (.app, .main, .topbar h1 등 일부 글로벌, .grid,
+   .col-*, .stats-grid, .page-head, .page-title, .txn-*, .salary-*,
+   .settings-*, .big-cell, .big-cal-*, .pin-cards, .timer-*, .sticky,
+   .notes-board, .filter-tabs, .bars 등) 의 모바일 오버라이드.
+
    Breakpoints:
      - Tablet:  ≤ 900px
      - Mobile:  ≤ 640px
@@ -13,117 +34,9 @@
     padding-bottom: 76px; /* space for bottom nav */
   }
 
-  .sidebar {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    top: auto;
-    height: auto;
-    width: 100%;
-    border-right: none;
-    border-top: 1px solid var(--line);
-    padding: 8px 6px calc(8px + env(safe-area-inset-bottom, 0px));
-    z-index: 50;
-    background: var(--bg-paper);
-    backdrop-filter: blur(8px);
-    box-shadow: 0 -4px 20px rgba(40, 30, 10, 0.08);
-    flex-direction: row;
-    align-items: center;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    gap: 0;
-  }
-  .sidebar::-webkit-scrollbar {
-    display: none;
-  }
-
-  .brand,
-  .side-foot,
-  .side-section-label {
-    display: none !important;
-  }
-
-  .nav {
-    flex-direction: row;
-    flex-wrap: nowrap;
-    width: max-content;
-    min-width: 100%;
-    gap: 0;
-    justify-content: space-around;
-  }
-  .nav-group {
-    flex-direction: row;
-    padding-top: 0;
-    border-top: none;
-    gap: 0;
-  }
-  .nav-item {
-    flex-direction: column;
-    gap: 2px;
-    padding: 6px 10px;
-    min-width: 64px;
-    border-radius: 10px;
-    font-size: 10px;
-    color: var(--ink-mute);
-    text-align: center;
-    flex-shrink: 0;
-  }
-  .nav-item .label-wrap {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  .nav-item .label-wrap span {
-    font-size: 10px;
-    font-weight: 600;
-    line-height: 1.1;
-  }
-  .nav-item .label-wrap small {
-    display: none;
-  }
-  .nav-item.active {
-    background: var(--ink);
-    color: var(--yellow);
-  }
-  .nav-item.active small {
-    display: none;
-  }
-
   /* Main area */
   .main {
     padding: 16px 14px 24px;
-  }
-
-  /* Topbar collapses */
-  .topbar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-    margin-bottom: 14px;
-  }
-  .topbar h1 {
-    font-size: 22px;
-  }
-  .topbar h1 .hand {
-    font-size: 17px;
-    display: block;
-    margin-left: 0;
-    margin-top: 2px;
-  }
-  .topbar-sub {
-    font-size: 12px;
-  }
-  .topbar-actions {
-    width: 100%;
-    justify-content: space-between;
-  }
-  .search {
-    flex: 1;
-    min-width: 0;
-  }
-  .search kbd {
-    display: none;
   }
 
   /* Page heads */
@@ -319,40 +232,6 @@
     font-size: 11px;
   }
 
-  /* Modals */
-  .modal {
-    width: 100%;
-    max-height: 95vh;
-    border-radius: 16px 16px 0 0;
-  }
-  .modal-overlay {
-    padding: 0;
-    align-items: flex-end;
-  }
-  .modal-head {
-    padding: 16px 18px 12px;
-  }
-  .modal-body {
-    padding: 14px 18px;
-  }
-  .modal-foot {
-    padding: 12px 18px;
-    flex-wrap: wrap;
-  }
-  .field-row {
-    grid-template-columns: 1fr;
-  }
-  .numpad button {
-    height: 42px;
-    font-size: 17px;
-  }
-  .cat-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-  .time-chips {
-    grid-template-columns: repeat(4, 1fr);
-  }
-
   /* Pin board */
   .pin-cards {
     grid-template-columns: 1fr 1fr;
@@ -371,12 +250,6 @@
   .section-h h2 {
     font-size: 14px;
   }
-
-  /* Edit mode toggle / tweaks panel scoot above bottom nav */
-  .tweaks-panel,
-  .edit-mode-panel {
-    bottom: 84px !important;
-  }
 }
 
 /* ---------- MOBILE (≤ 640px) ---------- */
@@ -386,12 +259,6 @@
   }
 
   /* Smaller hero text */
-  .topbar h1 {
-    font-size: 19px;
-  }
-  .topbar h1 .hand {
-    font-size: 15px;
-  }
   .page-title {
     font-size: 20px;
   }
@@ -402,14 +269,6 @@
   /* Stats single column */
   .stats-grid {
     grid-template-columns: 1fr;
-  }
-
-  /* Hide search box on tiny screens */
-  .search {
-    display: none;
-  }
-  .topbar-actions {
-    gap: 6px;
   }
 
   /* Card padding */
@@ -489,23 +348,6 @@
     font-size: 13px;
   }
 
-  /* Cat grid in modals */
-  .cat-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .time-chips {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  /* Bottom nav — hide subs on smallest */
-  .nav-item {
-    min-width: 56px;
-    padding: 6px 6px;
-  }
-  .nav-item .label-wrap span {
-    font-size: 9px;
-  }
-
   /* Money summary tighter */
   .money-stat {
     padding: 10px;
@@ -518,15 +360,8 @@
   }
 }
 
-/* Landscape phones — keep bottom nav workable */
+/* Landscape phones — smaller timer */
 @media (max-width: 900px) and (max-height: 480px) and (orientation: landscape) {
-  .sidebar {
-    padding: 4px 6px;
-  }
-  .nav-item {
-    min-width: 50px;
-    padding: 4px 8px;
-  }
   .timer-circle {
     width: 120px;
     height: 120px;
@@ -537,7 +372,6 @@
 @media (pointer: coarse) {
   .timer-btn,
   .icon-btn,
-  .nav-item,
   .settings-nav-item {
     min-height: 44px;
   }

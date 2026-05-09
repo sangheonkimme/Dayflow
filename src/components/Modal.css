@@ -450,3 +450,53 @@
     grid-column: span 6;
   }
 }
+
+/* ============================================================
+   Modal mobile overrides (Phase 4b: moved from mobile.css)
+   .modal / .modal-* / .field-row / .numpad / .cat-grid / .time-chips
+   are global selectors (still defined above), so these media
+   query blocks remain global as well.
+   ============================================================ */
+@media (max-width: 900px) {
+  .modal {
+    width: 100%;
+    max-height: 95vh;
+    border-radius: 16px 16px 0 0;
+  }
+  .modal-overlay {
+    padding: 0;
+    align-items: flex-end;
+  }
+  .modal-head {
+    padding: 16px 18px 12px;
+  }
+  .modal-body {
+    padding: 14px 18px;
+  }
+  .modal-foot {
+    padding: 12px 18px;
+    flex-wrap: wrap;
+  }
+  .field-row {
+    grid-template-columns: 1fr;
+  }
+  .numpad button {
+    height: 42px;
+    font-size: 17px;
+  }
+  .cat-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .time-chips {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .cat-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .time-chips {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
