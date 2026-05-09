@@ -10,7 +10,6 @@ import {
 import { useDailyLog } from "@/data/daily-log";
 import { usePinnedInfo } from "@/data/pinned-info";
 import { MOODS, emojiToMood, moodToEmoji } from "@/data/lookups";
-import { usePreferences } from "@/data/preferences";
 import styles from "./StickyNotes.module.css";
 
 // ============================================================
@@ -178,17 +177,6 @@ function DeskPile() {
   };
   const updatePin = (np: { id: string | number }) => upsertPin(np);
 
-  // 자주 쓰는 정보 보드 타이틀 — 사용자 편집 가능, 환경설정에 영구 저장.
-  const [tweaks, setTweak] = usePreferences();
-  const boardTitle =
-    (typeof tweaks.pinBoardTitle === "string" && tweaks.pinBoardTitle) ||
-    "자주 쓰는 정보";
-  const titleField = useDraftField<string>({
-    value: boardTitle,
-    onCommit: (next) => setTweak("pinBoardTitle", next.trim() || "자주 쓰는 정보"),
-  });
-  const [titleEditing, setTitleEditing] = useState(false);
-
   return (
     <div className={styles.deskPile}>
       <div className={styles.deskPileRow}>
@@ -231,45 +219,7 @@ function DeskPile() {
 
         <div className={styles.pinBoard}>
           <div className={styles.pinBoardHead}>
-            {titleEditing ? (
-              <input
-                autoFocus
-                value={titleField.value}
-                onChange={(e) => titleField.setDraft(e.target.value)}
-                onBlur={() => {
-                  titleField.commit();
-                  setTitleEditing(false);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    (e.target as HTMLInputElement).blur();
-                  } else if (e.key === "Escape") {
-                    titleField.setDraft(boardTitle);
-                    setTitleEditing(false);
-                  }
-                }}
-                style={{
-                  font: "inherit",
-                  fontWeight: 700,
-                  fontSize: "inherit",
-                  border: "1px solid var(--line)",
-                  borderRadius: 6,
-                  padding: "2px 8px",
-                  background: "var(--card)",
-                  color: "inherit",
-                  outline: "none",
-                }}
-              />
-            ) : (
-              <h3
-                onDoubleClick={() => setTitleEditing(true)}
-                title="더블클릭으로 이름 변경"
-                style={{ cursor: "text" }}
-              >
-                {boardTitle}
-              </h3>
-            )}
+            <h3>자주 쓰는 정보</h3>
             <button className={styles.pinAdd} onClick={addPin}>
               <Icon name="plus" size={11} />핀 추가
             </button>
