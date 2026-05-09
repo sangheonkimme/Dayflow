@@ -44,11 +44,10 @@ const config: Config = {
       },
     },
   },
-  // 기존 글로벌 CSS 와 공존 단계 — preflight(reset) 켜면 기존 스타일과 충돌.
-  // Phase 5 에서 글로벌 CSS 를 모듈로 옮긴 뒤 corePlugins.preflight 활성화.
-  corePlugins: {
-    preflight: false,
-  },
+  // Phase 4b 마무리 후 활성화 (2026-05-09).
+  // Tailwind reset(margin/padding/heading 0, border-box, button default 등) 적용.
+  // 기존 styles.css 의 reset 과 일부 중복되지만 cascade 는 Tailwind 가 우선.
+  // 시각 회귀 가능성 — h1~h6/p/button/ul 의 unstyled 사용처는 별도 클래스로 명시 필요.
 };
 
 export default config;
