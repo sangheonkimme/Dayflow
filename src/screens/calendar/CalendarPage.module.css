@@ -1,0 +1,19 @@
+/* ============================================================
+   CALENDAR PAGE — module
+   페이지 전용 .big-cell hover 보강.
+
+   주: flows.css 의 .day-panel* / .dpd-* / .dp-* / .day-action / .da-ico
+   계열은 어떤 컴포넌트에서도 사용되지 않는 죽은 시안 스타일이라
+   Phase 4b 에서 제거함 (사용처 grep: 0건).
+   ============================================================ */
+
+/* big-cell hover (페이지 전용 보강) — 모듈 로컬 wrapper 로 스코프 */
+.bigCalScope :global(.big-cell) {
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.bigCalScope :global(.big-cell):hover:not(:global(.muted)) {
+  background: var(--bg-paper);
+  outline: 1px solid var(--ink-soft);
+  outline-offset: -1px;
+}

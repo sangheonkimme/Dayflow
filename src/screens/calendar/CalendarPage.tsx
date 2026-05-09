@@ -3,7 +3,7 @@ import { Icon } from "@/components/Icon";
 import { DOW } from "@/lib/date";
 import { EVENT_CATEGORY_COLORS } from "@/lib/categories";
 import { useEvents } from "@/data/events";
-import "@/styles/flows.css";
+import styles from "./CalendarPage.module.css";
 
 export const CalendarPage = ({ onAdd, onEditEvent }: any) => {
   const today = new Date();
@@ -143,7 +143,7 @@ export const CalendarPage = ({ onAdd, onEditEvent }: any) => {
 
       <div className="grid">
         <div className="card card-pad col-8">
-          <div className="big-cal">
+          <div className={`big-cal ${styles.bigCalScope}`}>
             <div className="big-cal-head">
               {dow.map((d, i) => (
                 <div

@@ -3,7 +3,7 @@ import { Icon } from "@/components/Icon";
 import { Modal } from "@/components/Modal";
 import { useTransactions } from "@/data/transactions";
 import { recent as selectRecent } from "@/data/transactions";
-import "@/styles/flows.css";
+import styles from "./ReceiptUploadModal.module.css";
 
 // ============================================================
 // RECEIPT UPLOAD MODAL — 영수증 첨부 플로우
@@ -103,12 +103,12 @@ function ReceiptUploadModal({ open, onClose, onAttach }: any) {
     <Modal
       open={open}
       onClose={onClose}
-      className="receipt-modal"
-      overlayClassName="receipt-overlay"
+      className={styles.receiptModal}
+      overlayClassName={styles.receiptOverlay}
     >
       <div className="modal-head">
         <div>
-          <div className="modal-eyebrow">거래내역 · 가계부</div>
+          <div className={styles.modalEyebrow}>거래내역 · 가계부</div>
           <h3 className="modal-title">
             영수증 첨부 <span className="hand-sub">— 사진으로 자동 입력</span>
           </h3>
@@ -119,7 +119,7 @@ function ReceiptUploadModal({ open, onClose, onAttach }: any) {
       </div>
 
       {/* Step indicator */}
-      <div className="receipt-steps">
+      <div className={styles.receiptSteps}>
         {[
           ["pick", "1", "업로드"],
           ["preview", "2", "미리보기"],
@@ -129,22 +129,22 @@ function ReceiptUploadModal({ open, onClose, onAttach }: any) {
           const order = ["pick", "preview", "scanning", "done"];
           const cur = order.indexOf(stage);
           const ix = order.indexOf(k);
-          const cls = ix < cur ? "done" : ix === cur ? "on" : "";
+          const cls = ix < cur ? styles.done : ix === cur ? styles.on : "";
           return (
-            <div key={k} className={"rcpt-step " + cls}>
-              <span className="rcpt-step-n">{ix < cur ? "✓" : n}</span>
+            <div key={k} className={`${styles.rcptStep} ${cls}`}>
+              <span className={styles.rcptStepN}>{ix < cur ? "✓" : n}</span>
               <span>{l}</span>
             </div>
           );
         })}
       </div>
 
-      <div className="modal-body receipt-body">
+      <div className={`modal-body ${styles.receiptBody}`}>
         {/* === STAGE 1: PICK === */}
         {stage === "pick" && (
           <>
             <div
-              className={"receipt-drop" + (isDragging ? " dragging" : "")}
+              className={`${styles.receiptDrop} ${isDragging ? styles.dragging : ""}`}
               onDragOver={(e) => {
                 e.preventDefault();
                 setIsDragging(true);
@@ -154,7 +154,7 @@ function ReceiptUploadModal({ open, onClose, onAttach }: any) {
               onClick={() => inputRef.current?.click()}
               ref={dragRef}
             >
-              <div className="receipt-drop-ico">📄</div>
+              <div className={styles.receiptDropIco}>📄</div>
               <b>여기로 드래그 또는 클릭해서 업로드</b>
               <small>JPG · PNG · HEIC · PDF · 최대 5장 · 파일당 10MB</small>
               <input
@@ -167,38 +167,38 @@ function ReceiptUploadModal({ open, onClose, onAttach }: any) {
               />
             </div>
 
-            <div className="receipt-or">또는 다른 방법으로</div>
+            <div className={styles.receiptOr}>또는 다른 방법으로</div>
 
-            <div className="receipt-method-grid">
+            <div className={styles.receiptMethodGrid}>
               <button
-                className="rcpt-method"
+                className={styles.rcptMethod}
                 onClick={() => inputRef.current?.click()}
               >
-                <span className="rm-ico bg-yellow">📷</span>
+                <span className={`${styles.rmIco} ${styles.bgYellow}`}>📷</span>
                 <div>
                   <b>카메라로 촬영</b>
                   <small>지금 영수증을 찍어요</small>
                 </div>
               </button>
               <button
-                className="rcpt-method"
+                className={styles.rcptMethod}
                 onClick={() => inputRef.current?.click()}
               >
-                <span className="rm-ico bg-mint">🖼️</span>
+                <span className={`${styles.rmIco} ${styles.bgMint}`}>🖼️</span>
                 <div>
                   <b>갤러리에서 선택</b>
                   <small>저장된 사진 불러오기</small>
                 </div>
               </button>
-              <button className="rcpt-method">
-                <span className="rm-ico bg-pink">📧</span>
+              <button className={styles.rcptMethod}>
+                <span className={`${styles.rmIco} ${styles.bgPink}`}>📧</span>
                 <div>
                   <b>이메일에서 가져오기</b>
                   <small>영수증 메일 자동 수집</small>
                 </div>
               </button>
-              <button className="rcpt-method">
-                <span className="rm-ico bg-blue">☁️</span>
+              <button className={styles.rcptMethod}>
+                <span className={`${styles.rmIco} ${styles.bgBlue}`}>☁️</span>
                 <div>
                   <b>드라이브 연결</b>
                   <small>구글 · 드롭박스</small>
@@ -206,7 +206,7 @@ function ReceiptUploadModal({ open, onClose, onAttach }: any) {
               </button>
             </div>
 
-            <div className="receipt-tip">
+            <div className={styles.receiptTip}>
               <span>💡</span>
               <div>
                 <b>스캔 팁</b>
@@ -222,27 +222,27 @@ function ReceiptUploadModal({ open, onClose, onAttach }: any) {
         {/* === STAGE 2: PREVIEW === */}
         {stage === "preview" && (
           <>
-            <div className="receipt-preview-grid">
+            <div className={styles.receiptPreviewGrid}>
               {files.map((f) => (
-                <div key={f.id} className="rcpt-thumb">
+                <div key={f.id} className={styles.rcptThumb}>
                   {f.url ? (
                     <img src={f.url} alt={f.name} />
                   ) : (
-                    <div className="rcpt-thumb-pdf">
+                    <div className={styles.rcptThumbPdf}>
                       📄<span>PDF</span>
                     </div>
                   )}
                   <button
-                    className="rcpt-thumb-x"
+                    className={styles.rcptThumbX}
                     onClick={() => setFiles(files.filter((x) => x.id !== f.id))}
                   >
                     <Icon name="x" size={11} />
                   </button>
-                  <div className="rcpt-thumb-name">{f.name}</div>
+                  <div className={styles.rcptThumbName}>{f.name}</div>
                 </div>
               ))}
               <button
-                className="rcpt-thumb add"
+                className={`${styles.rcptThumb} ${styles.add}`}
                 onClick={() => inputRef.current?.click()}
               >
                 <span>+</span>
@@ -260,20 +260,20 @@ function ReceiptUploadModal({ open, onClose, onAttach }: any) {
               />
             </div>
 
-            <div className="receipt-options">
-              <label className="rcpt-check">
+            <div className={styles.receiptOptions}>
+              <label className={styles.rcptCheck}>
                 <input type="checkbox" defaultChecked />
-                <span className="rcpt-check-box"></span>
+                <span className={styles.rcptCheckBox}></span>
                 <span>OCR 자동 인식 — 가게명, 금액, 날짜 추출</span>
               </label>
-              <label className="rcpt-check">
+              <label className={styles.rcptCheck}>
                 <input type="checkbox" defaultChecked />
-                <span className="rcpt-check-box"></span>
+                <span className={styles.rcptCheckBox}></span>
                 <span>이미지 자동 보정 — 밝기 · 기울기 보정</span>
               </label>
-              <label className="rcpt-check">
+              <label className={styles.rcptCheck}>
                 <input type="checkbox" />
-                <span className="rcpt-check-box"></span>
+                <span className={styles.rcptCheckBox}></span>
                 <span>원본 클라우드 백업</span>
               </label>
             </div>
@@ -282,34 +282,34 @@ function ReceiptUploadModal({ open, onClose, onAttach }: any) {
 
         {/* === STAGE 3: SCANNING === */}
         {stage === "scanning" && (
-          <div className="receipt-scanning">
-            <div className="rcpt-scan-card">
+          <div className={styles.receiptScanning}>
+            <div className={styles.rcptScanCard}>
               {files[0]?.url ? (
                 <img src={files[0].url} alt="scanning" />
               ) : (
-                <div className="rcpt-scan-placeholder">📄</div>
+                <div className={styles.rcptScanPlaceholder}>📄</div>
               )}
-              <div className="rcpt-scan-line" />
+              <div className={styles.rcptScanLine} />
             </div>
-            <div className="rcpt-scan-status">
+            <div className={styles.rcptScanStatus}>
               <b>영수증을 분석하고 있어요...</b>
-              <div className="rcpt-progress">
+              <div className={styles.rcptProgress}>
                 <div
-                  className="rcpt-progress-bar"
+                  className={styles.rcptProgressBar}
                   style={{ width: scanProgress + "%" }}
                 />
               </div>
               <small>{Math.floor(scanProgress)}% · 텍스트 추출 중</small>
             </div>
-            <ul className="rcpt-scan-tasks">
-              <li className={scanProgress > 20 ? "done" : ""}>이미지 보정</li>
-              <li className={scanProgress > 50 ? "done" : ""}>
+            <ul className={styles.rcptScanTasks}>
+              <li className={scanProgress > 20 ? styles.done : ""}>이미지 보정</li>
+              <li className={scanProgress > 50 ? styles.done : ""}>
                 텍스트 영역 감지
               </li>
-              <li className={scanProgress > 80 ? "done" : ""}>
+              <li className={scanProgress > 80 ? styles.done : ""}>
                 가맹점 · 금액 추출
               </li>
-              <li className={scanProgress >= 100 ? "done" : ""}>
+              <li className={scanProgress >= 100 ? styles.done : ""}>
                 거래내역 매칭
               </li>
             </ul>
@@ -318,54 +318,52 @@ function ReceiptUploadModal({ open, onClose, onAttach }: any) {
 
         {/* === STAGE 4: DONE / OCR RESULT === */}
         {stage === "done" && (
-          <div className="receipt-done">
-            <div className="rcpt-done-head">
-              <div className="rcpt-success">✓</div>
+          <div className={styles.receiptDone}>
+            <div className={styles.rcptDoneHead}>
+              <div className={styles.rcptSuccess}>✓</div>
               <div>
                 <b>인식 완료!</b>
                 <small>아래 정보를 확인하고 거래내역에 연결해주세요</small>
               </div>
             </div>
 
-            <div className="rcpt-ocr-card">
-              <div className="rcpt-ocr-row big">
+            <div className={styles.rcptOcrCard}>
+              <div className={`${styles.rcptOcrRow} ${styles.big}`}>
                 <span>가맹점</span>
                 <b>{ocrResult.merchant}</b>
               </div>
-              <div className="rcpt-ocr-row">
+              <div className={styles.rcptOcrRow}>
                 <span>일시</span>
                 <b>{ocrResult.date}</b>
               </div>
-              <div className="rcpt-ocr-row">
+              <div className={styles.rcptOcrRow}>
                 <span>결제수단</span>
                 <b>{ocrResult.payment}</b>
               </div>
-              <div className="rcpt-ocr-divider" />
+              <div className={styles.rcptOcrDivider} />
               {ocrResult.items.map((it, i) => (
-                <div key={i} className="rcpt-ocr-row item">
+                <div key={i} className={`${styles.rcptOcrRow} ${styles.item}`}>
                   <span>{it.name}</span>
                   <b>₩{it.price.toLocaleString()}</b>
                 </div>
               ))}
-              <div className="rcpt-ocr-divider" />
-              <div className="rcpt-ocr-row total">
+              <div className={styles.rcptOcrDivider} />
+              <div className={`${styles.rcptOcrRow} ${styles.total}`}>
                 <span>합계</span>
                 <b>₩{ocrResult.total.toLocaleString()}</b>
               </div>
             </div>
 
-            <div className="rcpt-link-section">
-              <div className="rcpt-link-label">거래내역에 연결</div>
-              <small className="rcpt-link-sub">
+            <div className={styles.rcptLinkSection}>
+              <div className={styles.rcptLinkLabel}>거래내역에 연결</div>
+              <small className={styles.rcptLinkSub}>
                 동일 금액·시간대로 자동 매칭된 거래입니다
               </small>
-              <div className="rcpt-link-list">
+              <div className={styles.rcptLinkList}>
                 {recentTxns.map((t) => (
                   <label
                     key={t.id}
-                    className={
-                      "rcpt-link-row" + (linkTxn === t.id ? " on" : "")
-                    }
+                    className={`${styles.rcptLinkRow} ${linkTxn === t.id ? styles.on : ""}`}
                   >
                     <input
                       type="radio"
@@ -373,24 +371,22 @@ function ReceiptUploadModal({ open, onClose, onAttach }: any) {
                       checked={linkTxn === t.id}
                       onChange={() => setLinkTxn(t.id)}
                     />
-                    <div className="rcpt-link-body">
+                    <div className={styles.rcptLinkBody}>
                       <b>{t.label}</b>
                       <small>
                         {t.time} · {t.cat}
                       </small>
                     </div>
-                    <span className="rcpt-link-amt">
+                    <span className={styles.rcptLinkAmt}>
                       -₩{Math.abs(t.amount).toLocaleString()}
                     </span>
                     {t.label.includes("스타벅스") && (
-                      <span className="rcpt-match-tag">자동 매칭</span>
+                      <span className={styles.rcptMatchTag}>자동 매칭</span>
                     )}
                   </label>
                 ))}
                 <label
-                  className={
-                    "rcpt-link-row new" + (linkTxn === "new" ? " on" : "")
-                  }
+                  className={`${styles.rcptLinkRow} ${styles.new} ${linkTxn === "new" ? styles.on : ""}`}
                 >
                   <input
                     type="radio"
@@ -398,7 +394,7 @@ function ReceiptUploadModal({ open, onClose, onAttach }: any) {
                     checked={linkTxn === "new"}
                     onChange={() => setLinkTxn("new")}
                   />
-                  <div className="rcpt-link-body">
+                  <div className={styles.rcptLinkBody}>
                     <b>+ 새 거래내역으로 추가</b>
                     <small>OCR 정보로 자동 입력해드려요</small>
                   </div>
