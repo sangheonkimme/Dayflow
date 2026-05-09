@@ -11,6 +11,7 @@ import Link from "@tiptap/extension-link";
 import TaskList from "@tiptap/extension-task-list";
 import TaskItem from "@tiptap/extension-task-item";
 import { Markdown } from "tiptap-markdown";
+import CharacterCount from "@tiptap/extension-character-count";
 import styles from "./MemoPage.module.css";
 
 // ============================================================
@@ -324,6 +325,7 @@ function MemoEditor({
       TaskList,
       TaskItem.configure({ nested: true }),
       Markdown.configure({ html: false, breaks: true }),
+      CharacterCount,
     ],
     content: active.body,
     editorProps: {
@@ -407,7 +409,13 @@ function MemoEditor({
   };
 
   // body 통계는 editor 의 plain text 기준으로 계산 (마크다운 토큰 제외).
-  const plainText = editor?.getText() ?? "";
+  // CharacterCount 가 ProseMirror 트리를 순회해 visible text 만 카운트.
+  // 줄바꿈 / 마크다운 토큰 / 들여쓰기 영향 없음 — getText().length 보다 정확.
+  const ccStorage = editor?.storage as
+    | { characterCount?: { characters: () => number; words: () => number } }
+    | undefined;
+  const charCount = ccStorage?.characterCount?.characters() ?? 0;
+  const wordCount = ccStorage?.characterCount?.words() ?? 0;
 
   return (
     <>
@@ -561,15 +569,15 @@ function MemoEditor({
         <span className="hand">손글씨처럼, 부담없이.</span>
         <div className={styles.memoFootStats}>
           <span>
-            <b>{plainText.length}</b>자
+            <b>{charCount}</b>자
           </span>
           <span className={styles.dotSep}>·</span>
           <span>
-            <b>{plainText.split(/\s+/).filter(Boolean).length}</b>단어
+            <b>{wordCount}</b>단어
           </span>
           <span className={styles.dotSep}>·</span>
           <span>
-            읽는 시간 <b>{Math.max(1, Math.round(plainText.length / 400))}</b>분
+            읽는 시간 <b>{Math.max(1, Math.round(charCount / 400))}</b>분
           </span>
         </div>
       </div>
