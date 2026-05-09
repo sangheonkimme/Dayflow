@@ -146,19 +146,34 @@ export function MiniCalendar({
               fontSize: 11,
               color: "var(--ink-mute)",
               marginBottom: 2,
+              gap: 6,
             }}
           >
             <span>
               {mo + 1}월 {selectedDay}일 일정 · {selectedEvents.length}개
             </span>
-            <button
-              className="upc-edit-btn"
-              onClick={() => setSelectedDay(null)}
-              title="선택 해제"
-              style={{ fontSize: 11, padding: "2px 6px" }}
-            >
-              ✕
-            </button>
+            <div style={{ display: "flex", gap: 4 }}>
+              <button
+                className="upc-edit-btn"
+                onClick={() => {
+                  if (!onEditEvent) return;
+                  const dateStr = `${monthKey}-${String(selectedDay).padStart(2, "0")}`;
+                  onEditEvent({ date: dateStr });
+                }}
+                title="이 날에 일정 추가"
+                style={{ fontSize: 11, padding: "2px 8px" }}
+              >
+                + 추가
+              </button>
+              <button
+                className="upc-edit-btn"
+                onClick={() => setSelectedDay(null)}
+                title="선택 해제"
+                style={{ fontSize: 11, padding: "2px 6px" }}
+              >
+                ✕
+              </button>
+            </div>
           </div>
         )}
         {visibleEvents.length === 0 && selectedDay != null && (

@@ -66,7 +66,13 @@ const fmtTime = (h, m) => {
 // EVENT MODAL — B + C 하이브리드
 // ============================================================
 export function EventModal({ onClose, editing, onDelete, onSave }: any) {
-  const [mode, setMode] = useState(editing ? "edit" : "quick");
+  // editing.id 있으면 기존 일정 수정.
+  // editing.date 등 일부 필드만 있고 id 없으면 'draft'(신규 + 사전 선택값).
+  // editing 자체가 없으면 빠른 입력(Quick) 모드.
+  const isDraft = !!editing && editing.id == null;
+  const [mode, setMode] = useState(
+    editing && editing.id != null ? "edit" : isDraft ? "edit" : "quick",
+  );
   return (
     <Modal open={true} onClose={onClose}>
       {mode === "edit" && (
@@ -75,6 +81,7 @@ export function EventModal({ onClose, editing, onDelete, onSave }: any) {
           editing={editing}
           onDelete={onDelete}
           onSave={onSave}
+          isDraft={isDraft}
         />
       )}
       {mode === "quick" && (
@@ -95,7 +102,7 @@ export function EventModal({ onClose, editing, onDelete, onSave }: any) {
   );
 }
 
-function EventEdit({ onClose, editing, onDelete, onSave }) {
+function EventEdit({ onClose, editing, onDelete, onSave, isDraft }: any) {
   const cats = EVENT_CATEGORIES;
   const colors = EVENT_COLOR_PALETTE;
   const [title, setTitle] = useState(editing?.title || "");
@@ -118,10 +125,14 @@ function EventEdit({ onClose, editing, onDelete, onSave }) {
       <div className="modal-head">
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <h3>일정 수정</h3>
-            <span className="badge-edit">✏️ EDIT</span>
+            <h3>{isDraft ? "일정 추가" : "일정 수정"}</h3>
+            {!isDraft && <span className="badge-edit">✏️ EDIT</span>}
           </div>
-          <small>일정의 정보를 변경하거나 삭제할 수 있어요</small>
+          <small>
+            {isDraft
+              ? "선택한 날짜로 새 일정을 만들어요"
+              : "일정의 정보를 변경하거나 삭제할 수 있어요"}
+          </small>
         </div>
         <button
           className="icon-btn"
@@ -289,12 +300,14 @@ function EventEdit({ onClose, editing, onDelete, onSave }) {
           </>
         ) : (
           <>
-            <button
-              className="timer-btn ghost-danger"
-              onClick={() => setConfirmDel(true)}
-            >
-              <Icon name="trash" size={13} /> 삭제
-            </button>
+            {!isDraft && (
+              <button
+                className="timer-btn ghost-danger"
+                onClick={() => setConfirmDel(true)}
+              >
+                <Icon name="trash" size={13} /> 삭제
+              </button>
+            )}
             <div style={{ flex: 1 }} />
             <button className="timer-btn" onClick={onClose}>
               취소
