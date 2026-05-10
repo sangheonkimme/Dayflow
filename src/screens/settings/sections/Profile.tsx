@@ -1,6 +1,38 @@
+import { useEffect, useState } from "react";
 import { SettingRow } from "@/screens/settings/SettingRow";
+import { useAuth } from "@/data/auth";
 
 export const ProfileSection = () => {
+  const { user, updateDisplayName } = useAuth();
+  const fallback = user?.email?.split("@")[0] ?? "방문자";
+  const current = user?.displayName ?? fallback;
+
+  const [draft, setDraft] = useState(current);
+  const [saving, setSaving] = useState(false);
+  const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
+
+  // user 가 늦게 로드되면 draft 도 맞춰준다 (단 사용자가 편집 중이면 덮어쓰지 않음)
+  useEffect(() => {
+    setDraft((d) => (d === "" || d === fallback ? current : d));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [current]);
+
+  const dirty = draft.trim() !== current && draft.trim().length > 0;
+
+  const onSave = async () => {
+    if (!dirty || saving) return;
+    setSaving(true);
+    setMsg(null);
+    const r = await updateDisplayName(draft.trim());
+    setSaving(false);
+    setMsg({
+      ok: r.ok,
+      text: r.ok ? "저장됐어요." : r.message ?? "저장에 실패했어요.",
+    });
+  };
+
+  const avatarChar = (current[0] ?? "N").toUpperCase();
+
   return (
     <>
       <div className="settings-group">
@@ -15,35 +47,57 @@ export const ProfileSection = () => {
               background: "var(--pink)",
             }}
           >
-            N
+            {avatarChar}
           </div>
           <div style={{ flex: 1 }}>
-            <b style={{ fontSize: 18 }}>나비</b>
+            <b style={{ fontSize: 18 }}>{current}</b>
             <div className="muted" style={{ fontSize: 13 }}>
-              nabi@dayflow.app · 무료 플랜
+              {user?.email ?? "비로그인"} · 무료 플랜
             </div>
           </div>
-          <button className="timer-btn">사진 변경</button>
+          <button className="timer-btn" disabled>
+            사진 변경
+          </button>
         </div>
-        <SettingRow label="이름">
-          <input className="set-input" defaultValue="나비" />
+        <SettingRow label="이름" sub="대시보드 인사말과 사이드바에 표시돼요">
+          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            <input
+              className="set-input"
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") onSave();
+              }}
+              placeholder={fallback}
+              style={{ flex: 1 }}
+            />
+            <button
+              className="timer-btn primary"
+              onClick={onSave}
+              disabled={!dirty || saving}
+            >
+              {saving ? "저장 중…" : "저장"}
+            </button>
+          </div>
+          {msg && (
+            <div
+              style={{
+                fontSize: 12,
+                marginTop: 6,
+                color: msg.ok ? "var(--green)" : "var(--red)",
+              }}
+            >
+              {msg.text}
+            </div>
+          )}
         </SettingRow>
         <SettingRow label="이메일">
-          <input className="set-input" defaultValue="nabi@dayflow.app" />
-        </SettingRow>
-        <SettingRow label="자기소개" sub="대시보드 상단에 표시됩니다">
-          <textarea
+          <input
             className="set-input"
-            rows={2}
-            defaultValue="디자이너 / 일과 삶의 균형을 추구합니다."
+            value={user?.email ?? ""}
+            readOnly
+            disabled
           />
-        </SettingRow>
-        <SettingRow label="시간대">
-          <select className="set-input" defaultValue="seoul">
-            <option value="seoul">(GMT+9) 서울</option>
-            <option>도쿄</option>
-            <option>뉴욕</option>
-          </select>
         </SettingRow>
       </div>
     </>
