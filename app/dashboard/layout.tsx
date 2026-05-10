@@ -6,12 +6,12 @@
 // Phase 3 에서 RSC + HydrationBoundary 도입 시 일부 페이지는 서버 렌더 가능.
 
 // 대시보드 공통 chrome 스타일.
-// LoanSearch.module.css 는 SearchOverlay/LoanCalcPage 가 lazy 로드 시 자동 동반.
+// SearchOverlay 는 src/components/SearchOverlay 로 분리됨 (Phase 1).
 // mobile-app.css 는 Phase 4b stage-7 에서 mobile.module.css 로 완전 이전됨 (git rm).
 // mobile.css 는 데스크탑 chrome 의 모바일 미디어쿼리 — 글로벌 잔존.
 import "@/styles/mobile.css";
 
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { Sidebar } from "@/components/Shell";
 import {
@@ -34,8 +34,10 @@ import { configureDataSource, getReadyPromise } from "@/data/source";
 import { queryClient } from "@/lib/query-client";
 import type { AccentColor } from "@/types";
 
+import type { SearchEntry } from "@/components/SearchOverlay/SearchOverlay";
+
 const SearchOverlay = lazy(() =>
-  import("@/screens/loan/LoanSearch").then((m) => ({
+  import("@/components/SearchOverlay/SearchOverlay").then((m) => ({
     default: m.SearchOverlay,
   })),
 );
@@ -77,6 +79,13 @@ export default function AppLayout({
   const { upsert: upsertTxn, remove: removeTxn } = useTransactions();
   const { upsert: upsertEvent, remove: removeEvent } = useEvents();
   const [searchOpen, setSearchOpen] = useState(false);
+  const closeSearch = useCallback(() => setSearchOpen(false), []);
+  const navigateFromSearch = useCallback(
+    (entry: SearchEntry) => {
+      router.push(entry.id === "home" ? "/dashboard" : `/dashboard/${entry.id}`);
+    },
+    [router],
+  );
 
   const isNarrowViewport = useMediaQuery("(max-width: 768px)");
   const isMobile = tweaks.forceMobile || isNarrowViewport;
@@ -181,10 +190,8 @@ export default function AppLayout({
         <Suspense fallback={null}>
           <SearchOverlay
             open={searchOpen}
-            onClose={() => setSearchOpen(false)}
-            onNavigate={(key: string) =>
-              router.push(key === "home" ? "/dashboard" : `/dashboard/${key}`)
-            }
+            onClose={closeSearch}
+            onNavigate={navigateFromSearch}
           />
         </Suspense>
       )}
