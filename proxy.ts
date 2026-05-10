@@ -1,12 +1,12 @@
-// 보호 라우트 미들웨어. /dashboard/* 진입 전 세션 갱신 + 미인증 시 /login 리다이렉트.
-// Phase 3: 인증 게이트 활성화.
+// 보호 라우트 Edge proxy. /dashboard/* 진입 전 세션 갱신 + 미인증 시 /login 리다이렉트.
+// Next 16: middleware 컨벤션이 proxy 로 리네임됨. 동작은 동일.
 
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 const PROTECTED_PREFIX = "/dashboard";
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -46,7 +46,7 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  // /dashboard/* 만 보호. 나머지(/, /login, /tools/* 등)는 미들웨어를 통과시켜
+  // /dashboard/* 만 보호. 나머지(/, /login, /tools/* 등)는 proxy 를 통과시켜
   // 매 요청마다 Supabase auth 왕복이 붙는 비용을 제거.
   matcher: ["/dashboard/:path*"],
 };

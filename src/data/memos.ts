@@ -18,7 +18,6 @@ export interface MemoFolder {
   id: string;
   label: string;
   icon: string;
-  count: number;
   color?: string;
 }
 
@@ -209,32 +208,12 @@ export const MEMO_SEEDS: MemoDoc[] = [
 ];
 
 export const FOLDERS: MemoFolder[] = [
-  { id: "all", label: "전체 메모", icon: "note", count: 7 },
-  { id: "starred", label: "즐겨찾기", icon: "star", count: 2 },
-  { id: "work", label: "업무", icon: "folder", count: 2, color: "#e89aac" },
-  { id: "personal", label: "개인", icon: "folder", count: 3, color: "#8ec0d6" },
-  {
-    id: "study",
-    label: "공부 · 독서",
-    icon: "folder",
-    count: 2,
-    color: "#a8d09b",
-  },
-  { id: "trash", label: "휴지통", icon: "trash", count: 0 },
-];
-
-export const ALL_TAGS = [
-  "디자인",
-  "토큰",
-  "회고",
-  "성장",
-  "카페",
-  "주말",
-  "기획",
-  "아이디어",
-  "독서",
-  "가족",
-  "커리어",
+  { id: "all", label: "전체 메모", icon: "note" },
+  { id: "starred", label: "즐겨찾기", icon: "star" },
+  { id: "work", label: "업무", icon: "folder", color: "#e89aac" },
+  { id: "personal", label: "개인", icon: "folder", color: "#8ec0d6" },
+  { id: "study", label: "공부 · 독서", icon: "folder", color: "#a8d09b" },
+  { id: "trash", label: "휴지통", icon: "trash" },
 ];
 
 // ─────────────────────────────────────────────
@@ -303,4 +282,39 @@ export function useMemos(folder?: string): MemosView {
     return all.filter((m) => m.folder === folder);
   }, [all, folder]);
   return useMemo(() => ({ ...view, data, all }), [view, data, all]);
+}
+
+// ─────────────────────────────────────────────
+// Facets — 사이드바 카운트/태그 클라이언트 derive
+// useMemos() 와 같은 query key 캐시를 공유하므로 추가 fetch 없음.
+// 전체 메모를 한 번 순회 (O(N)) — 보통 N<수백이라 무시할 수준.
+// 데이터셋이 1k+ 로 커지면 Supabase 집계(group by folder, distinct tags) 로 분리 고려.
+// ─────────────────────────────────────────────
+export interface MemoFacets {
+  /** 폴더 id → 메모 수. starred/trash 는 별도 키로 노출. */
+  folderCount: Record<string, number>;
+  starredCount: number;
+  totalCount: number;
+  /** 현재 메모에서 실제로 사용 중인 태그 (가나다 정렬, 중복 제거) */
+  tags: string[];
+}
+
+export function useMemoFacets(): MemoFacets {
+  const { all } = useMemos();
+  return useMemo(() => {
+    const folderCount: Record<string, number> = {};
+    const tagSet = new Set<string>();
+    let starredCount = 0;
+    for (const m of all) {
+      folderCount[m.folder] = (folderCount[m.folder] ?? 0) + 1;
+      if (m.starred) starredCount++;
+      for (const t of m.tags) tagSet.add(t);
+    }
+    return {
+      folderCount,
+      starredCount,
+      totalCount: all.length,
+      tags: [...tagSet].sort((a, b) => a.localeCompare(b, "ko")),
+    };
+  }, [all]);
 }
