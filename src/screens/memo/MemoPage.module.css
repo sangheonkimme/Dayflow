@@ -444,8 +444,8 @@
     repeating-linear-gradient(
       180deg,
       transparent 0,
-      transparent 31px,
-      rgba(180, 160, 110, 0.16) 32px
+      transparent 27px,
+      rgba(180, 160, 110, 0.16) 28px
     ),
     var(--card);
   position: relative;
@@ -570,7 +570,7 @@
   outline: none;
   font-family: var(--sans);
   font-size: 14.5px;
-  line-height: 32px; /* line up with paper rule lines */
+  line-height: 28px; /* line up with paper rule lines */
   color: var(--ink);
   letter-spacing: -0.005em;
   width: 100%;
@@ -587,13 +587,13 @@
 .memoBody :global(blockquote),
 .memoBody :global(pre) {
   margin: 0;
-  line-height: 32px;
+  line-height: 28px;
 }
 .memoBody :global(h1),
 .memoBody :global(h2),
 .memoBody :global(h3) {
   margin: 0;
-  line-height: 32px;
+  line-height: 28px;
   font-weight: 800;
   letter-spacing: -0.02em;
   color: var(--ink);
@@ -660,7 +660,7 @@
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
-  height: 32px; /* match memoBody line-height for first-line center alignment */
+  height: 28px; /* match memoBody line-height for first-line center alignment */
   margin: 0;
 }
 .memoBody :global(ul[data-type="taskList"] li > label > input[type="checkbox"]) {
