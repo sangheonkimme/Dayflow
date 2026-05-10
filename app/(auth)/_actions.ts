@@ -43,6 +43,7 @@ export async function signUpAction(
 ): Promise<AuthActionState> {
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
+  const name = String(formData.get("name") ?? "").trim();
   if (!email.includes("@") || password.length < 6) {
     return {
       ok: false,
@@ -51,7 +52,11 @@ export async function signUpAction(
   }
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.signUp({ email, password });
+  const { error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: name ? { data: { display_name: name } } : undefined,
+  });
   if (error) return { ok: false, message: error.message };
 
   revalidatePath("/", "layout");

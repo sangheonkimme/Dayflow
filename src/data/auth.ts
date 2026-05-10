@@ -12,6 +12,7 @@ import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 export interface AuthUser {
   id: string;
   email: string;
+  displayName?: string;
 }
 
 export type AuthStatus = "unknown" | "authed" | "guest";
@@ -21,9 +22,14 @@ export interface AuthView {
   status: AuthStatus;
   /** 사용자 행동 결과: 다음 화면을 어디로 보낼지 알려준다. */
   signIn: (email: string, password: string) => Promise<AuthResult>;
-  signUp: (email: string, password: string) => Promise<AuthResult>;
+  signUp: (
+    email: string,
+    password: string,
+    displayName?: string,
+  ) => Promise<AuthResult>;
   sendPasswordReset: (email: string) => Promise<AuthResult>;
   signOut: () => Promise<void>;
+  updateDisplayName: (name: string) => Promise<AuthResult>;
 }
 
 export interface AuthResult {
@@ -92,11 +98,21 @@ export function useAuth(): AuthView {
     mounted.current = true;
     if (!supabase) return;
 
+    const toAuthUser = (u: {
+      id: string;
+      email: string;
+      user_metadata?: Record<string, unknown> | null;
+    }): AuthUser => {
+      const meta = u.user_metadata ?? {};
+      const dn = typeof meta.display_name === "string" ? meta.display_name : undefined;
+      return { id: u.id, email: u.email, displayName: dn };
+    };
+
     supabase.auth.getSession().then(({ data }) => {
       if (!mounted.current) return;
       const u = data.session?.user;
       if (u && u.email) {
-        setUser({ id: u.id, email: u.email });
+        setUser(toAuthUser({ id: u.id, email: u.email, user_metadata: u.user_metadata }));
         setStatus("authed");
       } else {
         setStatus("guest");
@@ -107,7 +123,7 @@ export function useAuth(): AuthView {
       if (!mounted.current) return;
       const u = session?.user;
       if (u && u.email) {
-        setUser({ id: u.id, email: u.email });
+        setUser(toAuthUser({ id: u.id, email: u.email, user_metadata: u.user_metadata }));
         setStatus("authed");
       } else {
         setUser(null);
@@ -144,9 +160,18 @@ export function useAuth(): AuthView {
 
   // ── signUp ──
   const signUp = useCallback(
-    async (email: string, password: string): Promise<AuthResult> => {
+    async (
+      email: string,
+      password: string,
+      displayName?: string,
+    ): Promise<AuthResult> => {
+      const dn = displayName?.trim() || undefined;
       if (supabase) {
-        const { data, error } = await supabase.auth.signUp({ email, password });
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: dn ? { data: { display_name: dn } } : undefined,
+        });
         if (error) return { ok: false, message: translateError(error.message) };
         // confirm 이메일이 필요한 경우 session 이 null
         if (!data.session) {
@@ -155,7 +180,7 @@ export function useAuth(): AuthView {
         return { ok: true };
       }
       // mock: 즉시 로그인 처리
-      const next: AuthUser = { id: "mock-user", email };
+      const next: AuthUser = { id: "mock-user", email, displayName: dn };
       saveMock(next);
       setUser(next);
       setStatus("authed");
@@ -182,6 +207,38 @@ export function useAuth(): AuthView {
     [],
   );
 
+  // ── updateDisplayName ──
+  const updateDisplayName = useCallback(
+    async (name: string): Promise<AuthResult> => {
+      const dn = name.trim();
+      if (!dn) return { ok: false, message: "이름을 입력해 주세요." };
+      if (supabase) {
+        const { error } = await supabase.auth.updateUser({
+          data: { display_name: dn },
+        });
+        if (error) return { ok: false, message: translateError(error.message) };
+        // onAuthStateChange(USER_UPDATED) 가 setUser 처리.
+        // profiles 테이블은 클라가 직접 sync (트리거는 INSERT 전용).
+        const { data } = await supabase.auth.getUser();
+        const uid = data.user?.id;
+        if (uid) {
+          await supabase
+            .from("profiles")
+            .update({ display_name: dn })
+            .eq("id", uid);
+        }
+        return { ok: true };
+      }
+      // mock
+      if (!user) return { ok: false, message: "로그인 정보를 찾을 수 없어요." };
+      const next: AuthUser = { ...user, displayName: dn };
+      saveMock(next);
+      setUser(next);
+      return { ok: true };
+    },
+    [user],
+  );
+
   // ── signOut ──
   const signOut = useCallback(async () => {
     if (supabase) {
@@ -194,5 +251,13 @@ export function useAuth(): AuthView {
     setStatus("guest");
   }, []);
 
-  return { user, status, signIn, signUp, sendPasswordReset, signOut };
+  return {
+    user,
+    status,
+    signIn,
+    signUp,
+    sendPasswordReset,
+    signOut,
+    updateDisplayName,
+  };
 }

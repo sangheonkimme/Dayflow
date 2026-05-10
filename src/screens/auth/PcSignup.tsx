@@ -27,7 +27,7 @@ export const PCSignup = ({ lang = "ko", dark = false, onSwitch }: any) => {
     setConfirmMsg(null);
     setSubmitting(true);
     try {
-      const r = await signUp(email, pwd);
+      const r = await signUp(email, pwd, name);
       if (!r.ok) {
         setErrorMsg(r.message || "가입에 실패했어요.");
       } else if (r.needsEmailConfirmation) {

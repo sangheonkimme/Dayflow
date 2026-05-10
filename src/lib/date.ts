@@ -28,6 +28,16 @@ export const formatDateWithDow = (date: DateInput): string => {
   return `${mm}.${dd} (${DOW[d.getDay()]})`;
 };
 
+/** "M월 D일 HH:MM" — sticky-note style absolute timestamp */
+export const formatDateTimeShort = (date: DateInput): string => {
+  const d = date instanceof Date ? date : new Date(date);
+  const m = d.getMonth() + 1;
+  const day = d.getDate();
+  const hh = String(d.getHours()).padStart(2, "0");
+  const mm = String(d.getMinutes()).padStart(2, "0");
+  return `${m}월 ${day}일 ${hh}:${mm}`;
+};
+
 /**
  * "오늘" / "어제" / "MM.DD (요일)"
  * Returns relative label if the given date is today or yesterday relative to `today`.

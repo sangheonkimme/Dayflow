@@ -27,6 +27,31 @@ function MemoPage() {
   const facets = useMemoFacets();
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("updated"); // updated | title | created
+  const [quickOpen, setQuickOpen] = useState(false);
+
+  // Cmd/Ctrl+K — 빠른 검색 토글.
+  // dashboard/layout 도 같은 단축키로 전역 SearchOverlay 를 띄우기 때문에
+  // capture phase + stopImmediatePropagation 으로 메모 페이지에 있을 동안엔
+  // 메모 빠른 검색만 동작하도록 가로챈다.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        setQuickOpen((v) => !v);
+      }
+    };
+    window.addEventListener("keydown", onKey, { capture: true });
+    return () =>
+      window.removeEventListener("keydown", onKey, { capture: true });
+  }, []);
+
+  const openMemoFromQuick = (id: number) => {
+    setActiveId(id);
+    setFolder("all"); // 다른 폴더에 있던 메모도 리스트에 보이도록
+    setSearch("");
+    setQuickOpen(false);
+  };
 
   const folderCount = (id: string): number => {
     if (id === "all") return facets.totalCount;
@@ -115,7 +140,11 @@ function MemoPage() {
           </div>
         </div>
         <div className="row" style={{ gap: 8 }}>
-          <button className="timer-btn">
+          <button
+            className="timer-btn"
+            onClick={() => setQuickOpen(true)}
+            title="빠른 검색 (⌘K)"
+          >
             <Icon name="search" size={14} />
             빠른 검색
           </button>
@@ -227,6 +256,19 @@ function MemoPage() {
                   >
                     <Icon name={m.starred ? "starFilled" : "star"} size={13} />
                   </button>
+                  <button
+                    className={styles.memoTrash}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (confirm(`"${m.title}" 메모를 삭제할까요?`)) {
+                        removeMemo(m.id);
+                      }
+                    }}
+                    title="삭제"
+                    aria-label={`${m.title} 메모 삭제`}
+                  >
+                    <Icon name="trash" size={13} />
+                  </button>
                 </div>
                 <p className={styles.memoExcerpt}>{memoExcerpt(m)}</p>
                 <div className={styles.memoMeta}>
@@ -266,6 +308,14 @@ function MemoPage() {
           )}
         </section>
       </div>
+
+      {quickOpen && (
+        <MemoQuickSearch
+          memos={memos}
+          onClose={() => setQuickOpen(false)}
+          onPick={openMemoFromQuick}
+        />
+      )}
     </div>
   );
 }
@@ -319,7 +369,6 @@ function MemoEditor({
     onCommit: onUpdateTitle,
   });
   const [historyOpen, setHistoryOpen] = useState(false);
-  const [moreOpen, setMoreOpen] = useState(false);
   const [tagInputOpen, setTagInputOpen] = useState(false);
   const [tagDraft, setTagDraft] = useState("");
   const tagInputRef = useRef<HTMLInputElement | null>(null);
@@ -542,10 +591,14 @@ function MemoEditor({
           <button
             type="button"
             className="icon-btn"
-            onClick={() => setMoreOpen((v) => !v)}
-            title="더보기"
+            onClick={async () => {
+              if (!confirm(`"${active.title}" 메모를 삭제할까요?`)) return;
+              flushBody();
+              await onDelete();
+            }}
+            title="삭제"
           >
-            <Icon name="more" size={15} />
+            <Icon name="trash" size={15} />
           </button>
         </div>
       </div>
@@ -697,43 +750,8 @@ function MemoEditor({
 
       {historyOpen && (
         <div
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(0,0,0,0.4)",
-            display: "grid",
-            placeItems: "center",
-            zIndex: 100,
-          }}
+          style={{ position: "fixed", inset: 0, zIndex: 100 }}
           onClick={() => setHistoryOpen(false)}
-        >
-          <div
-            style={{
-              background: "var(--card-elev)",
-              padding: 24,
-              borderRadius: 12,
-              maxWidth: 360,
-              fontSize: 13,
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div style={{ fontWeight: 600, marginBottom: 8 }}>편집 기록</div>
-            <div style={{ color: "var(--ink-mute)" }}>
-              버전 기록은 곧 추가될 예정이에요. 현재는 마지막 편집 시각만
-              표시됩니다 — {memoUpdatedLabel(active)}.
-            </div>
-          </div>
-        </div>
-      )}
-
-      {moreOpen && (
-        <div
-          style={{
-            position: "fixed",
-            inset: 0,
-            zIndex: 100,
-          }}
-          onClick={() => setMoreOpen(false)}
         >
           <div
             style={{
@@ -743,38 +761,183 @@ function MemoEditor({
               background: "var(--card-elev)",
               borderRadius: 10,
               boxShadow: "var(--shadow-md)",
-              padding: 6,
+              padding: 14,
               fontSize: 13,
-              minWidth: 160,
+              minWidth: 240,
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            <button
-              type="button"
+            <div style={{ fontWeight: 600, marginBottom: 10 }}>이 메모 정보</div>
+            <dl
               style={{
-                display: "block",
-                width: "100%",
-                textAlign: "left",
-                padding: "8px 12px",
-                border: "none",
-                background: "transparent",
-                cursor: "pointer",
-                borderRadius: 6,
-                color: "var(--red)",
-              }}
-              onClick={async () => {
-                setMoreOpen(false);
-                if (!confirm(`"${active.title}" 메모를 삭제할까요?`)) return;
-                flushBody();
-                await onDelete();
+                display: "grid",
+                gridTemplateColumns: "auto 1fr",
+                gap: "6px 14px",
+                margin: 0,
               }}
             >
-              휴지통으로 이동
-            </button>
+              <dt style={{ color: "var(--ink-mute)" }}>마지막 편집</dt>
+              <dd style={{ margin: 0 }}>{memoUpdatedLabel(active)}</dd>
+              <dt style={{ color: "var(--ink-mute)" }}>분량</dt>
+              <dd style={{ margin: 0 }}>
+                {charCount}자 · {wordCount}단어
+              </dd>
+              <dt style={{ color: "var(--ink-mute)" }}>읽는 시간</dt>
+              <dd style={{ margin: 0 }}>
+                약 {Math.max(1, Math.round(charCount / 400))}분
+              </dd>
+              <dt style={{ color: "var(--ink-mute)" }}>폴더</dt>
+              <dd style={{ margin: 0 }}>{folderLabel(active.folder)}</dd>
+              <dt style={{ color: "var(--ink-mute)" }}>태그</dt>
+              <dd style={{ margin: 0 }}>
+                {active.tags.length === 0
+                  ? "—"
+                  : active.tags.map((t) => `#${t}`).join(" ")}
+              </dd>
+            </dl>
           </div>
         </div>
       )}
+
     </>
+  );
+}
+
+// ============================================================
+// MemoQuickSearch — Cmd/Ctrl+K command-palette 스타일 빠른 검색
+// 제목/태그/본문에서 매칭. ↑↓ 이동, Enter 선택, Esc 닫기.
+// ============================================================
+interface MemoQuickSearchProps {
+  memos: readonly import("@/types").MemoDoc[];
+  onClose: () => void;
+  onPick: (id: number) => void;
+}
+
+function MemoQuickSearch({ memos, onClose, onPick }: MemoQuickSearchProps) {
+  const [q, setQ] = useState("");
+  const [cursor, setCursor] = useState(0);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
+
+  const results = useMemo(() => {
+    const query = q.trim().toLowerCase();
+    if (!query) {
+      // 비어 있을 땐 최근/즐겨찾기 우선 8개 노출
+      return [...memos]
+        .sort((a, b) => {
+          if (a.starred !== b.starred) return a.starred ? -1 : 1;
+          if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
+          return 0;
+        })
+        .slice(0, 8);
+    }
+    // 매칭 점수: 제목 hit > 태그 hit > 본문 hit
+    const scored = memos
+      .map((m) => {
+        const title = m.title.toLowerCase();
+        const body = (m.body ?? "").toLowerCase();
+        const tagHit = m.tags.some((t) => t.toLowerCase().includes(query));
+        let score = 0;
+        if (title.includes(query)) score += title.startsWith(query) ? 30 : 20;
+        if (tagHit) score += 10;
+        if (body.includes(query)) score += 5;
+        return { m, score };
+      })
+      .filter((x) => x.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 12)
+      .map((x) => x.m);
+    return scored;
+  }, [memos, q]);
+
+  // 결과 갱신 시 cursor reset
+  useEffect(() => {
+    setCursor(0);
+  }, [q]);
+
+  const onKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Escape") {
+      e.preventDefault();
+      onClose();
+    } else if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setCursor((c) => Math.min(c + 1, results.length - 1));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setCursor((c) => Math.max(c - 1, 0));
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      const picked = results[cursor];
+      if (picked) onPick(picked.id);
+    }
+  };
+
+  return (
+    <div
+      className={styles.quickBackdrop}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div className={styles.quickPanel} role="dialog" aria-label="빠른 검색">
+        <div className={styles.quickInputRow}>
+          <Icon name="search" size={14} />
+          <input
+            ref={inputRef}
+            className={styles.quickInput}
+            placeholder="제목·태그·본문 검색…"
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            onKeyDown={onKeyDown}
+          />
+          <kbd className={styles.quickKbd}>Esc</kbd>
+        </div>
+        <div className={styles.quickResults}>
+          {results.length === 0 && (
+            <div className={styles.quickEmpty}>일치하는 메모가 없어요.</div>
+          )}
+          {results.map((m, i) => (
+            <button
+              key={m.id}
+              type="button"
+              className={`${styles.quickItem}${i === cursor ? ` ${styles.on}` : ""}`}
+              onMouseEnter={() => setCursor(i)}
+              onClick={() => onPick(m.id)}
+            >
+              <span className={styles.quickItemTitle}>{m.title}</span>
+              <span className={styles.quickItemMeta}>
+                {folderLabel(m.folder)}
+                {m.tags.length > 0 && (
+                  <>
+                    <span className={styles.dotSep}>·</span>
+                    {m.tags.slice(0, 3).map((t) => (
+                      <span key={t} className={styles.quickItemTag}>
+                        #{t}
+                      </span>
+                    ))}
+                  </>
+                )}
+              </span>
+              <span className={styles.quickItemExcerpt}>{memoExcerpt(m, 80)}</span>
+            </button>
+          ))}
+        </div>
+        <div className={styles.quickFoot}>
+          <span>
+            <kbd>↑</kbd> <kbd>↓</kbd> 이동
+          </span>
+          <span>
+            <kbd>Enter</kbd> 열기
+          </span>
+          <span>
+            <kbd>⌘K</kbd> 토글
+          </span>
+        </div>
+      </div>
+    </div>
   );
 }
 

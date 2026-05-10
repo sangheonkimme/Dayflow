@@ -13,7 +13,8 @@ interface SidebarProps {
 
 function Sidebar({ active, onSelect }: SidebarProps) {
   const { user, signOut } = useAuth();
-  const displayName = user?.email?.split("@")[0] ?? "나비";
+  const displayName =
+    user?.displayName ?? user?.email?.split("@")[0] ?? "나비";
   const avatarChar = (displayName[0] ?? "N").toUpperCase();
   // settings is reachable via gear icon next to user name in the side-foot,
   // so it doesn't need its own nav entry.
@@ -153,11 +154,14 @@ interface TopbarProps {
 function Topbar({ dark, onToggleDark, onSearch }: TopbarProps) {
   const today = new Date();
   const weekday = DOW[today.getDay()];
+  const { user } = useAuth();
+  const displayName =
+    user?.displayName ?? user?.email?.split("@")[0] ?? "방문자";
   return (
     <div className={s.topbar}>
       <div>
         <h1>
-          좋은 아침이에요, 나비{" "}
+          좋은 아침이에요, {displayName}{" "}
           <span className="hand">— let's get it done</span>
         </h1>
         <div className={s.topbarSub}>
