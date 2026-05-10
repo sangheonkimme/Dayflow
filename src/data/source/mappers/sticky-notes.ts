@@ -4,7 +4,6 @@
 
 import type { StickyNote, StickyColor } from "@/types";
 import type { TablesInsert, Tables } from "@/data/source/db.types";
-import { getRelativeDateLabel } from "@/lib/date";
 
 type Row = Tables<"sticky_notes">;
 type Insert = TablesInsert<"sticky_notes">;
@@ -20,7 +19,8 @@ export function toDomain(row: Row): StickyNote {
     title: nfc(row.title),
     emoji: row.emoji ?? undefined,
     text: nfc(row.body),
-    date: getRelativeDateLabel(row.updated_at), // 오늘/어제/MM.DD 상대 라벨
+    // ISO 그대로 보관 — 표시는 stickyDateLabel(formatDateTimeShort) 가 처리.
+    date: row.updated_at,
   };
 }
 

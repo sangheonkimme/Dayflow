@@ -26,7 +26,7 @@ export function StickyNotes() {
       title: "새 메모",
       emoji: "📝",
       text: "",
-      date: "방금",
+      date: new Date().toISOString(),
       author: "나",
     });
   };
