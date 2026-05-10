@@ -105,6 +105,12 @@
   color: var(--yellow);
   border-color: var(--ink);
 }
+.tagEmpty {
+  font-size: 11px;
+  color: var(--ink-mute);
+  padding: 3px 6px;
+  font-style: italic;
+}
 
 .memoQuote {
   margin-top: 22px;
@@ -369,6 +375,14 @@
   width: 32px;
   height: 32px;
 }
+/* 별/핀 토글 시각화 — Icon 은 stroke-only 라 fill: currentColor 로 솔리드 처리.
+   aria-pressed 셀렉터는 핀·별 버튼에만 붙어있어 다른 .icon-btn 엔 영향 없음. */
+.memoEditActions :global(.icon-btn[aria-pressed="true"]) {
+  color: var(--ink);
+}
+.memoEditActions :global(.icon-btn[aria-pressed="true"] svg) {
+  fill: currentColor;
+}
 
 .memoToolbar {
   display: flex;
@@ -523,6 +537,22 @@
   color: var(--ink);
   border-color: var(--ink);
 }
+.memoTagInput {
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  background: var(--bg-paper);
+  border: 1px solid var(--ink);
+  border-radius: 99px;
+  color: var(--ink);
+  outline: none;
+  width: 120px;
+}
+.memoTagInput::placeholder {
+  color: var(--ink-mute);
+  font-weight: 500;
+}
 
 /* host wrapper for Tiptap EditorContent — Tiptap 은 내부에 .ProseMirror div 를 만든다. */
 .memoBodyHost {
@@ -628,12 +658,27 @@
 }
 .memoBody :global(ul[data-type="taskList"] li > label) {
   flex-shrink: 0;
-  margin-top: 8px;
+  display: inline-flex;
+  align-items: center;
+  height: 32px; /* match memoBody line-height for first-line center alignment */
+  margin: 0;
+}
+.memoBody :global(ul[data-type="taskList"] li > label > input[type="checkbox"]) {
+  margin: 0;
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
 }
 .memoBody :global(ul[data-type="taskList"] li > div) {
   flex: 1;
+  min-width: 0;
 }
-.memoBody :global(p.is-editor-empty:first-child::before) {
+.memoBody :global(ul[data-type="taskList"] li > div > p) {
+  margin: 0;
+}
+/* Tiptap Placeholder — 빈 노드의 data-placeholder 속성을 ::before 로 노출.
+   첫 노드만 보이도록 .is-editor-empty + :first-child 조합 사용 (showOnlyCurrent: false). */
+.memoBody :global(.is-editor-empty:first-child::before) {
   content: attr(data-placeholder);
   color: var(--ink-mute);
   font-style: italic;

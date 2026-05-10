@@ -1,7 +1,7 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import { Icon } from "@/components/Icon";
-import { useMemos } from "@/data/memos";
-import { FOLDERS, ALL_TAGS } from "@/data/memos";
+import { useMemos, useMemoFacets } from "@/data/memos";
+import { FOLDERS } from "@/data/memos";
 import { memoExcerpt, memoWordCount, memoUpdatedLabel } from "@/data/memos";
 import { useDraftField } from "@/lib/useDraftField";
 import { useEditor, EditorContent } from "@tiptap/react";
@@ -12,6 +12,7 @@ import TaskList from "@tiptap/extension-task-list";
 import TaskItem from "@tiptap/extension-task-item";
 import { Markdown } from "tiptap-markdown";
 import CharacterCount from "@tiptap/extension-character-count";
+import Placeholder from "@tiptap/extension-placeholder";
 import styles from "./MemoPage.module.css";
 
 // ============================================================
@@ -22,9 +23,17 @@ import styles from "./MemoPage.module.css";
 function MemoPage() {
   const [folder, setFolder] = useState("all");
   const [activeId, setActiveId] = useState(1);
-  const { all: memos, upsert } = useMemos();
+  const { all: memos, upsert, remove } = useMemos();
+  const facets = useMemoFacets();
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("updated"); // updated | title | created
+
+  const folderCount = (id: string): number => {
+    if (id === "all") return facets.totalCount;
+    if (id === "starred") return facets.starredCount;
+    if (id === "trash") return 0;
+    return facets.folderCount[id] ?? 0;
+  };
 
   const filtered = useMemo(() => {
     let list = memos;
@@ -61,6 +70,14 @@ function MemoPage() {
   };
   const updateTitle = (title: string) => {
     if (active) upsert({ ...active, title });
+  };
+  const updateTags = (tags: string[]) => {
+    if (active) upsert({ ...active, tags });
+  };
+
+  const removeMemo = async (id: number) => {
+    await remove(id);
+    setActiveId((prev) => (prev === id ? 0 : prev));
   };
 
   const newMemo = () => {
@@ -126,7 +143,7 @@ function MemoPage() {
                   <Icon name={f.icon} size={15} />
                 </span>
                 <span className={styles.folderLabel}>{f.label}</span>
-                <span className={styles.folderCount}>{f.count}</span>
+                <span className={styles.folderCount}>{folderCount(f.id)}</span>
               </li>
             ))}
           </ul>
@@ -135,8 +152,15 @@ function MemoPage() {
             태그
           </div>
           <div className={styles.tagCloud}>
-            {ALL_TAGS.map((t) => (
-              <span key={t} className={styles.tagPill}>
+            {facets.tags.length === 0 && (
+              <span className={styles.tagEmpty}>아직 태그가 없어요</span>
+            )}
+            {facets.tags.map((t) => (
+              <span
+                key={t}
+                className={styles.tagPill}
+                onClick={() => setSearch(`#${t}`)}
+              >
                 #{t}
               </span>
             ))}
@@ -191,7 +215,7 @@ function MemoPage() {
                 onClick={() => setActiveId(m.id)}
               >
                 <div className={styles.memoCardHead}>
-                  {m.pinned && <Icon name="pin" size={12} />}
+                  {m.pinned && <Icon name="pinFilled" size={12} />}
                   <h4>{m.title}</h4>
                   <button
                     className={`${styles.memoStar}${m.starred ? ` ${styles.starred}` : ""}`}
@@ -201,14 +225,12 @@ function MemoPage() {
                     }}
                     title="즐겨찾기"
                   >
-                    <Icon name="star" size={13} />
+                    <Icon name={m.starred ? "starFilled" : "star"} size={13} />
                   </button>
                 </div>
                 <p className={styles.memoExcerpt}>{memoExcerpt(m)}</p>
                 <div className={styles.memoMeta}>
                   <span>{memoUpdatedLabel(m)}</span>
-                  <span className={styles.dotSep}>·</span>
-                  <span>{memoWordCount(m)}자</span>
                   <span className={styles.memoTagRow}>
                     {m.tags.slice(0, 2).map((t) => (
                       <span key={t} className={styles.memoMiniTag}>
@@ -236,8 +258,10 @@ function MemoPage() {
               active={active}
               onUpdateTitle={updateTitle}
               onUpdateBody={updateBody}
+              onUpdateTags={updateTags}
               onTogglePin={() => togglePin(active.id)}
               onToggleStar={() => toggleStar(active.id)}
+              onDelete={() => removeMemo(active.id)}
             />
           )}
         </section>
@@ -275,16 +299,20 @@ interface MemoEditorProps {
   active: import("@/types").MemoDoc;
   onUpdateTitle: (title: string) => void;
   onUpdateBody: (body: string) => void;
+  onUpdateTags: (tags: string[]) => void;
   onTogglePin: () => void;
   onToggleStar: () => void;
+  onDelete: () => Promise<void>;
 }
 
 function MemoEditor({
   active,
   onUpdateTitle,
   onUpdateBody,
+  onUpdateTags,
   onTogglePin,
   onToggleStar,
+  onDelete,
 }: MemoEditorProps) {
   const titleField = useDraftField<string>({
     value: active.title,
@@ -292,6 +320,26 @@ function MemoEditor({
   });
   const [historyOpen, setHistoryOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
+  const [tagInputOpen, setTagInputOpen] = useState(false);
+  const [tagDraft, setTagDraft] = useState("");
+  const tagInputRef = useRef<HTMLInputElement | null>(null);
+
+  const commitTag = () => {
+    const next = tagDraft.trim().replace(/^#+/, "");
+    setTagDraft("");
+    setTagInputOpen(false);
+    if (!next) return;
+    if (active.tags.includes(next)) return;
+    onUpdateTags([...active.tags, next]);
+  };
+  const removeTag = (t: string) => {
+    onUpdateTags(active.tags.filter((x) => x !== t));
+  };
+  const openTagInput = () => {
+    setTagInputOpen(true);
+    setTagDraft("");
+    requestAnimationFrame(() => tagInputRef.current?.focus());
+  };
 
   // 본문 편집은 Tiptap (ProseMirror) — 한국어 IME 는 ProseMirror 가 자체 처리.
   // 자동 저장은 update 이벤트 + 디바운스(800ms) 로 onUpdateBody(markdown) 호출.
@@ -326,6 +374,14 @@ function MemoEditor({
       TaskItem.configure({ nested: true }),
       Markdown.configure({ html: false, breaks: true }),
       CharacterCount,
+      Placeholder.configure({
+        placeholder: ({ node }) =>
+          node.type.name === "heading"
+            ? "제목을 입력하세요…"
+            : "여기에 적어보세요. 떠오르는 대로, 부담없이.",
+        showOnlyWhenEditable: true,
+        showOnlyCurrent: false,
+      }),
     ],
     content: active.body,
     editorProps: {
@@ -403,10 +459,26 @@ function MemoEditor({
   const isActive = (name: string, attrs?: Record<string, unknown>) =>
     editor ? editor.isActive(name, attrs) : false;
 
-  const copyShareLink = () => {
+  const [copied, setCopied] = useState(false);
+  const copiedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const copyShareLink = async () => {
     const url = `${window.location.origin}/dashboard/memo?id=${active.id}`;
-    navigator.clipboard?.writeText(url);
+    try {
+      await navigator.clipboard.writeText(url);
+    } catch {
+      window.prompt("아래 링크를 복사하세요", url);
+      return;
+    }
+    setCopied(true);
+    if (copiedTimerRef.current) clearTimeout(copiedTimerRef.current);
+    copiedTimerRef.current = setTimeout(() => setCopied(false), 1800);
   };
+  useEffect(
+    () => () => {
+      if (copiedTimerRef.current) clearTimeout(copiedTimerRef.current);
+    },
+    [],
+  );
 
   // body 통계는 editor 의 plain text 기준으로 계산 (마크다운 토큰 제외).
   // CharacterCount 가 ProseMirror 트리를 순회해 visible text 만 카운트.
@@ -439,7 +511,7 @@ function MemoEditor({
             title={active.pinned ? "고정 해제" : "고정"}
             aria-pressed={active.pinned}
           >
-            <Icon name="pin" size={15} />
+            <Icon name={active.pinned ? "pinFilled" : "pin"} size={15} />
           </button>
           <button
             type="button"
@@ -448,7 +520,7 @@ function MemoEditor({
             title={active.starred ? "즐겨찾기 해제" : "즐겨찾기"}
             aria-pressed={active.starred}
           >
-            <Icon name="star" size={15} />
+            <Icon name={active.starred ? "starFilled" : "star"} size={15} />
           </button>
           <button
             type="button"
@@ -460,11 +532,12 @@ function MemoEditor({
           </button>
           <button
             type="button"
-            className="icon-btn"
+            className={"icon-btn" + (copied ? " on" : "")}
             onClick={copyShareLink}
-            title="공유 링크 복사"
+            title={copied ? "복사됨" : "공유 링크 복사"}
+            aria-live="polite"
           >
-            <Icon name="link" size={15} />
+            <Icon name={copied ? "check" : "link"} size={15} />
           </button>
           <button
             type="button"
@@ -557,10 +630,50 @@ function MemoEditor({
           {active.tags.map((t) => (
             <span key={t} className={styles.memoTagChip}>
               #{t}
-              <button>×</button>
+              <button
+                type="button"
+                onClick={() => removeTag(t)}
+                aria-label={`${t} 태그 제거`}
+              >
+                ×
+              </button>
             </span>
           ))}
-          <button className={styles.memoTagAdd}>+ 태그</button>
+          {tagInputOpen ? (
+            <input
+              ref={tagInputRef}
+              className={styles.memoTagInput}
+              value={tagDraft}
+              onChange={(e) => setTagDraft(e.target.value)}
+              onBlur={commitTag}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === ",") {
+                  e.preventDefault();
+                  commitTag();
+                } else if (e.key === "Escape") {
+                  e.preventDefault();
+                  setTagDraft("");
+                  setTagInputOpen(false);
+                } else if (
+                  e.key === "Backspace" &&
+                  tagDraft === "" &&
+                  active.tags.length > 0
+                ) {
+                  e.preventDefault();
+                  removeTag(active.tags[active.tags.length - 1]);
+                }
+              }}
+              placeholder="태그 입력 후 Enter"
+            />
+          ) : (
+            <button
+              type="button"
+              className={styles.memoTagAdd}
+              onClick={openTagInput}
+            >
+              + 태그
+            </button>
+          )}
         </div>
         <EditorContent editor={editor} className={styles.memoBodyHost} />
       </div>
@@ -649,15 +762,11 @@ function MemoEditor({
                 borderRadius: 6,
                 color: "var(--red)",
               }}
-              onClick={() => {
-                if (confirm(`"${active.title}" 메모를 휴지통으로 보낼까요?`)) {
-                  onUpdateBody(active.body); // ensure latest body before delete
-                  // 실제 삭제는 useMemos.remove — props 위임이 없어 placeholder.
-                  alert(
-                    "삭제 기능은 곧 추가됩니다. 임시로 폴더를 'trash' 로 옮기세요.",
-                  );
-                }
+              onClick={async () => {
                 setMoreOpen(false);
+                if (!confirm(`"${active.title}" 메모를 삭제할까요?`)) return;
+                flushBody();
+                await onDelete();
               }}
             >
               휴지통으로 이동
