@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, Fragment } from "react";
 import Link from "next/link";
+import { IMAGE_TOOLS_PUBLIC } from "@/lib/feature-flags";
 
 // ============================================================
 // LANDING PAGE — Dayflow marketing site (WLD (4) 시안 이식)
@@ -47,7 +48,7 @@ function Nav({ onGoToAuth }: { onGoToAuth?: () => void }) {
           <a href="#features">기능</a>
           <a href="#demo">데모</a>
           <a href="#gallery">스크린샷</a>
-          <Link href="/tools/crop">무료 도구</Link>
+          {IMAGE_TOOLS_PUBLIC && <Link href="/tools/crop">무료 도구</Link>}
           <a href="#faq">FAQ</a>
         </div>
         <div className="nav-cta">

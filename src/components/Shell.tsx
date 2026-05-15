@@ -1,6 +1,7 @@
 import { Icon } from "@/components/Icon";
 import { DOW } from "@/lib/date";
 import { useAuth } from "@/data/auth";
+import { IMAGE_TOOLS_PUBLIC } from "@/lib/feature-flags";
 import s from "@/components/Shell.module.css";
 
 // ============================================================
@@ -63,13 +64,22 @@ function Sidebar({ active, onSelect }: SidebarProps) {
           label: "대출 이자 계산기",
           sub: "원리금/원금 균등",
         },
-        {
-          id: "crop",
-          icon: "crop",
-          label: "이미지 자르기",
-          sub: "비율 / 크롭",
-        },
-        { id: "pdf", icon: "pdf", label: "이미지 → PDF", sub: "한번에 변환" },
+        ...(IMAGE_TOOLS_PUBLIC
+          ? [
+              {
+                id: "crop",
+                icon: "crop",
+                label: "이미지 자르기",
+                sub: "비율 / 크롭",
+              },
+              {
+                id: "pdf",
+                icon: "pdf",
+                label: "이미지 → PDF",
+                sub: "한번에 변환",
+              },
+            ]
+          : []),
       ],
     },
   ];

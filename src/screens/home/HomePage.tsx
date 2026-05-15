@@ -8,6 +8,7 @@ import { Stopwatch } from "@/screens/home/timers/Stopwatch";
 import { MoneyFlow } from "@/screens/home/MoneyFlow";
 import { MiniCalendar } from "@/screens/home/MiniCalendar";
 import { ToolCard } from "@/screens/home/ToolCard";
+import { IMAGE_TOOLS_PUBLIC } from "@/lib/feature-flags";
 import type { Tweaks, EventDraft } from "@/types";
 import type { SetPreference } from "@/data/preferences";
 
@@ -71,20 +72,24 @@ export function HomePage({
           items={["2026년 기준 세율 적용", "4대 보험 · 소득세 자동 계산"]}
           onClick={() => setActive("salary")}
         />
-        <ToolCard
-          icon="crop"
-          title="이미지 자르기"
-          desc="업로드한 이미지를 빠르게 자르고 내보내세요"
-          items={["원하는 크기와 포맷 설정", "전체 화면 도구에서 사용 가능"]}
-          onClick={() => setActive("crop")}
-        />
-        <ToolCard
-          icon="pdf"
-          title="이미지 → PDF"
-          desc="여러 이미지를 하나의 PDF로 깔끔하게 합쳐요"
-          items={["품질 유지와 순서 편집", "전체 화면 도구에서 진행"]}
-          onClick={() => setActive("pdf")}
-        />
+        {IMAGE_TOOLS_PUBLIC && (
+          <>
+            <ToolCard
+              icon="crop"
+              title="이미지 자르기"
+              desc="업로드한 이미지를 빠르게 자르고 내보내세요"
+              items={["원하는 크기와 포맷 설정", "전체 화면 도구에서 사용 가능"]}
+              onClick={() => setActive("crop")}
+            />
+            <ToolCard
+              icon="pdf"
+              title="이미지 → PDF"
+              desc="여러 이미지를 하나의 PDF로 깔끔하게 합쳐요"
+              items={["품질 유지와 순서 편집", "전체 화면 도구에서 진행"]}
+              onClick={() => setActive("pdf")}
+            />
+          </>
+        )}
       </div>
 
       <div className="section-h" style={{ marginTop: 26 }}>

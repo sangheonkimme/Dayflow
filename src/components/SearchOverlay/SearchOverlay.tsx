@@ -12,6 +12,7 @@ import { Icon } from "@/components/Icon";
 import { useTransactions } from "@/data/transactions";
 import { useEvents } from "@/data/events";
 import { useMemos, memoExcerpt } from "@/data/memos";
+import { IMAGE_TOOLS_PUBLIC } from "@/lib/feature-flags";
 import styles from "./SearchOverlay.module.css";
 
 // ============================================================
@@ -46,8 +47,12 @@ const PAGE_INDEX: SearchEntry[] = [
   { type: "page", id: "memo", label: "메모", sub: "장문 메모", icon: "note" },
   { type: "page", id: "salary", label: "연봉 계산기", sub: "실수령액 계산", icon: "coin" },
   { type: "page", id: "loan", label: "대출 이자 계산기", sub: "원리금/원금 균등", icon: "cash" },
-  { type: "page", id: "crop", label: "이미지 자르기", sub: "비율 / 크롭", icon: "crop" },
-  { type: "page", id: "pdf", label: "이미지 → PDF", sub: "한번에 변환", icon: "pdf" },
+  ...(IMAGE_TOOLS_PUBLIC
+    ? ([
+        { type: "page", id: "crop", label: "이미지 자르기", sub: "비율 / 크롭", icon: "crop" },
+        { type: "page", id: "pdf", label: "이미지 → PDF", sub: "한번에 변환", icon: "pdf" },
+      ] as SearchEntry[])
+    : []),
   { type: "page", id: "settings", label: "환경설정", sub: "테마 · 계정", icon: "settings" },
 ];
 

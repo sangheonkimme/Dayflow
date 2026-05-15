@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { CropCanvasPage } from "@/screens/tools/ImageTools";
 import { getSiteUrl } from "@/lib/site-url";
+import { IMAGE_TOOLS_PUBLIC } from "@/lib/feature-flags";
 
 export const metadata: Metadata = {
   title: "이미지 자르기",
@@ -16,6 +17,8 @@ export const metadata: Metadata = {
     "PNG 자르기",
   ],
   alternates: { canonical: "/tools/crop" },
+  // 시안만 있고 실제 기능 미구현 상태 — 공개 보류 (feature-flags.ts 참고)
+  robots: { index: false, follow: false },
   openGraph: {
     title: "이미지 자르기 · Dayflow",
     description:
@@ -41,11 +44,13 @@ const jsonLd = {
 export default function Page() {
   return (
     <>
-      <script
-        type="application/ld+json"
-        // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      {IMAGE_TOOLS_PUBLIC && (
+        <script
+          type="application/ld+json"
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      )}
       <CropCanvasPage />
     </>
   );

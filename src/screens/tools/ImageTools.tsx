@@ -3,6 +3,9 @@ import { useState } from "react";
 import { Icon } from "@/components/Icon";
 import styles from "./ImageTools.module.css";
 
+// variant 토글 바는 디자인 시안 비교용 — production 빌드에서는 숨김.
+const SHOW_VARIANT_SWITCH = process.env.NODE_ENV !== "production";
+
 // ============================================================
 // IMAGE TOOLS — Crop & PDF detail pages
 // Two design-canvas presentations, each with 2-3 variants.
@@ -80,7 +83,7 @@ const SampleImg = ({
 // ============================================================
 // CROP — variant A · Classic editor (toolbar left, preview right)
 // ============================================================
-function CropClassic({ density = "comfy" }) {
+function CropClassic() {
   const [ratio, setRatio] = useState("4:3");
   const [rot, setRot] = useState(0);
   const [flip, setFlip] = useState(false);
@@ -478,121 +481,6 @@ function CropBatch() {
 }
 
 // ============================================================
-// PDF — variant A · Storyboard layout (sortable cards + sidebar)
-// ============================================================
-function PdfStoryboard() {
-  const pages = [
-    { id: 1, name: "표지.png", size: "1.2 MB" },
-    { id: 2, name: "목차.png", size: "0.8 MB" },
-    { id: 3, name: "01_intro.jpg", size: "2.1 MB" },
-    { id: 4, name: "02_chart.png", size: "1.4 MB" },
-    { id: 5, name: "03_table.png", size: "1.1 MB" },
-    { id: 6, name: "04_summary.jpg", size: "1.8 MB" },
-  ];
-  return (
-    <div className={styles.toolPage}>
-      <div className="page-head">
-        <div>
-          <div className="crumb">도구 · 이미지 → PDF</div>
-          <h1 className="page-title">
-            이미지를 PDF로 <span className="hand-sub">— 한 권으로 묶어요</span>
-          </h1>
-          <div className="page-sub">
-            {pages.length}장 · 예상 PDF 용량 8.4 MB
-          </div>
-        </div>
-        <div className="row" style={{ gap: 8 }}>
-          <button className="timer-btn">+ 이미지 추가</button>
-          <button className="timer-btn primary">↓ PDF 만들기</button>
-        </div>
-      </div>
-
-      <div className={styles.pdfShell}>
-        <aside className={styles.pdfRail}>
-          <div className={styles.railSection}>
-            <div className={styles.railH}>용지</div>
-            <div className={styles.paperRow}>
-              {[
-                { id: "a4", label: "A4", sub: "210 × 297" },
-                { id: "lt", label: "Letter", sub: "8.5 × 11" },
-                { id: "or", label: "원본", sub: "이미지 크기" },
-              ].map((p, i) => (
-                <button
-                  key={p.id}
-                  className={
-                    i === 0
-                      ? `${styles.paperCard} ${styles.on}`
-                      : styles.paperCard
-                  }
-                >
-                  <span
-                    className={styles.paperGlyph}
-                    style={{
-                      aspectRatio:
-                        p.id === "lt"
-                          ? "8.5/11"
-                          : p.id === "or"
-                            ? "4/3"
-                            : "210/297",
-                    }}
-                  />
-                  <b>{p.label}</b>
-                  <small>{p.sub}</small>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className={styles.railSection}>
-            <div className={styles.railH}>방향 / 정렬</div>
-            <div className={styles.orientRow}>
-              <button className={styles.on}>세로</button>
-              <button>가로</button>
-            </div>
-            <div className={styles.orientRow} style={{ marginTop: 8 }}>
-              <button>장당 1장</button>
-              <button>2장 (분할)</button>
-            </div>
-          </div>
-
-          <div className={styles.railSection}>
-            <div className={styles.railH}>파일명</div>
-            <input
-              className={styles.railInput}
-              defaultValue="document_2026-05-03.pdf"
-            />
-          </div>
-        </aside>
-
-        <div className={styles.pdfBoard}>
-          <div className={styles.boardH}>
-            <span>
-              페이지 순서 <small>(드래그로 변경)</small>
-            </span>
-            <span className="muted">{pages.length}장</span>
-          </div>
-          <div className={styles.pageGrid}>
-            {pages.map((p, i) => (
-              <div key={p.id} className={styles.pageCard}>
-                <span className={styles.pageNum}>{i + 1}</span>
-                <span className={styles.pageGrip}>⋮⋮</span>
-                <SampleImg aspect="3/4" muted={i % 2 === 1} />
-                <div className={styles.pageName}>{p.name}</div>
-                <small>{p.size}</small>
-              </div>
-            ))}
-            <div className={`${styles.pageCard} ${styles.add}`}>
-              <div className={styles.addPlus}>+</div>
-              <small>이미지 추가</small>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ============================================================
 // PDF — variant B · Empty drop zone (first-run state)
 // ============================================================
 function PdfEmpty() {
@@ -859,80 +747,6 @@ function PdfUploaded() {
   );
 }
 
-// ============================================================
-// PDF — variant C · Spread / book preview (live PDF preview)
-// ============================================================
-function PdfSpread() {
-  const pages = [
-    { id: 1, name: "표지" },
-    { id: 2, name: "01" },
-    { id: 3, name: "02" },
-    { id: 4, name: "03" },
-    { id: 5, name: "04" },
-    { id: 6, name: "05" },
-  ];
-  return (
-    <div className={styles.toolPage}>
-      <div className="page-head">
-        <div>
-          <div className="crumb">도구 · 이미지 → PDF · 미리보기</div>
-          <h1 className="page-title">
-            PDF 미리보기 <span className="hand-sub">— 펼쳐서 확인해요</span>
-          </h1>
-          <div className="page-sub">A4 세로 · 6 페이지 · 8.4 MB 예상</div>
-        </div>
-        <div className="row" style={{ gap: 8 }}>
-          <button className="timer-btn">← 편집으로</button>
-          <button className="timer-btn primary">↓ 다운로드</button>
-        </div>
-      </div>
-
-      <div className={styles.spreadShell}>
-        <aside className={styles.spreadThumbs}>
-          <div className={styles.railH}>{pages.length}장</div>
-          {pages.map((p, i) => (
-            <div
-              key={p.id}
-              className={
-                i === 1 || i === 2
-                  ? `${styles.spreadThumb} ${styles.on}`
-                  : styles.spreadThumb
-              }
-            >
-              <span className={styles.tNum}>{i + 1}</span>
-              <SampleImg aspect="3/4" />
-            </div>
-          ))}
-        </aside>
-
-        <div className={styles.spreadStage}>
-          <div className={styles.spreadBg}>
-            <div className={styles.spreadBook}>
-              <div className={`${styles.spreadPage} ${styles.left}`}>
-                <div className={styles.pageNo}>2</div>
-                <SampleImg aspect="3/4" />
-              </div>
-              <div className={`${styles.spreadPage} ${styles.right}`}>
-                <div className={styles.pageNo}>3</div>
-                <SampleImg aspect="3/4" muted />
-              </div>
-            </div>
-          </div>
-          <div className={styles.spreadControls}>
-            <button>← 이전</button>
-            <span className={styles.spreadPos}>2 — 3 / 6</span>
-            <button>다음 →</button>
-            <span className={styles.div} />
-            <button>맞춤</button>
-            <button>100%</button>
-            <button>200%</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function RatioGlyph({ id }) {
   const map = {
     free: [22, 14],
@@ -1020,46 +834,48 @@ function CropCanvasPage() {
   };
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
-      <div className={styles.variantSwitch}>
-        <span className={styles.vsLabel}>상태</span>
-        <button
-          className={state === "empty" ? styles.on : ""}
-          onClick={() => setState("empty")}
-        >
-          업로드 전
-        </button>
-        <button
-          className={state === "loaded" ? styles.on : ""}
-          onClick={() => setState("loaded")}
-        >
-          업로드 후
-        </button>
-        {state === "loaded" && (
-          <>
-            <span className={styles.vsLabel} style={{ marginLeft: 12 }}>
-              모드
-            </span>
-            <button
-              className={variant === "classic" ? styles.on : ""}
-              onClick={() => setVariant("classic")}
-            >
-              기본
-            </button>
-            <button
-              className={variant === "focus" ? styles.on : ""}
-              onClick={() => setVariant("focus")}
-            >
-              포커스 모드 <span className={styles.proBadge}>PRO</span>
-            </button>
-            <button
-              className={variant === "batch" ? styles.on : ""}
-              onClick={() => setVariant("batch")}
-            >
-              일괄 처리 <span className={styles.proBadge}>PRO</span>
-            </button>
-          </>
-        )}
-      </div>
+      {SHOW_VARIANT_SWITCH && (
+        <div className={styles.variantSwitch}>
+          <span className={styles.vsLabel}>상태</span>
+          <button
+            className={state === "empty" ? styles.on : ""}
+            onClick={() => setState("empty")}
+          >
+            업로드 전
+          </button>
+          <button
+            className={state === "loaded" ? styles.on : ""}
+            onClick={() => setState("loaded")}
+          >
+            업로드 후
+          </button>
+          {state === "loaded" && (
+            <>
+              <span className={styles.vsLabel} style={{ marginLeft: 12 }}>
+                모드
+              </span>
+              <button
+                className={variant === "classic" ? styles.on : ""}
+                onClick={() => setVariant("classic")}
+              >
+                기본
+              </button>
+              <button
+                className={variant === "focus" ? styles.on : ""}
+                onClick={() => setVariant("focus")}
+              >
+                포커스 모드 <span className={styles.proBadge}>PRO</span>
+              </button>
+              <button
+                className={variant === "batch" ? styles.on : ""}
+                onClick={() => setVariant("batch")}
+              >
+                일괄 처리 <span className={styles.proBadge}>PRO</span>
+              </button>
+            </>
+          )}
+        </div>
+      )}
       <div style={{ flex: 1, minHeight: 0, overflow: "auto" }}>
         {state === "empty" ? (
           <CropEmpty onPickSample={() => setState("loaded")} />
@@ -1075,21 +891,23 @@ function PdfCanvasPage() {
   const [state, setState] = useState("empty");
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
-      <div className={styles.variantSwitch}>
-        <span className={styles.vsLabel}>상태</span>
-        <button
-          className={state === "empty" ? styles.on : ""}
-          onClick={() => setState("empty")}
-        >
-          업로드 전
-        </button>
-        <button
-          className={state === "uploaded" ? styles.on : ""}
-          onClick={() => setState("uploaded")}
-        >
-          업로드 후 (3장)
-        </button>
-      </div>
+      {SHOW_VARIANT_SWITCH && (
+        <div className={styles.variantSwitch}>
+          <span className={styles.vsLabel}>상태</span>
+          <button
+            className={state === "empty" ? styles.on : ""}
+            onClick={() => setState("empty")}
+          >
+            업로드 전
+          </button>
+          <button
+            className={state === "uploaded" ? styles.on : ""}
+            onClick={() => setState("uploaded")}
+          >
+            업로드 후 (3장)
+          </button>
+        </div>
+      )}
       <div style={{ flex: 1, minHeight: 0, overflow: "auto" }}>
         {state === "empty" ? <PdfEmpty /> : <PdfUploaded />}
       </div>

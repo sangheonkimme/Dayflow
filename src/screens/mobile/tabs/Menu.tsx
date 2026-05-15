@@ -1,5 +1,6 @@
 import { Ico } from "@/screens/mobile/shared/Ico";
 import { SectionHeader } from "@/screens/mobile/shared/SectionHeader";
+import { IMAGE_TOOLS_PUBLIC } from "@/lib/feature-flags";
 import styles from "@/screens/mobile/mobile.module.css";
 
 export const MobileMenu = ({ onNavigate, onProfile }: any) => {
@@ -7,8 +8,12 @@ export const MobileMenu = ({ onNavigate, onProfile }: any) => {
     ["wallet", "가계부 상세", "거래 내역 · 카테고리 분석", "ledger"],
     ["tag", "구독 관리", "12개 활성 · 이번 달 ₩47,000", "subs"],
     ["coin", "연봉 계산기", "실수령액 · 4대 보험", null],
-    ["pdf", "이미지 → PDF", "여러 이미지를 한 파일로", null],
-    ["crop", "이미지 자르기", "빠른 크롭과 내보내기", null],
+    ...(IMAGE_TOOLS_PUBLIC
+      ? [
+          ["pdf", "이미지 → PDF", "여러 이미지를 한 파일로", null],
+          ["crop", "이미지 자르기", "빠른 크롭과 내보내기", null],
+        ]
+      : []),
     ["bell", "알림 설정", "리마인더 · 푸시 알림", "notif"],
     ["moon", "테마 · 모양", "다크 모드 · 포인트 컬러", "theme"],
   ];

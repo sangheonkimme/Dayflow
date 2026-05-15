@@ -3,6 +3,7 @@ import { Ico } from "@/screens/mobile/shared/Ico";
 import { useTransactions } from "@/data/transactions";
 import { useEvents } from "@/data/events";
 import { useMemos } from "@/data/memos";
+import { IMAGE_TOOLS_PUBLIC } from "@/lib/feature-flags";
 import styles from "@/screens/mobile/mobile.module.css";
 
 export const SearchSheet = ({ open, onClose, onJump }: any) => {
@@ -181,22 +182,26 @@ export const SearchSheet = ({ open, onClose, onJump }: any) => {
       sub: "실수령액 · 4대 보험",
       tone: "#fff0a8",
     },
-    {
-      kind: "도구",
-      tab: "menu",
-      ico: "pdf",
-      title: "이미지 → PDF",
-      sub: "여러 이미지를 한 파일로",
-      tone: "#cfe7ff",
-    },
-    {
-      kind: "도구",
-      tab: "menu",
-      ico: "crop",
-      title: "이미지 자르기",
-      sub: "빠른 크롭과 내보내기",
-      tone: "#d4efdb",
-    },
+    ...(IMAGE_TOOLS_PUBLIC
+      ? [
+          {
+            kind: "도구",
+            tab: "menu",
+            ico: "pdf",
+            title: "이미지 → PDF",
+            sub: "여러 이미지를 한 파일로",
+            tone: "#cfe7ff",
+          },
+          {
+            kind: "도구",
+            tab: "menu",
+            ico: "crop",
+            title: "이미지 자르기",
+            sub: "빠른 크롭과 내보내기",
+            tone: "#d4efdb",
+          },
+        ]
+      : []),
   ];
 
   const recent = ["넷플릭스", "스타벅스", "디자인 리뷰", "월급"];
