@@ -16,6 +16,7 @@
 <link rel="stylesheet" href="flows-extra.css" />
 <link rel="stylesheet" href="mobile.css" />
 <link rel="stylesheet" href="community.css" />
+<link rel="stylesheet" href="dialogs-toasts.css" />
 </head>
 <body>
 <div id="root"></div>
@@ -41,6 +42,7 @@
 <script type="text/babel" src="loan-search.jsx"></script>
 <script type="text/babel" src="flows.jsx"></script>
 <script type="text/babel" src="community.jsx"></script>
+<script type="text/babel" src="dt-demo.jsx"></script>
 
 <script type="text/babel">
 const { useState, useEffect } = React;
@@ -175,6 +177,8 @@ function App() {
       {modal?.type === "event" && <EventModal onClose={closeModal} editing={modal.editing} onDelete={(e) => console.log("delete event", e)} onSave={(e) => console.log("save event", e)} />}
 
       <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} onNavigate={setActive} />
+
+      <DTDemoLauncher mode="pc" />
 
       <TweaksPanel title="Tweaks">
         <TweakSection title="모양">

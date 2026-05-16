@@ -11,6 +11,7 @@
 
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="mobile-app.css">
+<link rel="stylesheet" href="dialogs-toasts.css">
 
 <style>
   html, body { margin: 0; padding: 0; height: 100%; }
@@ -58,6 +59,7 @@
   <script type="text/babel" src="ios-frame.jsx"></script>
   <script type="text/babel" src="tweaks-panel.jsx"></script>
   <script type="text/babel" src="mobile-app.jsx"></script>
+  <script type="text/babel" src="dt-demo.jsx"></script>
 
   <script type="text/babel">
     const { useState, useEffect } = React;
@@ -100,6 +102,7 @@
           <div id="device-wrap">
             <IOSDevice width={t.deviceWidth} height={Math.round(t.deviceWidth * 2.16)} dark={t.dark}>
               <MobileApp initialTab={t.initialTab} key={t.initialTab} />
+              <DTDemoLauncher mode="mobile" />
             </IOSDevice>
           </div>
 

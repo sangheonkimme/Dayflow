@@ -1,0 +1,612 @@
+/* ============================================================
+   Dialogs & Toasts — paper-desk styled
+   PC + Mobile variants share the same vocabulary
+   ============================================================ */
+
+/* ---------- shared dialog shell ---------- */
+.dlg {
+  background: var(--card);
+  border-radius: 18px;
+  box-shadow:
+    0 1px 0 rgba(0,0,0,0.04),
+    0 12px 28px rgba(40,30,10,0.14),
+    0 28px 56px -20px rgba(40,30,10,0.22);
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+.dlg.compact { border-radius: 14px; }
+
+/* paper accents (some dialogs only) */
+.dlg .pin {
+  position: absolute;
+  top: -7px; left: 24px;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #ff8a8a, #c2433a 70%);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.25), inset 1px 1px 1px rgba(255,255,255,0.5);
+  z-index: 3;
+}
+.dlg .tape {
+  position: absolute;
+  top: -10px; right: 28px;
+  width: 70px; height: 18px;
+  background: var(--tape);
+  border-left: 1px dashed rgba(170,140,80,0.25);
+  border-right: 1px dashed rgba(170,140,80,0.25);
+  transform: rotate(-3deg);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+}
+
+/* ---------- header / icon row ---------- */
+.dlg-icon {
+  width: 56px; height: 56px;
+  border-radius: 16px;
+  display: grid; place-items: center;
+  margin-bottom: 16px;
+  flex-shrink: 0;
+}
+.dlg-icon svg { width: 26px; height: 26px; }
+.dlg-icon.danger { background: rgba(226,92,77,0.12); color: var(--red); }
+.dlg-icon.warn   { background: rgba(232,200,74,0.20); color: #a07a10; }
+.dlg-icon.info   { background: rgba(143,192,214,0.22); color: #2b6f8f; }
+.dlg-icon.success{ background: rgba(93,162,108,0.16); color: #2d7a3a; }
+.dlg-icon.neutral{ background: var(--bg-paper); color: var(--ink); border: 1px solid var(--line); }
+
+.dlg-body {
+  padding: 26px 28px 22px;
+}
+.dlg-body.center { text-align: center; }
+.dlg-body.center .dlg-icon { margin: 0 auto 16px; }
+
+.dlg-title {
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.3;
+  color: var(--ink);
+  margin: 0 0 8px;
+}
+.dlg-title .hand {
+  font-family: var(--hand);
+  font-weight: 700;
+  font-size: 22px;
+  margin-left: 6px;
+  color: var(--ink-soft);
+}
+.dlg-msg {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  margin: 0;
+}
+.dlg-msg b { color: var(--ink); }
+.dlg-msg .quoted {
+  background: var(--yellow);
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+/* ---------- close x ---------- */
+.dlg-close {
+  position: absolute;
+  top: 12px; right: 12px;
+  width: 30px; height: 30px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--ink-mute);
+  cursor: pointer;
+  display: grid; place-items: center;
+  transition: all 0.12s;
+  z-index: 4;
+}
+.dlg-close:hover {
+  background: var(--bg-paper);
+  border-color: var(--line);
+  color: var(--ink);
+}
+
+/* ---------- footer / actions ---------- */
+.dlg-foot {
+  display: flex;
+  gap: 8px;
+  padding: 0 22px 22px;
+  justify-content: flex-end;
+}
+.dlg-foot.center { justify-content: center; }
+.dlg-foot.stack { flex-direction: column; padding: 0 22px 22px; }
+.dlg-foot.full { padding: 0; border-top: 1px solid var(--line); }
+.dlg-foot.full .dbtn {
+  flex: 1;
+  border-radius: 0;
+  height: 50px;
+  border: none;
+  border-right: 1px solid var(--line);
+}
+.dlg-foot.full .dbtn:last-child { border-right: none; }
+
+.dbtn {
+  display: inline-flex;
+  align-items: center; justify-content: center;
+  gap: 6px;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-family: var(--sans);
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  cursor: pointer;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--ink);
+  transition: all 0.12s;
+  min-height: 38px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.dbtn:hover { background: var(--bg-paper); border-color: var(--line-strong); }
+.dbtn.primary {
+  background: var(--ink);
+  color: #fffaec;
+  border-color: var(--ink);
+}
+.dbtn.primary:hover { background: #322f29; }
+.dbtn.danger {
+  background: var(--red);
+  color: #fff;
+  border-color: var(--red);
+}
+.dbtn.danger:hover { background: #c84233; }
+.dbtn.ghost {
+  background: transparent;
+  border-color: transparent;
+  color: var(--ink-soft);
+}
+.dbtn.ghost:hover { background: var(--bg-paper); color: var(--ink); }
+.dbtn.full { width: 100%; }
+.dbtn.lg { padding: 12px 20px; font-size: 14px; min-height: 44px; }
+
+/* ---------- inputs in dialogs ---------- */
+.dlg-input {
+  width: 100%;
+  height: 46px;
+  padding: 0 14px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: 10px;
+  background: #fffdf5;
+  font-family: var(--sans);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--ink);
+  outline: none;
+  margin-top: 10px;
+  transition: border-color 0.12s, box-shadow 0.12s;
+}
+.dlg-input:focus {
+  border-color: var(--ink);
+  box-shadow: 0 0 0 3px rgba(31,29,24,0.08);
+}
+.dlg-hint {
+  font-size: 11.5px;
+  color: var(--ink-mute);
+  margin-top: 6px;
+}
+
+/* ---------- danger confirm sub-row ---------- */
+.dlg-warn-box {
+  background: rgba(226,92,77,0.08);
+  border: 1px dashed rgba(226,92,77,0.4);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  margin-top: 14px;
+  display: flex; gap: 10px;
+  align-items: flex-start;
+}
+.dlg-warn-box svg { flex-shrink: 0; margin-top: 1px; color: var(--red); }
+.dlg-warn-box b { color: var(--ink); }
+
+/* ---------- sheet variant (mobile bottom) ---------- */
+.dlg.sheet {
+  border-radius: 22px 22px 0 0;
+  width: 100%;
+}
+.dlg.sheet::before {
+  content: "";
+  display: block;
+  width: 36px; height: 4px;
+  background: var(--line-strong);
+  border-radius: 99px;
+  margin: 8px auto 4px;
+}
+
+/* ============================================================
+   TOASTS
+   ============================================================ */
+
+.toast {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px 12px 12px;
+  background: var(--ink);
+  color: #fdf6e0;
+  border-radius: 12px;
+  box-shadow:
+    0 4px 12px rgba(40,30,10,0.18),
+    0 14px 32px -12px rgba(40,30,10,0.28);
+  min-width: 320px;
+  max-width: 420px;
+  position: relative;
+  font-family: var(--sans);
+}
+.toast .t-ico {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  display: grid; place-items: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.toast .t-ico svg { width: 14px; height: 14px; }
+.toast .t-body { flex: 1; min-width: 0; }
+.toast .t-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 0;
+  color: #fffaec;
+}
+.toast .t-msg {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: rgba(253,246,224,0.72);
+  margin: 2px 0 0;
+}
+.toast .t-action {
+  border: none;
+  background: transparent;
+  color: var(--yellow);
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  margin-top: 4px;
+  margin-left: -8px;
+  letter-spacing: -0.005em;
+}
+.toast .t-action:hover { background: rgba(255,226,122,0.12); }
+.toast .t-close {
+  position: absolute;
+  top: 8px; right: 8px;
+  width: 22px; height: 22px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: rgba(253,246,224,0.5);
+  cursor: pointer;
+  display: grid; place-items: center;
+  transition: all 0.12s;
+}
+.toast .t-close:hover { background: rgba(255,255,255,0.08); color: #fffaec; }
+
+/* color variants — left ribbon accent */
+.toast::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 12px; bottom: 12px;
+  width: 3px;
+  border-radius: 2px;
+  background: var(--ink-mute);
+}
+.toast.success::before { background: #6dc97a; }
+.toast.error::before   { background: var(--red); }
+.toast.warn::before    { background: #f0c43b; }
+.toast.info::before    { background: #7fc0e0; }
+.toast.loading::before { background: var(--yellow); }
+
+.toast.success .t-ico { background: rgba(109,201,122,0.18); color: #6dc97a; }
+.toast.error   .t-ico { background: rgba(226,92,77,0.18); color: #ff8e7d; }
+.toast.warn    .t-ico { background: rgba(240,196,59,0.18); color: #f0c43b; }
+.toast.info    .t-ico { background: rgba(127,192,224,0.18); color: #7fc0e0; }
+.toast.loading .t-ico { background: rgba(255,226,122,0.16); color: var(--yellow); }
+.toast.undo    .t-ico { background: rgba(255,255,255,0.08); color: rgba(253,246,224,0.72); }
+
+/* spinner for loading toast */
+@keyframes t-spin { to { transform: rotate(360deg); } }
+.t-spinner {
+  width: 16px; height: 16px;
+  border: 2px solid rgba(255,226,122,0.25);
+  border-top-color: var(--yellow);
+  border-radius: 50%;
+  animation: t-spin 0.8s linear infinite;
+}
+
+/* progress bar for time-based dismiss */
+.toast .t-progress {
+  position: absolute;
+  left: 12px; right: 12px; bottom: 5px;
+  height: 2px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.toast .t-progress span {
+  display: block; height: 100%;
+  background: var(--yellow);
+  width: 100%;
+  transform-origin: left;
+}
+.toast.success .t-progress span { background: #6dc97a; }
+.toast.error   .t-progress span { background: var(--red); }
+.toast.warn    .t-progress span { background: #f0c43b; }
+.toast.info    .t-progress span { background: #7fc0e0; }
+
+/* light variant — for paper-mood feel on PC */
+.toast.light {
+  background: #fffdf5;
+  color: var(--ink);
+  border: 1px solid var(--line);
+  box-shadow:
+    0 1px 1px rgba(0,0,0,0.05),
+    0 8px 22px rgba(40,30,10,0.10),
+    0 18px 40px -16px rgba(40,30,10,0.18);
+}
+.toast.light .t-title { color: var(--ink); }
+.toast.light .t-msg { color: var(--ink-mute); }
+.toast.light .t-close { color: var(--ink-mute); }
+.toast.light .t-close:hover { background: var(--bg-paper); color: var(--ink); }
+.toast.light .t-action {
+  color: var(--ink);
+  background: var(--yellow);
+  padding: 4px 10px;
+}
+.toast.light .t-action:hover { background: var(--yellow-edge); }
+.toast.light::before { width: 4px; }
+.toast.light.success .t-ico { background: rgba(45,122,58,0.10); color: #2d7a3a; }
+.toast.light.error   .t-ico { background: rgba(226,92,77,0.10); color: var(--red); }
+.toast.light.warn    .t-ico { background: rgba(160,122,16,0.10); color: #a07a10; }
+.toast.light.info    .t-ico { background: rgba(43,111,143,0.10); color: #2b6f8f; }
+.toast.light.loading .t-ico { background: rgba(160,122,16,0.10); }
+.toast.light .t-spinner {
+  border-color: rgba(160,122,16,0.18);
+  border-top-color: #a07a10;
+}
+
+/* mobile toast — slimmer + horizontal layout */
+.toast.mobile {
+  min-width: 0;
+  max-width: 100%;
+  width: 100%;
+  border-radius: 14px;
+  padding: 11px 12px 11px 12px;
+}
+.toast.mobile .t-msg { display: none; }
+.toast.mobile .t-title { font-size: 13.5px; line-height: 1.35; }
+.toast.mobile.detailed .t-msg { display: block; }
+
+/* ============================================================
+   STAGE FRAMES — for showing dialogs in their context
+   ============================================================ */
+
+/* PC stage: simulated dimmed page behind the dialog */
+.stage {
+  position: relative;
+  background: linear-gradient(180deg, #f4ecd8 0%, #ece4cf 100%);
+  display: flex; align-items: center; justify-content: center;
+  padding: 40px 36px;
+  height: 100%;
+  overflow: hidden;
+}
+.stage::before {
+  /* simulated app behind */
+  content: "";
+  position: absolute;
+  inset: 18px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0) 30%),
+    repeating-linear-gradient(180deg, rgba(31,29,24,0.04) 0 1px, transparent 1px 22px);
+  border-radius: 12px;
+  border: 1px solid rgba(31,29,24,0.07);
+  pointer-events: none;
+}
+.stage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(20,16,8,0.25);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+.stage > * { position: relative; z-index: 2; }
+
+/* mobile stage: inside a phone-ish window */
+.mstage {
+  position: relative;
+  background: var(--bg);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.mstage-status {
+  height: 28px;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 22px;
+  font-size: 11.5px;
+  font-family: var(--sans);
+  font-weight: 700;
+  color: var(--ink);
+}
+.mstage-status .dots {
+  display: inline-flex; gap: 3px; align-items: center;
+}
+.mstage-status .dots span {
+  width: 4px; height: 4px;
+  background: var(--ink);
+  border-radius: 50%;
+}
+.mstage-app {
+  flex: 1;
+  position: relative;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0) 30%),
+    repeating-linear-gradient(180deg, rgba(31,29,24,0.04) 0 1px, transparent 1px 22px);
+  margin: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(31,29,24,0.07);
+  overflow: hidden;
+}
+.mstage.dimmed .mstage-app::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: rgba(20,16,8,0.32);
+  backdrop-filter: blur(1.5px);
+  -webkit-backdrop-filter: blur(1.5px);
+}
+.mstage-dlg {
+  position: absolute;
+  z-index: 3;
+}
+.mstage-dlg.center {
+  top: 50%; left: 16px; right: 16px;
+  transform: translateY(-50%);
+}
+.mstage-dlg.bottom {
+  left: 0; right: 0; bottom: 0;
+}
+.mstage-dlg.top-toast {
+  top: 38px; left: 12px; right: 12px;
+}
+
+/* ============================================================
+   INTERACTIVE DEMO — bottom of canvas
+   ============================================================ */
+.demo-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 28px 30px;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+}
+.demo-h {
+  font-family: var(--hand);
+  font-weight: 700;
+  font-size: 28px;
+  color: var(--ink);
+  margin: 0 0 6px;
+}
+.demo-sub {
+  font-size: 13.5px;
+  color: var(--ink-soft);
+  margin: 0 0 20px;
+}
+.demo-row {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  margin-bottom: 10px;
+}
+.demo-row-h {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--ink-mute);
+  margin: 14px 0 6px;
+  text-transform: uppercase;
+}
+.demo-btn {
+  padding: 8px 14px;
+  border-radius: 9px;
+  border: 1px solid var(--line);
+  background: #fffdf5;
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+  display: inline-flex; align-items: center; gap: 6px;
+  transition: all 0.12s;
+}
+.demo-btn:hover { border-color: var(--ink); transform: translateY(-1px); }
+.demo-btn:active { transform: translateY(0); }
+.demo-btn .dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+}
+.demo-btn .dot.success { background: #2d7a3a; }
+.demo-btn .dot.error { background: var(--red); }
+.demo-btn .dot.warn { background: #e8c84a; }
+.demo-btn .dot.info { background: #7fc0e0; }
+.demo-btn .dot.undo { background: var(--ink); }
+.demo-btn .dot.loading { background: var(--yellow); }
+
+/* live toast container — fixed-position */
+.toast-stack {
+  position: fixed;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+.toast-stack > * { pointer-events: auto; }
+.toast-stack.bottom-right {
+  bottom: 24px; right: 24px;
+  align-items: flex-end;
+}
+.toast-stack.top-mobile {
+  top: 24px; left: 50%;
+  transform: translateX(-50%);
+  width: min(380px, calc(100vw - 32px));
+}
+
+@keyframes toast-in {
+  from { transform: translateY(20px) scale(0.96); opacity: 0; }
+  to   { transform: translateY(0) scale(1); opacity: 1; }
+}
+@keyframes toast-in-top {
+  from { transform: translateY(-20px) scale(0.98); opacity: 0; }
+  to   { transform: translateY(0) scale(1); opacity: 1; }
+}
+@keyframes toast-out {
+  to { transform: translateX(40px) scale(0.92); opacity: 0; }
+}
+@keyframes progress-shrink {
+  from { transform: scaleX(1); }
+  to   { transform: scaleX(0); }
+}
+
+.toast.live { animation: toast-in 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.toast.live.top { animation: toast-in-top 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.toast.live.leaving { animation: toast-out 0.25s cubic-bezier(0.5, 0, 0.75, 0) forwards; }
+.toast.live .t-progress span { animation: progress-shrink 4s linear forwards; }
+
+/* ============================================================
+   CANVAS HEADER NOTES
+   ============================================================ */
+.dt-intro {
+  padding: 28px 30px;
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: var(--ink-soft);
+}
+.dt-intro h2 {
+  font-family: var(--hand);
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0 0 10px;
+}
+.dt-intro .yel {
+  background: linear-gradient(180deg, transparent 60%, var(--yellow) 60%, var(--yellow) 92%, transparent 92%);
+  padding: 0 4px;
+}
+.dt-intro ul { padding-left: 18px; margin: 8px 0 0; }
+.dt-intro li { margin-bottom: 4px; }
+.dt-intro li b { color: var(--ink); }

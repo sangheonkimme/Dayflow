@@ -1,0 +1,1541 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>이미지 자르기 · Dayflow</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Gaegu:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   STANDALONE — Image Crop & PDF tools
+   Sized for full-viewport public page (not in-dashboard)
+   Body 15px · Generous spacing · Reuses Dayflow paper-desk tokens
+============================================================ */
+:root {
+  --bg: #efe9dc;
+  --bg-paper: #f7f1e3;
+  --ink: #1f1d18;
+  --ink-soft: #4a463d;
+  --ink-mute: #8a8479;
+  --line: #e0d6bf;
+  --line-strong: #c9bd9f;
+  --card: #fffdf6;
+  --card-elev: #ffffff;
+  --yellow: #ffe27a;
+  --yellow-edge: #e8c84a;
+  --pink: #ffc1ce;
+  --blue: #b9dcec;
+  --green: #c5e4a8;
+  --red: #e25c4d;
+  --shadow-sm: 0 1px 2px rgba(40,30,10,.06), 0 2px 6px rgba(40,30,10,.04);
+  --shadow-md: 0 4px 14px rgba(40,30,10,.08), 0 2px 4px rgba(40,30,10,.05);
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+  --hand: 'Gaegu', 'Caveat', cursive;
+  --mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--sans);
+  color: var(--ink);
+  background: var(--bg);
+  font-size: 15px;
+  line-height: 1.5;
+  background-image:
+    radial-gradient(circle at 20% 10%, rgba(255,255,255,.5) 0%, transparent 40%),
+    radial-gradient(circle at 80% 90%, rgba(180,160,120,.10) 0%, transparent 50%);
+  -webkit-font-smoothing: antialiased;
+}
+button, input, select { font-family: inherit; }
+
+/* ─────── TOP NAV ─────── */
+.topnav {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(247,241,227,.85);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+.topnav-inner {
+  max-width: 1440px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 36px;
+  padding: 14px 32px;
+}
+.brand {
+  display: flex; align-items: center; gap: 10px;
+  text-decoration: none; color: var(--ink);
+}
+.brand-mark {
+  width: 36px; height: 36px;
+  border-radius: 9px;
+  background: var(--ink);
+  color: var(--yellow);
+  display: grid; place-items: center;
+  font-family: var(--hand);
+  font-weight: 700;
+  font-size: 22px;
+  transform: rotate(-4deg);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+}
+.brand-mark::after{
+  content:""; position:absolute; inset:auto -5px -3px auto;
+  width:11px; height:11px; background: var(--yellow);
+  border-radius: 50%; border: 2px solid var(--ink);
+}
+.brand-name { font-family: var(--hand); font-size: 26px; font-weight: 700; line-height: 1; }
+
+.tabs { display: flex; gap: 4px; }
+.tab {
+  font-size: 15px; font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 99px;
+  color: var(--ink-mute);
+  text-decoration: none;
+  cursor: pointer;
+  border: 1px solid transparent;
+  background: transparent;
+  transition: all .15s;
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.tab:hover { color: var(--ink); background: rgba(255,255,255,.4); }
+.tab.on {
+  background: var(--card);
+  border-color: var(--line);
+  color: var(--ink);
+  box-shadow: var(--shadow-sm);
+}
+.tab .ic { font-family: var(--mono); font-size: 13px; opacity: .55; }
+.tab.on .ic { opacity: 1; }
+
+.nav-right { margin-left: auto; display: flex; align-items: center; gap: 14px; }
+.cta-pill {
+  display: inline-flex; align-items: center; gap: 8px;
+  height: 40px; padding: 0 18px;
+  background: var(--yellow);
+  color: var(--ink);
+  border: 1px solid var(--yellow-edge);
+  border-radius: 99px;
+  font-size: 14px; font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 2px 0 var(--yellow-edge);
+  transition: transform .12s;
+}
+.cta-pill:hover { transform: translateY(-1px); }
+.cta-pill svg { transition: transform .15s; }
+.cta-pill:hover svg { transform: translateX(2px); }
+
+/* ─────── PAGE FRAME ─────── */
+.page {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 32px 32px 80px;
+}
+
+.page-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+.crumb {
+  font-size: 12px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  font-weight: 800;
+  color: var(--ink-mute);
+  margin-bottom: 10px;
+  display: flex; align-items: center; gap: 8px;
+}
+.crumb-dot { width: 4px; height: 4px; border-radius: 50%; background: currentColor; opacity: .5; }
+.page-title {
+  margin: 0;
+  font-size: 38px;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+}
+.page-title .hand-sub {
+  font-family: var(--hand);
+  font-weight: 700;
+  font-size: 26px;
+  color: var(--ink-soft);
+  margin-left: 12px;
+  letter-spacing: 0;
+}
+.page-title .hand-sub::before {
+  content: "—";
+  margin-right: 8px;
+  color: var(--ink-mute);
+  font-family: var(--sans);
+}
+.file-meta {
+  margin-top: 10px;
+  font-size: 14px;
+  color: var(--ink-mute);
+  font-family: var(--mono);
+  display: flex; align-items: center; gap: 10px;
+  flex-wrap: wrap;
+}
+.file-meta b { color: var(--ink-soft); font-weight: 600; }
+.meta-dot { width: 3px; height: 3px; border-radius: 50%; background: currentColor; opacity: .4; }
+
+.head-actions { display: flex; gap: 10px; }
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  height: 42px;
+  padding: 0 18px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--ink);
+  font-size: 14px; font-weight: 600;
+  cursor: pointer;
+  transition: all .12s;
+}
+.btn:hover { border-color: var(--ink); }
+.btn.primary {
+  background: var(--ink); color: var(--yellow);
+  border-color: var(--ink);
+  font-weight: 700;
+}
+.btn.primary:hover { background: #000; }
+.btn.lg { height: 48px; padding: 0 22px; font-size: 15px; }
+
+/* ─────── 3-COL SHELL ─────── */
+.shell {
+  display: grid;
+  grid-template-columns: 320px 1fr 320px;
+  gap: 18px;
+  align-items: start;
+}
+.panel {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+.panel-pad { padding: 22px; }
+
+.section { margin-bottom: 26px; }
+.section:last-child { margin-bottom: 0; }
+.section-h {
+  font-size: 12px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  font-weight: 800;
+  color: var(--ink-mute);
+  margin: 0 0 14px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.section-h .hand-note {
+  font-family: var(--hand);
+  font-weight: 400;
+  font-size: 15px;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ink-soft);
+}
+
+/* ─────── RATIO PRESETS ─────── */
+.ratio-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+.ratio-card {
+  position: relative;
+  background: var(--bg-paper);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 14px 10px 12px;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  cursor: pointer;
+  transition: all .12s;
+  font-family: inherit;
+  color: var(--ink);
+  text-align: center;
+}
+.ratio-card:hover { border-color: var(--line-strong); transform: translateY(-1px); }
+.ratio-card.on {
+  background: var(--ink);
+  color: var(--yellow);
+  border-color: var(--ink);
+}
+.ratio-glyph {
+  background: transparent;
+  border: 1.5px solid var(--ink-soft);
+  border-radius: 2px;
+  display: block;
+  margin-bottom: 2px;
+}
+.ratio-card.on .ratio-glyph { border-color: var(--yellow); }
+.ratio-card b { font-size: 14px; font-weight: 700; line-height: 1; }
+.ratio-card small {
+  font-size: 11px;
+  opacity: .65;
+  font-weight: 500;
+  line-height: 1.2;
+}
+.ratio-card.on small { opacity: .8; }
+
+/* ─────── NUMBER INPUTS ─────── */
+.num-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.num-field {
+  display: flex; align-items: center;
+  background: var(--bg-paper);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0 12px;
+  height: 38px;
+  gap: 4px;
+}
+.num-field:focus-within { border-color: var(--ink); background: var(--card); }
+.num-field span {
+  font-weight: 700; color: var(--ink-mute);
+  font-family: var(--mono); font-size: 12px;
+  letter-spacing: .04em;
+}
+.num-field input {
+  border: none; outline: none; background: transparent;
+  font-family: var(--mono); font-size: 14px; flex: 1; min-width: 0;
+  color: var(--ink);
+  padding: 0;
+}
+.num-field em { font-style: normal; font-size: 12px; color: var(--ink-mute); }
+
+/* ─────── TRANSFORM ─────── */
+.trans-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+.trans-btn {
+  height: 40px;
+  background: var(--bg-paper);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-size: 13px; font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center; gap: 4px;
+}
+.trans-btn:hover { border-color: var(--line-strong); }
+.trans-btn .glyph { font-size: 15px; }
+.slider-row {
+  display: flex; align-items: center; gap: 12px;
+  margin-top: 12px;
+}
+.slider-row label { font-size: 12px; color: var(--ink-mute); width: 36px; font-weight: 600; }
+.slider-row input[type="range"] { flex: 1; }
+.slider-row .val { font-family: var(--mono); font-size: 13px; min-width: 48px; text-align: right; color: var(--ink-soft); }
+
+input[type="range"] {
+  -webkit-appearance: none; appearance: none;
+  height: 6px;
+  background: var(--line);
+  border-radius: 99px;
+  outline: none;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: var(--ink);
+  border: 2px solid var(--card);
+  box-shadow: 0 1px 3px rgba(0,0,0,.25);
+  cursor: pointer;
+}
+input[type="range"]::-moz-range-thumb {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: var(--ink);
+  border: 2px solid var(--card);
+  cursor: pointer;
+}
+
+/* ─────── PREVIEW STAGE ─────── */
+.stage {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  min-height: 640px;
+}
+.stage-toolbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg-paper);
+}
+.stage-meta {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink-soft);
+  display: flex; align-items: center; gap: 10px;
+}
+.stage-meta small { font-weight: 500; color: var(--ink-mute); font-size: 12px; }
+
+.zoom { display: flex; align-items: center; gap: 4px; }
+.zoom-btn {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  font-size: 16px;
+  color: var(--ink-soft);
+  cursor: pointer;
+  display: grid; place-items: center;
+}
+.zoom-btn:hover { border-color: var(--ink); color: var(--ink); }
+.zoom-val {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--ink-soft);
+  min-width: 48px;
+  text-align: center;
+  font-weight: 500;
+}
+.zoom .sep { width: 1px; height: 18px; background: var(--line); margin: 0 6px; }
+.zoom-fit {
+  height: 32px; padding: 0 12px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  font-size: 12px; font-weight: 600;
+  color: var(--ink-soft); cursor: pointer;
+}
+.zoom-fit:hover { border-color: var(--ink); color: var(--ink); }
+
+.stage-canvas {
+  flex: 1;
+  display: grid; place-items: center;
+  padding: 36px;
+  background:
+    linear-gradient(45deg, #e6dec7 25%, transparent 25%),
+    linear-gradient(-45deg, #e6dec7 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #e6dec7 75%),
+    linear-gradient(-45deg, transparent 75%, #e6dec7 75%),
+    var(--bg-paper);
+  background-size: 24px 24px;
+  background-position: 0 0, 0 12px, 12px -12px, -12px 0px;
+  min-height: 480px;
+}
+.stage-img {
+  position: relative;
+  width: min(70%, 560px);
+  aspect-ratio: 3 / 2;
+  border-radius: 4px;
+  overflow: hidden;
+  background: linear-gradient(180deg, #1a3a5f 0%, #2d5a8a 100%);
+  box-shadow: 0 8px 24px rgba(0,0,0,.18);
+}
+.stage-img .img-mock {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse at 50% 30%, rgba(255,255,255,.15) 0%, transparent 60%),
+    repeating-linear-gradient(90deg, transparent 0 80px, rgba(255,255,255,.04) 80px 81px),
+    repeating-linear-gradient(0deg, transparent 0 80px, rgba(255,255,255,.04) 80px 81px);
+}
+.stage-img .img-label {
+  position: absolute; left: 50%; top: 50%;
+  transform: translate(-50%,-50%);
+  color: #fff;
+  font-family: var(--hand);
+  font-size: 64px;
+  font-weight: 700;
+  letter-spacing: -.02em;
+  text-shadow: 0 4px 12px rgba(0,0,0,.4);
+  white-space: nowrap;
+}
+.stage-img .img-sub {
+  position: absolute;
+  left: 50%; bottom: 28px;
+  transform: translateX(-50%);
+  color: #6fc7ff;
+  font-family: var(--hand);
+  font-size: 48px;
+  font-weight: 700;
+  letter-spacing: -.02em;
+}
+.crop-frame {
+  position: absolute;
+  inset: 14% 18% 14% 18%;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 9999px rgba(0,0,0,.5);
+  z-index: 2;
+}
+.crop-frame .grid {
+  position: absolute; inset: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+}
+.crop-frame .grid span { border: .5px dashed rgba(255,255,255,.55); }
+.crop-handle {
+  position: absolute;
+  width: 12px; height: 12px;
+  background: var(--ink);
+  border: 2px solid #fff;
+  border-radius: 50%;
+}
+.h-tl { top: -6px; left: -6px; cursor: nwse-resize; }
+.h-tr { top: -6px; right: -6px; cursor: nesw-resize; }
+.h-bl { bottom: -6px; left: -6px; cursor: nesw-resize; }
+.h-br { bottom: -6px; right: -6px; cursor: nwse-resize; }
+.h-t { top: -6px; left: 50%; transform: translateX(-50%); cursor: ns-resize; }
+.h-b { bottom: -6px; left: 50%; transform: translateX(-50%); cursor: ns-resize; }
+.h-l { left: -6px; top: 50%; transform: translateY(-50%); cursor: ew-resize; }
+.h-r { right: -6px; top: 50%; transform: translateY(-50%); cursor: ew-resize; }
+
+.stage-foot {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px 20px;
+  border-top: 1px solid var(--line);
+  background: var(--bg-paper);
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+.stage-foot .badge {
+  background: var(--ink);
+  color: var(--yellow);
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+/* ─────── EXPORT RAIL ─────── */
+.format-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+.format-btn {
+  height: 42px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--bg-paper);
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .03em;
+  color: var(--ink);
+  cursor: pointer;
+}
+.format-btn:hover { border-color: var(--line-strong); }
+.format-btn.on { background: var(--ink); color: var(--yellow); border-color: var(--ink); }
+
+.quality-row {
+  display: flex; align-items: baseline; justify-content: space-between;
+  margin-bottom: 8px;
+}
+.quality-row span { font-size: 13px; color: var(--ink-mute); font-weight: 600; }
+.quality-row b { font-family: var(--mono); font-size: 17px; font-weight: 700; }
+
+.dl-btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%;
+  height: 48px;
+  background: var(--ink);
+  color: var(--yellow);
+  border: 1px solid var(--ink);
+  border-radius: 10px;
+  font-size: 15px; font-weight: 700;
+  cursor: pointer;
+}
+.dl-btn:hover { background: #000; }
+
+.tip {
+  margin-top: 18px;
+  padding: 14px 16px;
+  background: var(--yellow);
+  border: 1px solid var(--yellow-edge);
+  border-radius: 10px;
+}
+.tip-h {
+  display: flex; align-items: center; gap: 6px;
+  font-family: var(--hand);
+  font-size: 19px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.tip p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+
+/* ─────── PDF — Page-specific ─────── */
+.pdf-shell {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 18px;
+  align-items: start;
+}
+.pdf-strip {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: 22px;
+}
+.strip-h {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-bottom: 16px;
+}
+.strip-h .hand-note { font-family: var(--hand); font-size: 16px; color: var(--ink-soft); }
+
+.page-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+.page-card {
+  position: relative;
+  background: var(--bg-paper);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px;
+  cursor: grab;
+  transition: all .15s;
+}
+.page-card:hover { border-color: var(--line-strong); transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+.page-card.active {
+  border-color: var(--ink);
+  box-shadow: 0 6px 16px rgba(40,30,10,.12);
+}
+.page-card.add {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 6px;
+  border-style: dashed;
+  background: transparent;
+  cursor: pointer;
+  text-align: center;
+  min-height: 220px;
+}
+.page-card.add .plus { font-size: 38px; color: var(--ink-mute); font-weight: 200; line-height: 1; }
+.page-card.add small { font-size: 13px; color: var(--ink-soft); font-weight: 600; }
+.page-card.add .hand { font-family: var(--hand); font-size: 16px; color: var(--ink-mute); }
+
+.page-num {
+  position: absolute; top: 10px; left: 10px;
+  width: 26px; height: 26px;
+  background: var(--ink); color: var(--yellow);
+  border-radius: 50%;
+  display: grid; place-items: center;
+  font-family: var(--mono);
+  font-size: 12px; font-weight: 800;
+  z-index: 2;
+}
+.page-grip {
+  position: absolute; top: 12px; right: 38px;
+  font-size: 16px; letter-spacing: -3px;
+  color: var(--ink-mute); opacity: .5;
+}
+.page-x {
+  position: absolute; top: 10px; right: 10px;
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--card);
+  font-size: 14px; line-height: 1;
+  color: var(--ink-mute);
+  cursor: pointer;
+  display: grid; place-items: center;
+  z-index: 2;
+}
+.page-x:hover { background: var(--red); color: #fff; border-color: var(--red); }
+.page-thumb {
+  aspect-ratio: 3/4;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #b89a64 0%, #cfb582 50%, #b89a64 100%);
+  position: relative;
+  overflow: hidden;
+}
+.page-thumb svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.page-thumb.alt { background: linear-gradient(135deg, #8eb4d6 0%, #b9dcec 50%, #8eb4d6 100%); }
+.page-thumb.alt2 { background: linear-gradient(135deg, #c5e4a8 0%, #d9efbf 50%, #b6d997 100%); }
+.page-thumb.alt3 { background: linear-gradient(135deg, #d6b1c1 0%, #ffc1ce 50%, #d6b1c1 100%); }
+
+.page-name {
+  margin-top: 10px;
+  font-size: 13px; font-weight: 600;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.page-card small.size {
+  font-size: 11px;
+  color: var(--ink-mute);
+  font-family: var(--mono);
+}
+
+/* paper cards (PDF) */
+.paper-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+}
+.paper-card {
+  background: var(--bg-paper);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 14px 8px 12px;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  cursor: pointer;
+  font-family: inherit;
+  color: var(--ink);
+  transition: all .12s;
+}
+.paper-card:hover { border-color: var(--line-strong); }
+.paper-card.on { background: var(--ink); color: var(--yellow); border-color: var(--ink); }
+.paper-glyph {
+  width: 26px;
+  background: transparent;
+  border: 1.5px solid var(--ink-soft);
+  border-radius: 2px;
+}
+.paper-card.on .paper-glyph { border-color: var(--yellow); }
+.paper-card b { font-size: 14px; font-weight: 700; }
+.paper-card small { font-size: 11px; opacity: .65; }
+.paper-card.on small { opacity: .85; }
+
+.orient-row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.orient-btn {
+  height: 42px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--bg-paper);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+}
+.orient-btn:hover { border-color: var(--line-strong); }
+.orient-btn.on { background: var(--ink); color: var(--yellow); border-color: var(--ink); }
+
+.rail-input {
+  width: 100%;
+  height: 42px;
+  background: var(--bg-paper);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0 14px;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--ink);
+}
+.rail-input:focus { outline: none; border-color: var(--ink); background: var(--card); }
+
+.pdf-summary {
+  margin-top: 22px;
+  padding: 14px 16px;
+  background: var(--bg-paper);
+  border: 1px dashed var(--line-strong);
+  border-radius: 10px;
+}
+.pdf-summary-row {
+  display: flex; justify-content: space-between;
+  font-size: 13px;
+  padding: 4px 0;
+}
+.pdf-summary-row b { font-family: var(--mono); font-weight: 700; }
+.pdf-summary-row.total {
+  margin-top: 6px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+  font-size: 14px;
+}
+.pdf-summary-row.total b { font-size: 15px; }
+
+/* ─────── STATE MACHINE (empty / loaded) ─────── */
+.state { display: none; }
+.page:not(.loaded) .state-empty { display: block; }
+.page.loaded .state-loaded { display: block; }
+
+/* hidden file input */
+.file-input { display: none; }
+
+/* simplified head for empty state */
+.page-head.empty {
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+.page-head.empty .file-meta {
+  font-family: var(--sans);
+  font-size: 14px;
+  color: var(--ink-mute);
+  letter-spacing: 0;
+}
+.page-head.empty .file-meta b { font-weight: 500; color: var(--ink-soft); }
+
+/* ─────── DROPZONE ─────── */
+.dropzone {
+  position: relative;
+  background: var(--card);
+  border: 2px dashed var(--line-strong);
+  border-radius: var(--radius-lg);
+  padding: 56px 32px 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  min-height: 580px;
+  transition: all .15s;
+  cursor: pointer;
+}
+.dropzone:hover {
+  border-color: var(--ink-soft);
+  background: #fffefa;
+}
+.dropzone.drag-over {
+  border-color: var(--ink);
+  background: var(--yellow);
+  border-style: solid;
+}
+.dropzone.drag-over .dz-pile { transform: scale(1.04); }
+
+/* illustration pile */
+.dz-pile {
+  position: relative;
+  margin-bottom: 36px;
+  height: 180px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: transform .2s ease;
+}
+.dz-card {
+  position: relative;
+  width: 140px;
+  height: 180px;
+  border-radius: 12px;
+  background:
+    repeating-linear-gradient(45deg, #b89a64 0 14px, #a88858 14px 28px);
+  box-shadow:
+    0 4px 10px rgba(40,30,10,.12),
+    0 14px 30px rgba(40,30,10,.18),
+    inset 0 0 0 1px rgba(255,255,255,.08);
+  overflow: hidden;
+}
+.dz-card svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.dz-pile.multi .dz-card {
+  margin: 0 -22px;
+}
+.dz-pile.multi .dz-card:nth-child(1) { transform: rotate(-8deg) translateY(8px); z-index: 1; }
+.dz-pile.multi .dz-card:nth-child(2) { transform: rotate(-1deg) translateY(-2px); z-index: 2; }
+.dz-pile.multi .dz-card:nth-child(3) { transform: rotate(7deg) translateY(4px); z-index: 1; }
+
+.dz-title {
+  margin: 0 0 18px;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.dz-pick-row {
+  display: flex; align-items: center; gap: 12px;
+  font-size: 14px;
+  color: var(--ink-soft);
+  margin-bottom: 26px;
+}
+.dz-pick {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 40px; padding: 0 18px;
+  background: var(--ink);
+  color: var(--yellow);
+  border: none;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14px; font-weight: 700;
+  cursor: pointer;
+}
+.dz-pick:hover { background: #000; }
+.dz-pick-row kbd {
+  font-family: var(--mono);
+  font-size: 12px;
+  padding: 2px 6px;
+  background: var(--bg-paper);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  color: var(--ink-soft);
+}
+
+.dz-formats {
+  display: flex; gap: 8px;
+  margin-bottom: 32px;
+}
+.dz-formats span {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 12px;
+  background: var(--bg-paper);
+  border: 1px solid var(--line);
+  border-radius: 99px;
+  color: var(--ink-soft);
+}
+
+.dz-tips {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(180px, 220px));
+  gap: 14px;
+  max-width: 720px;
+  width: 100%;
+}
+.dz-tip {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 14px 16px;
+  background: var(--bg-paper);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  text-align: left;
+}
+.dz-tip b {
+  font-family: var(--mono);
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--ink);
+  flex-shrink: 0;
+  line-height: 1.2;
+}
+.dz-tip span {
+  font-size: 13px;
+  color: var(--ink-soft);
+  line-height: 1.45;
+}
+
+/* small footer */
+.foot {
+  margin-top: 80px;
+  padding-top: 22px;
+  border-top: 1px dashed var(--line);
+  font-size: 13px;
+  color: var(--ink-mute);
+  display: flex; justify-content: space-between;
+}
+
+/* tab-page show/hide */
+[data-page] { display: none; }
+[data-page].active { display: block; }
+
+/* Responsive guardrails */
+@media (max-width: 1180px) {
+  .shell { grid-template-columns: 280px 1fr 280px; }
+}
+@media (max-width: 1024px) {
+  .shell { grid-template-columns: 1fr; }
+  .pdf-shell { grid-template-columns: 1fr; }
+  .topnav-inner { gap: 16px; padding: 12px 20px; flex-wrap: wrap; }
+  .page { padding: 24px 20px 60px; }
+  .page-title { font-size: 30px; }
+  .page-title .hand-sub { font-size: 20px; }
+  .nav-right .cta-pill span { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- ─────── TOP NAV ─────── -->
+<header class="topnav">
+  <div class="topnav-inner">
+    <a href="#" class="brand">
+      <span class="brand-mark">D</span>
+      <span class="brand-name">Dayflow</span>
+    </a>
+    <nav class="tabs">
+      <button class="tab on" data-target="crop">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2v14a2 2 0 0 0 2 2h14"/><path d="M18 22V8a2 2 0 0 0-2-2H2"/></svg>
+        이미지 자르기
+      </button>
+      <button class="tab" data-target="pdf">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+        이미지 → PDF
+      </button>
+    </nav>
+    <div class="nav-right">
+      <a href="#" class="cta-pill">
+        <span>전체 앱 둘러보기</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </div>
+  </div>
+</header>
+
+<!-- ─────── CROP PAGE ─────── -->
+<main class="page active" data-page="crop">
+  <input type="file" class="file-input" accept="image/*" />
+
+  <!-- EMPTY STATE ────────────────────────── -->
+  <div class="state state-empty">
+    <div class="page-head empty">
+      <div>
+        <div class="crumb">
+          <span>도구</span><span class="crumb-dot"></span><span>이미지 자르기</span>
+        </div>
+        <h1 class="page-title">
+          이미지 자르기<span class="hand-sub">시작해보세요</span>
+        </h1>
+        <div class="file-meta">
+          <span>JPG · PNG · WebP · GIF 지원 · 한 번에 한 장씩</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="dropzone" data-dz>
+      <div class="dz-pile">
+        <div class="dz-card">
+          <svg viewBox="0 0 140 180" preserveAspectRatio="none">
+            <circle cx="105" cy="42" r="14" fill="#fff5d6" opacity="0.95"/>
+            <path d="M0 130 L28 100 L52 115 L80 80 L108 100 L140 88 L140 180 L0 180 Z" fill="rgba(40,30,15,0.55)"/>
+            <path d="M0 150 L36 125 L66 138 L96 115 L124 130 L140 122 L140 180 L0 180 Z" fill="rgba(20,15,8,0.7)"/>
+          </svg>
+        </div>
+      </div>
+
+      <h2 class="dz-title">여기로 이미지를 끌어다 놓으세요</h2>
+
+      <div class="dz-pick-row">
+        <span>또는</span>
+        <button class="dz-pick" data-pick>파일 선택</button>
+        <span>· 클립보드 붙여넣기 <kbd>⌘V</kbd> 도 지원해요</span>
+      </div>
+
+      <div class="dz-formats">
+        <span>JPG</span><span>PNG</span><span>WebP</span><span>GIF</span>
+      </div>
+
+      <div class="dz-tips">
+        <div class="dz-tip"><b>1.</b><span>드래그로 자를 영역을 선택해요</span></div>
+        <div class="dz-tip"><b>2.</b><span>비율(1:1 / 16:9 / 자유)을 골라 정렬해요</span></div>
+        <div class="dz-tip"><b>3.</b><span>원하는 포맷·크기로 내보내요</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOADED STATE ───────────────────────── -->
+  <div class="state state-loaded">
+  <div class="page-head">
+    <div>
+      <div class="crumb">
+        <span>도구</span><span class="crumb-dot"></span><span>이미지 자르기</span>
+      </div>
+      <h1 class="page-title">
+        이미지 자르기<span class="hand-sub">깔끔하게 잘라내요</span>
+      </h1>
+      <div class="file-meta">
+        <b>전체시안_20251106-2026-05-05 (2).png</b>
+        <span class="meta-dot"></span>
+        <span>333 × 592 px</span>
+        <span class="meta-dot"></span>
+        <span>63.8 KB</span>
+      </div>
+    </div>
+    <div class="head-actions">
+      <button class="btn">초기화</button>
+      <button class="btn" data-reset>다른 이미지</button>
+      <button class="btn primary">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v14M5 12l7 7 7-7M5 21h14"/></svg>
+        내보내기
+      </button>
+    </div>
+  </div>
+
+  <div class="shell">
+    <!-- LEFT — control rail -->
+    <aside class="panel panel-pad">
+      <div class="section">
+        <h3 class="section-h">비율 프리셋</h3>
+        <div class="ratio-grid">
+          <button class="ratio-card on">
+            <span class="ratio-glyph" style="width:24px; height:18px;"></span>
+            <b>자유</b><small>비율 고정 X</small>
+          </button>
+          <button class="ratio-card">
+            <span class="ratio-glyph" style="width:20px; height:20px;"></span>
+            <b>1 : 1</b><small>정사각</small>
+          </button>
+          <button class="ratio-card">
+            <span class="ratio-glyph" style="width:24px; height:18px;"></span>
+            <b>4 : 3</b><small>기본</small>
+          </button>
+          <button class="ratio-card">
+            <span class="ratio-glyph" style="width:28px; height:16px;"></span>
+            <b>16 : 9</b><small>와이드</small>
+          </button>
+          <button class="ratio-card">
+            <span class="ratio-glyph" style="width:14px; height:24px;"></span>
+            <b>9 : 16</b><small>스토리</small>
+          </button>
+          <button class="ratio-card">
+            <span class="ratio-glyph" style="width:20px; height:20px;"></span>
+            <b>인스타</b><small>1080 × 1080</small>
+          </button>
+          <button class="ratio-card">
+            <span class="ratio-glyph" style="width:26px; height:15px;"></span>
+            <b>유튜브</b><small>1280 × 720</small>
+          </button>
+          <button class="ratio-card">
+            <span class="ratio-glyph" style="width:28px; height:11px;"></span>
+            <b>페북커버</b><small>1640 × 624</small>
+          </button>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h">자유 입력</h3>
+        <div class="num-grid">
+          <label class="num-field"><span>W</span><input value="333" /><em>px</em></label>
+          <label class="num-field"><span>H</span><input value="250" /><em>px</em></label>
+          <label class="num-field"><span>X</span><input value="0" /><em>px</em></label>
+          <label class="num-field"><span>Y</span><input value="40" /><em>px</em></label>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h">변환</h3>
+        <div class="trans-row">
+          <button class="trans-btn"><span class="glyph">↺</span> -90°</button>
+          <button class="trans-btn"><span class="glyph">↻</span> +90°</button>
+          <button class="trans-btn"><span class="glyph">⇆</span> 좌우반전</button>
+        </div>
+        <div class="slider-row">
+          <label>각도</label>
+          <input type="range" min="-45" max="45" value="0" />
+          <span class="val">0°</span>
+        </div>
+        <div class="slider-row">
+          <label>확대</label>
+          <input type="range" min="50" max="200" value="100" />
+          <span class="val">1.00×</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- CENTER — preview stage -->
+    <section class="stage">
+      <div class="stage-toolbar">
+        <div class="stage-meta">
+          미리보기
+          <small>드래그로 이동 · 스크롤로 줌</small>
+        </div>
+        <div class="zoom">
+          <button class="zoom-btn">−</button>
+          <span class="zoom-val">100%</span>
+          <button class="zoom-btn">+</button>
+          <span class="sep"></span>
+          <button class="zoom-fit">맞춤</button>
+        </div>
+      </div>
+      <div class="stage-canvas">
+        <div class="stage-img">
+          <div class="img-mock"></div>
+          <div class="img-label">든 출동!</div>
+          <div class="img-sub">빠른 출동</div>
+          <div class="crop-frame">
+            <div class="grid"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+            <span class="crop-handle h-tl"></span>
+            <span class="crop-handle h-tr"></span>
+            <span class="crop-handle h-bl"></span>
+            <span class="crop-handle h-br"></span>
+            <span class="crop-handle h-t"></span>
+            <span class="crop-handle h-b"></span>
+            <span class="crop-handle h-l"></span>
+            <span class="crop-handle h-r"></span>
+          </div>
+        </div>
+      </div>
+      <div class="stage-foot">
+        <span>출력 <b style="color:var(--ink); font-weight:700;">333 × 250</b> · 자유</span>
+        <span class="badge">JPG</span>
+      </div>
+    </section>
+
+    <!-- RIGHT — export rail -->
+    <aside class="panel panel-pad">
+      <div class="section">
+        <h3 class="section-h">내보내기</h3>
+        <div class="format-row">
+          <button class="format-btn on">JPG</button>
+          <button class="format-btn">PNG</button>
+          <button class="format-btn">WebP</button>
+        </div>
+        <div class="quality-row"><span>품질</span><b>92</b></div>
+        <input type="range" min="0" max="100" value="92" style="width:100%;" />
+      </div>
+
+      <div class="section">
+        <h3 class="section-h">다운로드</h3>
+        <button class="dl-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v14M5 12l7 7 7-7M5 21h14"/></svg>
+          JPG로 저장
+        </button>
+        <div class="tip">
+          <div class="tip-h">팁 ✎</div>
+          <p>SNS용은 1080px 너비 + 품질 88~92가 가장 안정적이에요.</p>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <div class="foot">
+    <span>© 2026 Dayflow · 종이 그대로의 감성으로</span>
+    <span>이미지는 브라우저에서만 처리돼요 · 서버 업로드 없음</span>
+  </div>
+  </div><!-- /state-loaded -->
+</main>
+
+<!-- ─────── PDF PAGE ─────── -->
+<main class="page" data-page="pdf">
+  <input type="file" class="file-input" accept="image/*" multiple />
+
+  <!-- EMPTY STATE ────────────────────────── -->
+  <div class="state state-empty">
+    <div class="page-head empty">
+      <div>
+        <div class="crumb">
+          <span>도구</span><span class="crumb-dot"></span><span>이미지 → PDF</span>
+        </div>
+        <h1 class="page-title">
+          이미지를 PDF로<span class="hand-sub">시작해보세요</span>
+        </h1>
+        <div class="file-meta">
+          <span>JPG · PNG · WebP · GIF 지원 · 여러 장 한꺼번에</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="dropzone" data-dz>
+      <div class="dz-pile multi">
+        <div class="dz-card">
+          <svg viewBox="0 0 140 180" preserveAspectRatio="none">
+            <path d="M0 130 L28 100 L52 115 L80 80 L108 100 L140 88 L140 180 L0 180 Z" fill="rgba(40,30,15,0.55)"/>
+            <path d="M0 150 L36 125 L66 138 L96 115 L124 130 L140 122 L140 180 L0 180 Z" fill="rgba(20,15,8,0.7)"/>
+          </svg>
+        </div>
+        <div class="dz-card">
+          <svg viewBox="0 0 140 180" preserveAspectRatio="none">
+            <path d="M0 130 L28 100 L52 115 L80 80 L108 100 L140 88 L140 180 L0 180 Z" fill="rgba(40,30,15,0.55)"/>
+            <path d="M0 150 L36 125 L66 138 L96 115 L124 130 L140 122 L140 180 L0 180 Z" fill="rgba(20,15,8,0.7)"/>
+          </svg>
+        </div>
+        <div class="dz-card">
+          <svg viewBox="0 0 140 180" preserveAspectRatio="none">
+            <circle cx="108" cy="44" r="13" fill="#fff5d6" opacity="0.95"/>
+            <path d="M0 130 L28 100 L52 115 L80 80 L108 100 L140 88 L140 180 L0 180 Z" fill="rgba(40,30,15,0.55)"/>
+            <path d="M0 150 L36 125 L66 138 L96 115 L124 130 L140 122 L140 180 L0 180 Z" fill="rgba(20,15,8,0.7)"/>
+          </svg>
+        </div>
+      </div>
+
+      <h2 class="dz-title">여기로 이미지를 끌어다 놓으세요</h2>
+
+      <div class="dz-pick-row">
+        <span>또는</span>
+        <button class="dz-pick" data-pick>파일 선택</button>
+        <span>· 클립보드 붙여넣기 <kbd>⌘V</kbd> 도 지원해요</span>
+      </div>
+
+      <div class="dz-formats">
+        <span>JPG</span><span>PNG</span><span>WebP</span><span>GIF</span>
+      </div>
+
+      <div class="dz-tips">
+        <div class="dz-tip"><b>1.</b><span>여러 이미지를 한꺼번에 끌어다 놓아요</span></div>
+        <div class="dz-tip"><b>2.</b><span>드래그로 순서를 바꿀 수 있어요</span></div>
+        <div class="dz-tip"><b>3.</b><span>용지 크기(A4 / Letter / 원본) 선택 후 내보내기</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOADED STATE ───────────────────────── -->
+  <div class="state state-loaded">
+  <div class="page-head">
+    <div>
+      <div class="crumb">
+        <span>도구</span><span class="crumb-dot"></span><span>이미지 → PDF</span>
+      </div>
+      <h1 class="page-title">
+        이미지를 PDF로<span class="hand-sub">한 권으로 묶어요</span>
+      </h1>
+      <div class="file-meta">
+        <b>6장 업로드됨</b>
+        <span class="meta-dot"></span>
+        <span>원본 9.4 MB</span>
+        <span class="meta-dot"></span>
+        <span>예상 PDF 약 6.2 MB</span>
+      </div>
+    </div>
+    <div class="head-actions">
+      <button class="btn" data-reset>전체 삭제</button>
+      <button class="btn">+ 더 추가</button>
+      <button class="btn primary">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v14M5 12l7 7 7-7M5 21h14"/></svg>
+        PDF 만들기
+      </button>
+    </div>
+  </div>
+
+  <div class="pdf-shell">
+    <!-- LEFT — settings -->
+    <aside class="panel panel-pad">
+      <div class="section">
+        <h3 class="section-h">용지 크기</h3>
+        <div class="paper-row">
+          <button class="paper-card on">
+            <span class="paper-glyph" style="aspect-ratio: 210/297;"></span>
+            <b>A4</b><small>210 × 297</small>
+          </button>
+          <button class="paper-card">
+            <span class="paper-glyph" style="aspect-ratio: 8.5/11;"></span>
+            <b>Letter</b><small>8.5 × 11</small>
+          </button>
+          <button class="paper-card">
+            <span class="paper-glyph" style="aspect-ratio: 4/3;"></span>
+            <b>원본</b><small>이미지 그대로</small>
+          </button>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h">방향</h3>
+        <div class="orient-row">
+          <button class="orient-btn on">┃ 세로</button>
+          <button class="orient-btn">━ 가로</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h">레이아웃</h3>
+        <div class="orient-row">
+          <button class="orient-btn on">장당 1장</button>
+          <button class="orient-btn">2장 분할</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-h">파일명</h3>
+        <input class="rail-input" value="document_2026-05-16.pdf" />
+        <div class="pdf-summary">
+          <div class="pdf-summary-row"><span>페이지 수</span><b>6장</b></div>
+          <div class="pdf-summary-row"><span>원본 용량</span><b>9.4 MB</b></div>
+          <div class="pdf-summary-row total"><span>예상 PDF</span><b>6.2 MB</b></div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- RIGHT — page board -->
+    <section class="pdf-strip">
+      <div class="strip-h">
+        <h3 class="section-h" style="margin:0;">페이지 순서</h3>
+        <span class="hand-note">드래그로 변경 ✎</span>
+      </div>
+
+      <div class="page-grid">
+        <div class="page-card active">
+          <span class="page-num">1</span>
+          <span class="page-grip">⋮⋮</span>
+          <button class="page-x" aria-label="제거">×</button>
+          <div class="page-thumb">
+            <svg viewBox="0 0 200 260" preserveAspectRatio="none"><circle cx="160" cy="55" r="18" fill="#fff5d6" opacity=".85"/><path d="M0 180 L40 150 L70 165 L110 130 L140 145 L180 125 L200 140 L200 260 L0 260 Z" fill="rgba(40,35,25,.55)"/></svg>
+          </div>
+          <div class="page-name">표지.png</div>
+          <small class="size">1.2 MB</small>
+        </div>
+
+        <div class="page-card">
+          <span class="page-num">2</span>
+          <span class="page-grip">⋮⋮</span>
+          <button class="page-x" aria-label="제거">×</button>
+          <div class="page-thumb alt">
+            <svg viewBox="0 0 200 260" preserveAspectRatio="none"><rect x="30" y="40" width="140" height="14" rx="2" fill="rgba(255,255,255,.6)"/><rect x="30" y="70" width="100" height="8" rx="2" fill="rgba(255,255,255,.4)"/><rect x="30" y="110" width="140" height="80" rx="4" fill="rgba(255,255,255,.3)"/></svg>
+          </div>
+          <div class="page-name">목차.png</div>
+          <small class="size">0.8 MB</small>
+        </div>
+
+        <div class="page-card">
+          <span class="page-num">3</span>
+          <span class="page-grip">⋮⋮</span>
+          <button class="page-x" aria-label="제거">×</button>
+          <div class="page-thumb alt2">
+            <svg viewBox="0 0 200 260" preserveAspectRatio="none"><path d="M0 200 L50 160 L90 175 L130 140 L170 155 L200 145 L200 260 L0 260 Z" fill="rgba(40,35,25,.4)"/><circle cx="170" cy="60" r="22" fill="rgba(255,255,255,.5)"/></svg>
+          </div>
+          <div class="page-name">01_intro.jpg</div>
+          <small class="size">2.1 MB</small>
+        </div>
+
+        <div class="page-card">
+          <span class="page-num">4</span>
+          <span class="page-grip">⋮⋮</span>
+          <button class="page-x" aria-label="제거">×</button>
+          <div class="page-thumb alt3">
+            <svg viewBox="0 0 200 260" preserveAspectRatio="none"><rect x="20" y="60" width="40" height="160" fill="rgba(40,35,25,.4)"/><rect x="80" y="100" width="40" height="120" fill="rgba(40,35,25,.5)"/><rect x="140" y="40" width="40" height="180" fill="rgba(40,35,25,.55)"/></svg>
+          </div>
+          <div class="page-name">02_chart.png</div>
+          <small class="size">1.4 MB</small>
+        </div>
+
+        <div class="page-card">
+          <span class="page-num">5</span>
+          <span class="page-grip">⋮⋮</span>
+          <button class="page-x" aria-label="제거">×</button>
+          <div class="page-thumb">
+            <svg viewBox="0 0 200 260" preserveAspectRatio="none"><rect x="20" y="40" width="160" height="20" fill="rgba(40,35,25,.4)"/><rect x="20" y="70" width="160" height="14" fill="rgba(40,35,25,.25)"/><rect x="20" y="90" width="160" height="14" fill="rgba(40,35,25,.25)"/><rect x="20" y="110" width="160" height="14" fill="rgba(40,35,25,.25)"/></svg>
+          </div>
+          <div class="page-name">03_table.png</div>
+          <small class="size">1.1 MB</small>
+        </div>
+
+        <div class="page-card">
+          <span class="page-num">6</span>
+          <span class="page-grip">⋮⋮</span>
+          <button class="page-x" aria-label="제거">×</button>
+          <div class="page-thumb alt">
+            <svg viewBox="0 0 200 260" preserveAspectRatio="none"><circle cx="100" cy="130" r="60" fill="rgba(255,255,255,.4)"/><circle cx="100" cy="130" r="35" fill="rgba(40,35,25,.3)"/></svg>
+          </div>
+          <div class="page-name">04_summary.jpg</div>
+          <small class="size">1.8 MB</small>
+        </div>
+
+        <div class="page-card add">
+          <div class="plus">+</div>
+          <small>이미지 추가</small>
+          <span class="hand">또는 끌어다 놓기</span>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="foot">
+    <span>© 2026 Dayflow · 종이 그대로의 감성으로</span>
+    <span>JPG · PNG · HEIC · WebP 지원 · 최대 100장</span>
+  </div>
+  </div><!-- /state-loaded -->
+</main>
+
+<script>
+  // Tab switching
+  const tabs = document.querySelectorAll('.tab');
+  const pages = document.querySelectorAll('[data-page]');
+  tabs.forEach(t => {
+    t.addEventListener('click', () => {
+      const target = t.dataset.target;
+      tabs.forEach(x => x.classList.toggle('on', x.dataset.target === target));
+      pages.forEach(p => p.classList.toggle('active', p.dataset.page === target));
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+
+  // Empty → Loaded state swap (per page)
+  pages.forEach(page => {
+    const fileInput = page.querySelector('.file-input');
+    const dropzone = page.querySelector('[data-dz]');
+    const pickBtn = page.querySelector('[data-pick]');
+
+    const loadFile = () => {
+      page.classList.add('loaded');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+    const resetFile = () => {
+      page.classList.remove('loaded');
+      if (fileInput) fileInput.value = '';
+    };
+
+    if (pickBtn) pickBtn.addEventListener('click', e => { e.stopPropagation(); fileInput?.click(); });
+    if (dropzone) dropzone.addEventListener('click', e => {
+      if (e.target.closest('[data-pick]')) return;
+      fileInput?.click();
+    });
+    if (fileInput) fileInput.addEventListener('change', () => {
+      if (fileInput.files && fileInput.files.length) loadFile();
+    });
+
+    // drag & drop
+    if (dropzone) {
+      ['dragenter','dragover'].forEach(ev => dropzone.addEventListener(ev, e => {
+        e.preventDefault(); e.stopPropagation();
+        dropzone.classList.add('drag-over');
+      }));
+      ['dragleave','dragend'].forEach(ev => dropzone.addEventListener(ev, e => {
+        e.preventDefault(); e.stopPropagation();
+        if (e.target === dropzone) dropzone.classList.remove('drag-over');
+      }));
+      dropzone.addEventListener('drop', e => {
+        e.preventDefault(); e.stopPropagation();
+        dropzone.classList.remove('drag-over');
+        loadFile();
+      });
+    }
+
+    // Reset buttons inside loaded state
+    page.querySelectorAll('[data-reset]').forEach(b => b.addEventListener('click', resetFile));
+  });
+
+  // Ratio preset selection
+  document.querySelectorAll('.ratio-grid').forEach(g => {
+    g.addEventListener('click', e => {
+      const card = e.target.closest('.ratio-card');
+      if (!card) return;
+      g.querySelectorAll('.ratio-card').forEach(c => c.classList.toggle('on', c === card));
+    });
+  });
+
+  // Format / paper / orient toggles
+  function bindToggle(sel) {
+    document.querySelectorAll(sel).forEach(group => {
+      group.addEventListener('click', e => {
+        const btn = e.target.closest('button');
+        if (!btn || !group.contains(btn)) return;
+        group.querySelectorAll('button').forEach(b => b.classList.toggle('on', b === btn));
+      });
+    });
+  }
+  bindToggle('.format-row');
+  bindToggle('.paper-row');
+  bindToggle('.orient-row');
+
+  // Page card delete (visual only)
+  document.querySelectorAll('.page-x').forEach(x => {
+    x.addEventListener('click', e => {
+      e.stopPropagation();
+      const card = x.closest('.page-card');
+      card.style.transition = 'all .25s';
+      card.style.opacity = '0';
+      card.style.transform = 'scale(.9)';
+      setTimeout(() => card.remove(), 250);
+    });
+  });
+
+  // Page card click — set active
+  document.querySelectorAll('.page-grid').forEach(g => {
+    g.addEventListener('click', e => {
+      const card = e.target.closest('.page-card:not(.add)');
+      if (!card || e.target.classList.contains('page-x')) return;
+      g.querySelectorAll('.page-card').forEach(c => c.classList.toggle('active', c === card));
+    });
+  });
+
+  // Quality slider — live number
+  const qSlider = document.querySelector('.quality-row + input[type="range"]');
+  const qVal = document.querySelector('.quality-row b');
+  if (qSlider && qVal) qSlider.addEventListener('input', () => qVal.textContent = qSlider.value);
+</script>
+
+</body>
+</html>
