@@ -32,6 +32,7 @@ import { useDataModeStore } from "@/store/dataMode";
 import { useModalStore } from "@/store/modal";
 import { configureDataSource, getReadyPromise } from "@/data/source";
 import { queryClient } from "@/lib/query-client";
+import { navKeyToHref } from "@/lib/nav";
 import type { AccentColor } from "@/types";
 
 import type { SearchEntry } from "@/components/SearchOverlay/SearchOverlay";
@@ -82,7 +83,7 @@ export default function AppLayout({
   const closeSearch = useCallback(() => setSearchOpen(false), []);
   const navigateFromSearch = useCallback(
     (entry: SearchEntry) => {
-      router.push(entry.id === "home" ? "/dashboard" : `/dashboard/${entry.id}`);
+      router.push(navKeyToHref(entry.id));
     },
     [router],
   );
@@ -162,7 +163,7 @@ export default function AppLayout({
       <div className="app">
         <Sidebar
           active={active}
-          onSelect={(key) => router.push(key === "home" ? "/dashboard" : `/dashboard/${key}`)}
+          onSelect={(key) => router.push(navKeyToHref(key))}
         />
         <main className="main" data-screen-label={active}>
           <Suspense fallback={<PageFallback />}>{children}</Suspense>

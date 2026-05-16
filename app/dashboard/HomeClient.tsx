@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { HomePage } from "@/screens/home/HomePage";
 import { usePreferences } from "@/data/preferences";
 import { useModalStore } from "@/store/modal";
+import { navKeyToHref } from "@/lib/nav";
 
 export default function DashboardHome() {
   const router = useRouter();
@@ -15,11 +16,7 @@ export default function DashboardHome() {
     <HomePage
       tweaks={tweaks}
       setTweak={setTweak}
-      setActive={(key) => {
-        if (key === "crop" || key === "pdf")
-          return router.push(`/tools/${key}`);
-        router.push(key === "home" ? "/dashboard" : `/dashboard/${key}`);
-      }}
+      setActive={(key) => router.push(navKeyToHref(key))}
       setSearchOpen={() => {
         // ⌘K 가 layout 에서 처리. 검색 토글은 Phase 5 에서 통합.
       }}
