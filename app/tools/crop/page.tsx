@@ -17,8 +17,6 @@ export const metadata: Metadata = {
     "PNG 자르기",
   ],
   alternates: { canonical: "/tools/crop" },
-  // 시안만 있고 실제 기능 미구현 상태 — 공개 보류 (feature-flags.ts 참고)
-  robots: { index: false, follow: false },
   openGraph: {
     title: "이미지 자르기 · Dayflow",
     description:

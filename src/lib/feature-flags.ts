@@ -1,4 +1,4 @@
-// 임시 feature flag — UI 시안만 있고 실제 기능 미구현 상태인 도구를
-// 공개 보류(사이드바/검색/홈/모바일메뉴/랜딩/sitemap/색인) 처리하기 위함.
-// 실제 동작(업로드→크롭/PDF 변환) 구현 완료 후 true 로 전환.
-export const IMAGE_TOOLS_PUBLIC = false;
+// 이미지 도구(/tools/crop, /tools/pdf) 공개 여부.
+// false 면 사이드바/검색/홈/모바일메뉴/랜딩/sitemap 에 노출되지 않음.
+// 라우트 자체는 항상 살아 있고, 노출 여부만 일괄 토글.
+export const IMAGE_TOOLS_PUBLIC = true;

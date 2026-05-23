@@ -17,8 +17,6 @@ export const metadata: Metadata = {
     "무료 PDF 변환",
   ],
   alternates: { canonical: "/tools/pdf" },
-  // 시안만 있고 실제 기능 미구현 상태 — 공개 보류 (feature-flags.ts 참고)
-  robots: { index: false, follow: false },
   openGraph: {
     title: "이미지 → PDF 변환기 · Dayflow",
     description:
