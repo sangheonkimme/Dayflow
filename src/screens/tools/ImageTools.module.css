@@ -61,7 +61,7 @@
 
 .toolPage {
   background: var(--bg);
-  padding: 24px 28px;
+  padding: 32px 32px 80px;
   font-family: var(--sans);
   color: var(--ink);
   min-height: 100%;
@@ -70,10 +70,28 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  max-width: 1440px;
+  margin: 0 auto;
+  width: 100%;
 }
 .toolPage :global(.page-head) {
-  margin-bottom: 18px;
+  margin-bottom: 28px;
   flex-shrink: 0;
+}
+/* WLD 시안 타이포 토큰을 .toolPage 안에서만 오버라이드 — 다른 페이지 영향 X */
+.toolPage :global(.crumb) {
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+.toolPage :global(.page-title) {
+  font-size: 38px;
+  line-height: 1.1;
+}
+.toolPage :global(.page-title .hand-sub) {
+  font-size: 26px;
+  font-weight: 700;
 }
 
 /* ─── CROP · Classic 3-pane ─── */
@@ -916,38 +934,53 @@
   font-family: var(--mono);
 }
 
-/* ─── PDF · Empty / dropzone ─── */
+/* ─── Empty / dropzone (Crop · PDF 공용) — WLD 시안 토큰 ─── */
 .dropzone {
   flex: 1;
   background: var(--card);
   border: 2px dashed var(--line-strong);
-  border-radius: var(--radius-md);
-  padding: 36px 20px;
+  border-radius: var(--radius-lg);
+  padding: 56px 32px 48px;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
+  min-height: 580px;
   overflow-y: auto;
+  transition: all 0.15s;
+  cursor: pointer;
+}
+.dropzone:hover {
+  border-color: var(--ink-soft);
+  background: #fffefa;
 }
 .dzPile {
   position: relative;
   display: flex;
-  margin-bottom: 28px;
+  justify-content: center;
+  align-items: center;
+  height: 180px;
+  margin-bottom: 36px;
 }
 .dzPile > * {
-  margin: 0 -28px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  margin: 0 -22px;
+  box-shadow:
+    0 4px 10px rgba(40, 30, 10, 0.12),
+    0 14px 30px rgba(40, 30, 10, 0.18);
 }
 .dropzone h2 {
-  margin: 0 0 8px;
+  margin: 0 0 18px;
   font-size: 22px;
   font-weight: 800;
   letter-spacing: -0.02em;
 }
 .dropzone > p {
-  margin: 0 0 18px;
+  margin: 0 0 26px;
   color: var(--ink-soft);
-  font-size: 13px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 .dzLink {
   background: var(--ink);
@@ -955,22 +988,28 @@
   border: none;
   font-family: inherit;
   font-weight: 700;
-  font-size: 13px;
-  padding: 6px 12px;
-  border-radius: 6px;
+  font-size: 14px;
+  height: 40px;
+  padding: 0 18px;
+  border-radius: 8px;
   cursor: pointer;
-  margin: 0 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.dzLink:hover {
+  background: #000;
 }
 .dzFormats {
   display: flex;
-  gap: 6px;
-  margin-bottom: 24px;
+  gap: 8px;
+  margin-bottom: 32px;
 }
 .dzFormats span {
   font-family: var(--mono);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
-  padding: 3px 9px;
+  padding: 4px 12px;
   background: var(--bg-paper);
   border: 1px solid var(--line);
   border-radius: 99px;
