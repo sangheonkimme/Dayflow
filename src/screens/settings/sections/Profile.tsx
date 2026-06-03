@@ -45,9 +45,19 @@ export const ProfileSection = () => {
               height: 64,
               fontSize: 26,
               background: "var(--pink)",
+              overflow: "hidden",
             }}
           >
-            {avatarChar}
+            {user?.avatarUrl ? (
+              <img
+                src={user.avatarUrl}
+                alt=""
+                referrerPolicy="no-referrer"
+                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              />
+            ) : (
+              avatarChar
+            )}
           </div>
           <div style={{ flex: 1 }}>
             <b style={{ fontSize: 18 }}>{current}</b>

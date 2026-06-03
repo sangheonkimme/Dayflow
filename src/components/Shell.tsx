@@ -122,7 +122,13 @@ function Sidebar({ active, onSelect }: SidebarProps) {
         <div
           className={`${s.foot}${active === "settings" ? ` ${s.active}` : ""}`}
         >
-          <div className={s.avatar}>{avatarChar}</div>
+          <div className={s.avatar}>
+            {user?.avatarUrl ? (
+              <img src={user.avatarUrl} alt="" referrerPolicy="no-referrer" />
+            ) : (
+              avatarChar
+            )}
+          </div>
           <div className={s.footMeta}>
             <b>{displayName}</b>
             <span>{user ? "무료 플랜" : "로그인 필요"}</span>

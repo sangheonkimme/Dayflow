@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "@/screens/mobile/mobile.module.css";
 import { EditProfileSheet } from "@/screens/mobile/sheets/EditProfileSheet";
 import { ChangePasswordSheet } from "@/screens/mobile/sheets/ChangePasswordSheet";
@@ -10,8 +10,14 @@ import { useAuth } from "@/data/auth";
 
 export const ProfileScreen = ({ onBack, onUpgrade }: any) => {
   const { user, signOut } = useAuth();
-  const [name, setName] = useState(user?.email?.split("@")[0] ?? "나비");
+  const fallbackName = user?.displayName ?? user?.email?.split("@")[0] ?? "나비";
+  const [name, setName] = useState(fallbackName);
   const [email] = useState(user?.email ?? "");
+  // user 가 늦게 로드되거나 displayName 갱신될 때 동기화 — 사용자가 편집 중이 아닐 때만.
+  useEffect(() => {
+    setName((n) => (n === "" || n === "나비" ? fallbackName : n));
+  }, [fallbackName]);
+  const avatarChar = (fallbackName[0] ?? "나").toUpperCase();
   const [editOpen, setEditOpen] = useState(false);
   const [pwOpen, setPwOpen] = useState(false);
   const stats = [
@@ -95,9 +101,19 @@ export const ProfileScreen = ({ onBack, onUpgrade }: any) => {
             fontFamily: "var(--hand)",
             fontWeight: 700,
             fontSize: 36,
+            overflow: "hidden",
           }}
         >
-          나
+          {user?.avatarUrl ? (
+            <img
+              src={user.avatarUrl}
+              alt=""
+              referrerPolicy="no-referrer"
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            />
+          ) : (
+            avatarChar
+          )}
         </div>
         <b
           style={{
