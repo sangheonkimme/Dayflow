@@ -14,7 +14,7 @@ export const LoginScreen = ({
   onSwitch,
 }: any) => {
   const t = AUTH_TEXT[lang];
-  const { signIn } = useAuth();
+  const { signIn, signInWithGoogle } = useAuth();
   const [email, setEmail] = useState("");
   const [pwd, setPwd] = useState("");
   const [showPwd, setShowPwd] = useState(false);
@@ -32,6 +32,16 @@ export const LoginScreen = ({
       const r = await signIn(email, pwd);
       if (!r.ok) setErrorMsg(r.message || "로그인에 실패했어요.");
     } finally {
+      setSubmitting(false);
+    }
+  };
+  const handleGoogle = async () => {
+    if (submitting) return;
+    setErrorMsg(null);
+    setSubmitting(true);
+    const r = await signInWithGoogle();
+    if (!r.ok) {
+      setErrorMsg(r.message || "Google 로그인에 실패했어요.");
       setSubmitting(false);
     }
   };
@@ -172,7 +182,7 @@ export const LoginScreen = ({
               }}
             />
           </div>
-          <Btn kind="google" dark={dark} disabled>
+          <Btn kind="google" dark={dark} disabled={submitting} onClick={handleGoogle}>
             <GoogleIcon /> {t.google}
           </Btn>
         </div>
@@ -311,7 +321,7 @@ export const LoginScreen = ({
           <Btn kind="primary" dark={dark}>
             {t.signin}
           </Btn>
-          <Btn kind="google" dark={dark}>
+          <Btn kind="google" dark={dark} disabled={submitting} onClick={handleGoogle}>
             <GoogleIcon /> {t.google}
           </Btn>
 
@@ -387,7 +397,7 @@ export const LoginScreen = ({
           gap: 10,
         }}
       >
-        <Btn kind="google" dark={dark}>
+        <Btn kind="google" dark={dark} disabled={submitting} onClick={handleGoogle}>
           <GoogleIcon /> {t.google}
         </Btn>
         <div

@@ -10,7 +10,7 @@ import { BrandPanel } from "@/screens/auth/PcBrandPanel";
 
 export const PCSignup = ({ lang = "ko", dark = false, onSwitch }: any) => {
   const t = AUTH_TEXT[lang];
-  const { signUp } = useAuth();
+  const { signUp, signInWithGoogle } = useAuth();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [pwd, setPwd] = useState("");
@@ -151,7 +151,23 @@ export const PCSignup = ({ lang = "ko", dark = false, onSwitch }: any) => {
             </p>
           </div>
 
-          <PCBtn kind="google" dark={dark} size="lg" disabled>
+          <PCBtn
+            kind="google"
+            dark={dark}
+            size="lg"
+            disabled={submitting}
+            onClick={async () => {
+              if (submitting) return;
+              setErrorMsg(null);
+              setConfirmMsg(null);
+              setSubmitting(true);
+              const r = await signInWithGoogle();
+              if (!r.ok) {
+                setErrorMsg(r.message || "Google 로그인에 실패했어요.");
+                setSubmitting(false);
+              }
+            }}
+          >
             <GoogleIcon /> {t.google}
           </PCBtn>
 

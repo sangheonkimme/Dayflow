@@ -15,7 +15,7 @@ export const SignupScreen = ({
   onSwitch,
 }: any) => {
   const t = AUTH_TEXT[lang];
-  const { signUp } = useAuth();
+  const { signUp, signInWithGoogle } = useAuth();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [pwd, setPwd] = useState("");
@@ -43,6 +43,17 @@ export const SignupScreen = ({
         );
       }
     } finally {
+      setSubmitting(false);
+    }
+  };
+  const handleGoogle = async () => {
+    if (submitting) return;
+    setErrorMsg(null);
+    setConfirmMsg(null);
+    setSubmitting(true);
+    const r = await signInWithGoogle();
+    if (!r.ok) {
+      setErrorMsg(r.message || "Google 로그인에 실패했어요.");
       setSubmitting(false);
     }
   };
@@ -157,7 +168,7 @@ export const SignupScreen = ({
           </p>
         </div>
 
-        <Btn kind="google" dark={dark}>
+        <Btn kind="google" dark={dark} disabled={submitting} onClick={handleGoogle}>
           <GoogleIcon /> {t.google}
         </Btn>
 
@@ -366,7 +377,7 @@ export const SignupScreen = ({
             flex: 1,
           }}
         >
-          <Btn kind="google" dark={dark}>
+          <Btn kind="google" dark={dark} disabled={submitting} onClick={handleGoogle}>
             <GoogleIcon /> {t.google}
           </Btn>
           <div
@@ -584,7 +595,7 @@ export const SignupScreen = ({
               }}
             />
           </div>
-          <Btn kind="google" dark={dark}>
+          <Btn kind="google" dark={dark} disabled={submitting} onClick={handleGoogle}>
             <GoogleIcon /> {t.google}
           </Btn>
         </>

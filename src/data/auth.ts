@@ -13,6 +13,7 @@ export interface AuthUser {
   id: string;
   email: string;
   displayName?: string;
+  avatarUrl?: string;
 }
 
 export type AuthStatus = "unknown" | "authed" | "guest";
@@ -27,6 +28,9 @@ export interface AuthView {
     password: string,
     displayName?: string,
   ) => Promise<AuthResult>;
+  /** OAuth (Google). 성공 시 provider 로 리다이렉트되므로 호출 시점엔 return 후 화면 떠남.
+   *  실패면 AuthResult 로 반환. */
+  signInWithGoogle: (next?: string) => Promise<AuthResult>;
   sendPasswordReset: (email: string) => Promise<AuthResult>;
   signOut: () => Promise<void>;
   updateDisplayName: (name: string) => Promise<AuthResult>;
@@ -104,8 +108,13 @@ export function useAuth(): AuthView {
       user_metadata?: Record<string, unknown> | null;
     }): AuthUser => {
       const meta = u.user_metadata ?? {};
-      const dn = typeof meta.display_name === "string" ? meta.display_name : undefined;
-      return { id: u.id, email: u.email, displayName: dn };
+      const pick = (k: string) =>
+        typeof meta[k] === "string" && meta[k] ? (meta[k] as string) : undefined;
+      // 이름: 가입 폼 입력값(display_name) → Google(full_name/name)
+      const dn = pick("display_name") ?? pick("full_name") ?? pick("name");
+      // 아바타: Supabase 가 정규화한 avatar_url → Google 원본 picture
+      const av = pick("avatar_url") ?? pick("picture");
+      return { id: u.id, email: u.email, displayName: dn, avatarUrl: av };
     };
 
     supabase.auth.getSession().then(({ data }) => {
@@ -239,6 +248,33 @@ export function useAuth(): AuthView {
     [user],
   );
 
+  // ── signInWithGoogle ──
+  // OAuth 는 브라우저를 리다이렉트시키므로 성공 시 코드 흐름은 여기서 멈춤.
+  // 실패(설정 미비, 네트워크)면 AuthResult 로 반환해 호출부가 토스트 띄울 수 있게.
+  const signInWithGoogle = useCallback(
+    async (next?: string): Promise<AuthResult> => {
+      if (!supabase) {
+        return {
+          ok: false,
+          message: "Supabase 가 설정되지 않았어요. (.env 확인)",
+        };
+      }
+      const origin =
+        typeof window !== "undefined" ? window.location.origin : "";
+      const nextQs = next ? `?next=${encodeURIComponent(next)}` : "";
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${origin}/auth/callback${nextQs}`,
+          queryParams: { prompt: "select_account" },
+        },
+      });
+      if (error) return { ok: false, message: translateError(error.message) };
+      return { ok: true };
+    },
+    [],
+  );
+
   // ── signOut ──
   const signOut = useCallback(async () => {
     if (supabase) {
@@ -256,6 +292,7 @@ export function useAuth(): AuthView {
     status,
     signIn,
     signUp,
+    signInWithGoogle,
     sendPasswordReset,
     signOut,
     updateDisplayName,
