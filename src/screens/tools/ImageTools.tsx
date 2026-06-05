@@ -92,6 +92,7 @@ function CropEmpty({ onPick }: { onPick: (file: File) => void }) {
 
       <div
         className={styles.dropzone}
+        onClick={() => inputRef.current?.click()}
         onDragOver={(e) => {
           e.preventDefault();
           if (!isDragOver) setDragOver(true);
@@ -124,7 +125,10 @@ function CropEmpty({ onPick }: { onPick: (file: File) => void }) {
           또는{" "}
           <button
             className={styles.dzLink}
-            onClick={() => inputRef.current?.click()}
+            onClick={(e) => {
+              e.stopPropagation();
+              inputRef.current?.click();
+            }}
             type="button"
           >
             파일 선택
@@ -204,6 +208,7 @@ function PdfEmpty({ onPick }: { onPick: (files: File[]) => void }) {
 
       <div
         className={styles.dropzone}
+        onClick={() => inputRef.current?.click()}
         onDragOver={(e) => {
           e.preventDefault();
           if (!isDragOver) setDragOver(true);
@@ -241,7 +246,10 @@ function PdfEmpty({ onPick }: { onPick: (files: File[]) => void }) {
           또는{" "}
           <button
             className={styles.dzLink}
-            onClick={() => inputRef.current?.click()}
+            onClick={(e) => {
+              e.stopPropagation();
+              inputRef.current?.click();
+            }}
             type="button"
           >
             파일 선택
