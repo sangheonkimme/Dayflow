@@ -2,11 +2,11 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Stack snapshot (2026-05-09)
+## Stack snapshot (2026-06-06)
 
 **Next.js 16 (App Router, Turbopack 기본) + React 19 + TypeScript + Supabase (`@supabase/ssr`) + TanStack Query + Zustand + Tailwind v3 (preflight off, 점진 도입).**
 
-> Next 16 으로 dev/build 둘 다 Turbopack 이 기본. middleware 파일은 deprecation warning 이 뜨지만 edge 런타임 보존을 위해 `proxy.ts` 로 이전하지 않음 (Supabase auth cold start 영향 회피). `eslint-config-next` 는 ESLint 9 flat config 이행 전까지 v15 에 고정.
+> Next 16 으로 dev/build 둘 다 Turbopack 이 기본. 보호 라우트 진입 가드는 Next 16 컨벤션에 맞춰 `middleware.ts` → 레포 루트 **`proxy.ts`** (export `proxy()`) 로 이전 완료. `eslint-config-next` 는 ESLint 9 flat config 이행 전까지 v15 에 고정.
 
 Vite SPA 잔재는 모두 제거됨 (vitest 포함). 글로벌 `src/styles/styles.css` chrome 일부만 점진 마이그레이션 대상. 진행 상태는 `docs/nextjs-migration-plan.md` 참고.
 
@@ -14,24 +14,24 @@ Vite SPA 잔재는 모두 제거됨 (vitest 포함). 글로벌 `src/styles/style
 
 > 패키지 매니저는 **pnpm 10** (corepack 으로 활성화). `package.json` 의 `packageManager` 필드가 진실. npm/yarn 사용 금지.
 
-- `pnpm dev` — Next.js dev server (기본 포트 3000).
+- `pnpm dev` — Next.js dev server (기본 포트 3000). `NODE_OPTIONS=--max-http-header-size=32768` (Supabase 대용량 auth 쿠키 대비).
 - `pnpm build` — `next build`. Type errors fail the build.
-- `pnpm start` — production 서버 (기본 포트 3000).
+- `pnpm start` — production 서버 (기본 포트 3000). dev 와 동일한 NODE_OPTIONS.
 - `pnpm typecheck` — `tsc --noEmit`. ts-nocheck 신규 추가는 ESLint 가 차단.
-- `pnpm lint` — ESLint (`--max-warnings 0`).
+- `pnpm lint` — `eslint . --ext .js,.jsx,.ts,.tsx --max-warnings 0`.
 
 > 테스트 러너 없음 (vitest 제거). 검증은 typecheck + lint + build + 수동 동작 확인.
 
-Path alias `@/*` → `src/*`. `app/`, `lib/`, `middleware.ts` 는 레포 루트에 위치하고 별도 alias 없이 상대/절대 import.
+Path alias `@/*` → `src/*`. `app/`, `proxy.ts` 는 레포 루트에 위치하고 별도 alias 없이 상대/절대 import.
 
 ## Environment
 
 `.env`:
 
 - `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` — 정식 (Phase 1+).
-- `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` — 레거시 fallback (`src/lib/supabase.ts` 가 둘 다 읽음).
+- `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` — 레거시 fallback (`src/lib/supabase/index.ts` 가 둘 다 읽음).
 
-미설정 시: middleware 는 통과, 클라 `useAuth` 는 'guest', mock 모드(`useDataModeStore`) 토글 시 in-memory 시드로 동작.
+미설정 시: `proxy.ts` 는 통과, 클라 `useAuth` 는 'guest', mock 모드(`useDataModeStore`) 토글 시 in-memory 시드로 동작.
 
 `WLD (4)/` 디렉토리는 시안 모음 — `tsconfig` exclude + `.eslintrc.cjs` ignorePatterns. **읽거나 grep 하지 말 것.**
 
@@ -44,16 +44,19 @@ app/
 ├ layout.tsx           — 루트(html/body, fonts, Providers, 글로벌 CSS import)
 ├ page.tsx             — 랜딩 (인증 시 /dashboard 로 redirect)
 ├ globals.css          — Tailwind directives + reset (preflight off)
+├ robots.ts / sitemap.ts / icon.tsx / apple-icon.tsx — 메타데이터·파비콘 라우트
 ├ (auth)/
-│  ├ login/   signup/   forgot/   onboarding/   page.tsx
+│  ├ login/   signup/   forgot/   onboarding/   page.tsx   (+ _actions.ts)
+├ auth/
+│  └ callback/route.ts — Supabase OAuth(PKCE) 콜백 (code → 세션 쿠키 → next 리다이렉트)
 ├ tools/
 │  ├ layout.tsx (.module.css), crop/ pdf/        page.tsx
 ├ dashboard/
 │  ├ layout.tsx        — Sidebar(usePathname)+Modals+SearchOverlay+Tweaks
-│  ├ page.tsx          — RSC: prefetch 8 도메인 → HydrationBoundary → HomeClient
+│  ├ page.tsx          — RSC: prefetch 6 도메인 → HydrationBoundary → HomeClient
 │  ├ ledger/calendar/memo/subs/txns: page.tsx (RSC prefetch) + *Client.tsx
 │  └ settings/salary/loan/cash: page.tsx (클라 전용)
-└ middleware.ts        — /dashboard/* 보호 (Supabase 미인증 → /login?next=)
+└ (레포 루트) proxy.ts — /dashboard/* 보호 (Supabase 미인증 → /login?next=)
 ```
 
 ### Client UI (`src/screens/`)
@@ -73,13 +76,13 @@ app/
 component → useXxx() (TanStack Query) → Repository → Store (useSyncExternalStore) → DataSource (mock | supabase)
 ```
 
-**서버측 (RSC)** — `src/server/queries/`:
+**서버측 (RSC)** — `src/server/` (flat):
 
 - 8개 도메인 fetcher (`transactions/events/memos/sticky-notes/checklist/subscriptions/pinned-info/daily-log`).
-- `cache()` + `@supabase/ssr` server client. 비로그인 시 빈 배열.
-- `keys.ts` — RSC ↔ 클라 query key 일치 (`["transactions"]` 등).
+- `_session.ts` — RSC 용 `@supabase/ssr` server client + 세션 헬퍼. `cache()` 로 요청당 1회. 비로그인 시 빈 배열.
+- `keys.ts` — RSC ↔ 클라 query key 일치 (`queryKeys.transactions = ["transactions"]` 등).
 - `prefetch.ts` — entries 받아 `dehydrate(QueryClient)` 반환.
-- 라우트 page.tsx 가 prefetch + `<HydrationBoundary>` 로 client wrapper 감쌈.
+- 라우트 page.tsx 가 prefetch + `<HydrationBoundary>` 로 client wrapper 감쌈 (홈은 6개만 prefetch, memos/subscriptions 는 클라 lazy).
 
 **클라측** — `src/data/`:
 
@@ -91,9 +94,11 @@ component → useXxx() (TanStack Query) → Repository → Store (useSyncExterna
 
 ### 인증 / 보호
 
-- middleware (`middleware.ts`) 가 매 요청마다 supabase.auth.getUser() — `/dashboard/*` 미인증 시 `/login?next=...` redirect. env 미설정 시 통과.
+- `proxy.ts` (레포 루트, export `proxy()`) 가 `/dashboard/*` 진입 전 세션 갱신 + 미인증 시 `/login?next=...` redirect. env 미설정 시 통과.
 - 클라: `useAuth()` 가 supabase.auth.onAuthStateChange 구독, status: 'unknown'|'authed'|'guest'.
+- **Google OAuth (PKCE)** — PC/모바일 로그인 버튼 → `signInWithOAuth` → `app/auth/callback/route.ts` 가 `exchangeCodeForSession` 으로 세션 쿠키 세팅 후 `next` 로 리다이렉트 (open redirect 방지: 내부 경로만 허용).
 - Server Actions (`app/(auth)/_actions.ts`) — `signInAction` / `signUpAction` / `sendPasswordResetAction` / `signOutAction`. 폼 wire-up 은 점진 (현재는 useAuth 클라 훅 사용 중).
+- Supabase 클라이언트는 `src/lib/supabase/{client,server,index}.ts` — `client.ts`(브라우저), `server.ts`(RSC/route handler), `index.ts`(legacy `@supabase/supabase-js` + VITE fallback).
 
 ### Tweaks
 
