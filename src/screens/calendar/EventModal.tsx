@@ -18,7 +18,7 @@ function parseEvent(input) {
         : "개인");
 
   const today = new Date();
-  let date = new Date(today);
+  const date = new Date(today);
   if (/내일/.test(input)) date.setDate(date.getDate() + 1);
   else if (/모레/.test(input)) date.setDate(date.getDate() + 2);
   else {
@@ -291,7 +291,7 @@ function EventEdit({ onClose, editing, onDelete, onSave, isDraft }: any) {
             <button
               className="timer-btn danger"
               onClick={() => {
-                onDelete && onDelete(editing);
+                onDelete?.(editing);
                 onClose();
               }}
             >
@@ -315,8 +315,7 @@ function EventEdit({ onClose, editing, onDelete, onSave, isDraft }: any) {
             <button
               className="timer-btn primary"
               onClick={() => {
-                onSave &&
-                  onSave({
+                onSave?.({
                     ...editing,
                     title,
                     cat,
@@ -351,8 +350,7 @@ function EventQuick({ onClose, onSave, onDetailed }) {
     const date = parsed.date as Date;
     const yyyyMmDd = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
     const startTime = `${String(parsed.hour).padStart(2, "0")}:${String(parsed.min).padStart(2, "0")}`;
-    onSave &&
-      onSave({
+    onSave?.({
         title: parsed.title,
         date: yyyyMmDd,
         startTime,
@@ -494,8 +492,7 @@ function EventDetailed({ onClose, onSave, onBack }) {
     const endHour = Math.min(23, startHour + Math.floor((0 + durMin) / 60));
     const endMin = durMin % 60;
     const endTime = `${String(endHour).padStart(2, "0")}:${String(endMin).padStart(2, "0")}`;
-    onSave &&
-      onSave({
+    onSave?.({
         title,
         date: yyyyMmDd,
         startTime,

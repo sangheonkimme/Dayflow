@@ -94,7 +94,7 @@ function ReceiptUploadModal({ open, onClose, onAttach }: any) {
   };
 
   const finish = () => {
-    onAttach && onAttach({ files, txn: linkTxn, ocr: ocrResult });
+    onAttach?.({ files, txn: linkTxn, ocr: ocrResult });
     onClose();
     setTimeout(reset, 300);
   };

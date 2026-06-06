@@ -218,4 +218,4 @@ export const ReceiptSheet = ({ txn, onClose }: any) => {
 };
 
 // txn detail handler exposed via window for simplicity (avoiding context boilerplate)
-let _openTxnRef = null;
+const _openTxnRef = null;

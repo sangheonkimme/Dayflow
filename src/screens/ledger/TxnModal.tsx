@@ -190,7 +190,7 @@ function TxnEdit({ onClose, editing, onDelete, onSave }) {
             <button
               className="timer-btn danger"
               onClick={() => {
-                onDelete && onDelete(editing);
+                onDelete?.(editing);
                 onClose();
               }}
             >
@@ -212,8 +212,7 @@ function TxnEdit({ onClose, editing, onDelete, onSave }) {
             <button
               className="timer-btn primary"
               onClick={() => {
-                onSave &&
-                  onSave({
+                onSave?.({
                     ...editing,
                     type,
                     amount:
@@ -244,8 +243,7 @@ function TxnQuick({ onClose, onSave, onDetailed }: any) {
   const today = new Date().toISOString().slice(0, 10);
   const save = () => {
     if (!val.trim()) return;
-    onSave &&
-      onSave({
+    onSave?.({
         type,
         amount: type === "out" ? -parsed.amount : parsed.amount,
         cat: parsed.cat,
@@ -376,8 +374,7 @@ function TxnDetailed({ onClose, onSave, onBack }) {
   const save = () => {
     const numeric = parseInt(amt, 10) || 0;
     if (numeric === 0 || !cat) return;
-    onSave &&
-      onSave({
+    onSave?.({
         type,
         amount: type === "out" ? -numeric : numeric,
         cat,

@@ -90,6 +90,8 @@ function CropEmpty({ onPick }: { onPick: (file: File) => void }) {
         </div>
       </div>
 
+      {/* 영역 클릭은 마우스 편의 — 키보드 접근은 내부 '파일 선택' 버튼이 담당 */}
+      {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events */}
       <div
         className={styles.dropzone}
         onClick={() => inputRef.current?.click()}
@@ -206,6 +208,8 @@ function PdfEmpty({ onPick }: { onPick: (files: File[]) => void }) {
         </div>
       </div>
 
+      {/* 영역 클릭은 마우스 편의 — 키보드 접근은 내부 '파일 선택' 버튼이 담당 */}
+      {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events */}
       <div
         className={styles.dropzone}
         onClick={() => inputRef.current?.click()}
