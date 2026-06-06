@@ -335,18 +335,22 @@ export const PCSignup = ({ lang = "ko", dark = false, onSwitch }: any) => {
           <div style={{ textAlign: "center" }}>
             <span style={{ fontSize: 14, color: mute }}>
               {t.haveAccount}{" "}
-              <a
+              <button
+                type="button"
                 onClick={() => onSwitch && onSwitch("login")}
                 style={{
                   color: ink,
                   fontWeight: 700,
                   textDecoration: "none",
                   cursor: "pointer",
+                  background: "none",
+                  border: "none",
                   borderBottom: `1.5px solid ${ink}`,
+                  padding: 0,
                 }}
               >
                 {t.login}
-              </a>
+              </button>
             </span>
           </div>
         </div>

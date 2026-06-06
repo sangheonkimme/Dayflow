@@ -40,10 +40,10 @@ function Nav({ onGoToAuth }: { onGoToAuth?: () => void }) {
   return (
     <header className="nav-wrap">
       <nav className="nav">
-        <a href="#" className="nav-brand" onClick={() => setOpen(false)}>
+        <button type="button" className="nav-brand" onClick={() => setOpen(false)}>
           <span className="brand-mark">D</span>
           <span className="brand-name">Dayflow</span>
-        </a>
+        </button>
         <div className="nav-links">
           <a href="#features">기능</a>
           <a href="#demo">데모</a>
@@ -769,9 +769,9 @@ function Footer() {
           </div>
           <p>종이 위의 자유로움을, 디지털의 가벼움으로. 매일 쓰는 도구일수록 더 다정해야 한다고 믿어요.</p>
           <div className="foot-socials">
-            <a href="#" className="foot-soc">{soc(<><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.8" fill="currentColor"/></>)}</a>
-            <a href="#" className="foot-soc">{soc(<path d="M22 5.8a8 8 0 0 1-2.4.7 4 4 0 0 0 1.8-2.2 8.4 8.4 0 0 1-2.6 1 4.1 4.1 0 0 0-7 3.7A11.6 11.6 0 0 1 3 4.7a4.1 4.1 0 0 0 1.3 5.5A4 4 0 0 1 2.4 9.7v.1a4.1 4.1 0 0 0 3.3 4 4 4 0 0 1-1.8.1 4.1 4.1 0 0 0 3.8 2.8A8.2 8.2 0 0 1 2 18.3a11.6 11.6 0 0 0 6.3 1.8c7.5 0 11.7-6.2 11.7-11.7v-.5A8.3 8.3 0 0 0 22 5.8z"/>)}</a>
-            <a href="#" className="foot-soc">{soc(<><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></>)}</a>
+            <button type="button" className="foot-soc">{soc(<><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.8" fill="currentColor"/></>)}</button>
+            <button type="button" className="foot-soc">{soc(<path d="M22 5.8a8 8 0 0 1-2.4.7 4 4 0 0 0 1.8-2.2 8.4 8.4 0 0 1-2.6 1 4.1 4.1 0 0 0-7 3.7A11.6 11.6 0 0 1 3 4.7a4.1 4.1 0 0 0 1.3 5.5A4 4 0 0 1 2.4 9.7v.1a4.1 4.1 0 0 0 3.3 4 4 4 0 0 1-1.8.1 4.1 4.1 0 0 0 3.8 2.8A8.2 8.2 0 0 1 2 18.3a11.6 11.6 0 0 0 6.3 1.8c7.5 0 11.7-6.2 11.7-11.7v-.5A8.3 8.3 0 0 0 22 5.8z"/>)}</button>
+            <button type="button" className="foot-soc">{soc(<><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></>)}</button>
           </div>
         </div>
         <div className="foot-col">
@@ -779,26 +779,26 @@ function Footer() {
           <ul>
             <li><a href="#features">기능</a></li>
             <li><a href="#demo">데모</a></li>
-            <li><a href="#">로드맵</a></li>
-            <li><a href="#">가격</a></li>
+            <li><button type="button">로드맵</button></li>
+            <li><button type="button">가격</button></li>
           </ul>
         </div>
         <div className="foot-col">
           <h5>회사</h5>
           <ul>
-            <li><a href="#">소개</a></li>
-            <li><a href="#">블로그</a></li>
-            <li><a href="#">채용</a></li>
-            <li><a href="#">언론 보도</a></li>
+            <li><button type="button">소개</button></li>
+            <li><button type="button">블로그</button></li>
+            <li><button type="button">채용</button></li>
+            <li><button type="button">언론 보도</button></li>
           </ul>
         </div>
         <div className="foot-col">
           <h5>지원</h5>
           <ul>
             <li><a href="#faq">FAQ</a></li>
-            <li><a href="#">고객센터</a></li>
-            <li><a href="#">개인정보처리방침</a></li>
-            <li><a href="#">이용약관</a></li>
+            <li><button type="button">고객센터</button></li>
+            <li><button type="button">개인정보처리방침</button></li>
+            <li><button type="button">이용약관</button></li>
           </ul>
         </div>
       </div>

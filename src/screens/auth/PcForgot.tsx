@@ -281,17 +281,21 @@ export const PCForgot = ({ lang = "ko", dark = false, initialStep = 0 }: any) =>
             marginBottom: 24,
           }}
         >
-          <a
+          <button
+            type="button"
             style={{
               fontSize: 13,
               color: mute,
               fontWeight: 600,
               cursor: "pointer",
               textDecoration: "none",
+              background: "none",
+              border: "none",
+              padding: 0,
             }}
           >
             ← {t.fpBackToLogin}
-          </a>
+          </button>
         </div>
 
         <div
@@ -638,16 +642,20 @@ export const PCForgot = ({ lang = "ko", dark = false, initialStep = 0 }: any) =>
           }}
         >
           {lang === "ko" ? "도움이 필요하신가요?" : "Need help?"}{" "}
-          <a
+          <button
+            type="button"
             style={{
               color: ink,
               fontWeight: 600,
               textDecoration: "none",
               cursor: "pointer",
+              background: "none",
+              border: "none",
+              padding: 0,
             }}
           >
             {lang === "ko" ? "지원팀에 문의" : "Contact support"}
-          </a>
+          </button>
         </div>
       </div>
     </div>

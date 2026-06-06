@@ -112,7 +112,8 @@ export const LoginScreen = ({
             }
           />
           <div style={{ textAlign: "right", marginTop: -4 }}>
-            <a
+            <button
+              type="button"
               onClick={() => onSwitch && onSwitch("forgot")}
               style={{
                 fontSize: 12,
@@ -120,10 +121,13 @@ export const LoginScreen = ({
                 color: mute,
                 textDecoration: "none",
                 cursor: "pointer",
+                background: "none",
+                border: "none",
+                padding: 0,
               }}
             >
               {t.forgot}
-            </a>
+            </button>
           </div>
         </div>
 
@@ -190,17 +194,21 @@ export const LoginScreen = ({
         <div style={{ marginTop: "auto", textAlign: "center", paddingTop: 24 }}>
           <span style={{ fontSize: 13, color: mute }}>
             {t.noAccount}{" "}
-            <a
+            <button
+              type="button"
               onClick={() => onSwitch && onSwitch("signup")}
               style={{
                 color: ink,
                 fontWeight: 700,
                 textDecoration: "none",
                 cursor: "pointer",
+                background: "none",
+                border: "none",
+                padding: 0,
               }}
             >
               {t.signup} →
-            </a>
+            </button>
           </span>
         </div>
       </div>
@@ -305,17 +313,21 @@ export const LoginScreen = ({
               }
             />
             <div style={{ textAlign: "right" }}>
-              <a
-                href="#"
+              <button
+                type="button"
                 style={{
                   fontSize: 12,
                   fontWeight: 600,
                   color: mute,
                   textDecoration: "none",
+                  background: "none",
+                  border: "none",
+                  padding: 0,
+                  cursor: "pointer",
                 }}
               >
                 {t.forgot}
-              </a>
+              </button>
             </div>
           </div>
           <Btn kind="primary" dark={dark}>
@@ -330,17 +342,21 @@ export const LoginScreen = ({
           >
             <span style={{ fontSize: 13, color: mute }}>
               {t.noAccount}{" "}
-              <a
+              <button
+                type="button"
                 onClick={() => onSwitch && onSwitch("signup")}
                 style={{
                   color: ink,
                   fontWeight: 700,
                   textDecoration: "none",
                   cursor: "pointer",
+                  background: "none",
+                  border: "none",
+                  padding: 0,
                 }}
               >
                 {t.signup}
-              </a>
+              </button>
             </span>
           </div>
         </div>
@@ -472,30 +488,38 @@ export const LoginScreen = ({
           gap: 6,
         }}
       >
-        <a
-          href="#"
+        <button
+          type="button"
           style={{
             fontSize: 12,
             fontWeight: 600,
             color: mute,
             textDecoration: "none",
+            background: "none",
+            border: "none",
+            padding: 0,
+            cursor: "pointer",
           }}
         >
           {t.forgot}
-        </a>
+        </button>
         <span style={{ fontSize: 13, color: mute }}>
           {t.noAccount}{" "}
-          <a
+          <button
+            type="button"
             onClick={() => onSwitch && onSwitch("signup")}
             style={{
               color: ink,
               fontWeight: 700,
               textDecoration: "none",
               cursor: "pointer",
+              background: "none",
+              border: "none",
+              padding: 0,
             }}
           >
             {t.signup}
-          </a>
+          </button>
         </span>
       </div>
     </div>

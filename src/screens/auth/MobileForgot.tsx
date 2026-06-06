@@ -238,7 +238,8 @@ export const ForgotScreen = ({
           <div
             style={{ textAlign: "center", marginTop: "auto", paddingTop: 8 }}
           >
-            <a
+            <button
+              type="button"
               onClick={onBackToLogin}
               style={{
                 fontSize: 13,
@@ -246,10 +247,13 @@ export const ForgotScreen = ({
                 fontWeight: 700,
                 cursor: "pointer",
                 textDecoration: "none",
+                background: "none",
+                border: "none",
+                padding: 0,
               }}
             >
               ← {t.fpBackToLogin}
-            </a>
+            </button>
           </div>
         </>
       )}

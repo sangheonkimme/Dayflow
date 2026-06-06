@@ -50,17 +50,21 @@ export const PCOnboarding = ({
         }}
       >
         <BrandMark dark={dark} size={26} />
-        <a
+        <button
+          type="button"
           style={{
             fontSize: 13,
             fontWeight: 600,
             color: mute,
             cursor: "pointer",
             textDecoration: "none",
+            background: "none",
+            border: "none",
+            padding: 0,
           }}
         >
           {t.skip} →
-        </a>
+        </button>
       </div>
 
       {/* Body */}
@@ -389,7 +393,8 @@ export const PCOnboarding = ({
                   <span>20</span>
                   <span>31</span>
                 </div>
-                <a
+                <button
+                  type="button"
                   style={{
                     display: "block",
                     marginTop: 18,
@@ -399,10 +404,14 @@ export const PCOnboarding = ({
                     fontWeight: 600,
                     cursor: "pointer",
                     textDecoration: "underline",
+                    background: "none",
+                    border: "none",
+                    padding: 0,
+                    width: "100%",
                   }}
                 >
                   {t.skipDay}
-                </a>
+                </button>
               </div>
             )}
 

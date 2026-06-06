@@ -294,17 +294,21 @@ export const SignupScreen = ({
         <div style={{ textAlign: "center", marginTop: "auto", paddingTop: 8 }}>
           <span style={{ fontSize: 13, color: mute }}>
             {t.haveAccount}{" "}
-            <a
+            <button
+              type="button"
               onClick={() => onSwitch && onSwitch("login")}
               style={{
                 color: ink,
                 fontWeight: 700,
                 textDecoration: "none",
                 cursor: "pointer",
+                background: "none",
+                border: "none",
+                padding: 0,
               }}
             >
               {t.login}
-            </a>
+            </button>
           </span>
         </div>
       </div>
@@ -462,17 +466,21 @@ export const SignupScreen = ({
           >
             <span style={{ fontSize: 13, color: mute }}>
               {t.haveAccount}{" "}
-              <a
+              <button
+                type="button"
                 onClick={() => onSwitch && onSwitch("login")}
                 style={{
                   color: ink,
                   fontWeight: 700,
                   textDecoration: "none",
                   cursor: "pointer",
+                  background: "none",
+                  border: "none",
+                  padding: 0,
                 }}
               >
                 {t.login}
-              </a>
+              </button>
             </span>
           </div>
         </div>
@@ -682,17 +690,21 @@ export const SignupScreen = ({
       <div style={{ textAlign: "center", marginTop: "auto", paddingTop: 8 }}>
         <span style={{ fontSize: 13, color: mute }}>
           {t.haveAccount}{" "}
-          <a
+          <button
+            type="button"
             onClick={() => onSwitch && onSwitch("login")}
             style={{
               color: ink,
               fontWeight: 700,
               textDecoration: "none",
               cursor: "pointer",
+              background: "none",
+              border: "none",
+              padding: 0,
             }}
           >
             {t.login}
-          </a>
+          </button>
         </span>
       </div>
     </div>

@@ -229,7 +229,8 @@ export const PCLogin = ({ lang = "ko", dark = false, onSwitch }: any) => {
               />
               {lang === "ko" ? "아이디 기억하기" : "Remember email"}
             </label>
-            <a
+            <button
+              type="button"
               onClick={() => onSwitch && onSwitch("forgot")}
               style={{
                 fontSize: 13,
@@ -237,10 +238,13 @@ export const PCLogin = ({ lang = "ko", dark = false, onSwitch }: any) => {
                 color: ink,
                 textDecoration: "none",
                 cursor: "pointer",
+                background: "none",
+                border: "none",
+                padding: 0,
               }}
             >
               {t.forgot}
-            </a>
+            </button>
           </div>
 
           {errorMsg && (
@@ -268,18 +272,22 @@ export const PCLogin = ({ lang = "ko", dark = false, onSwitch }: any) => {
           <div style={{ textAlign: "center", paddingTop: 8 }}>
             <span style={{ fontSize: 14, color: mute }}>
               {t.noAccount}{" "}
-              <a
+              <button
+                type="button"
                 onClick={() => onSwitch && onSwitch("signup")}
                 style={{
                   color: ink,
                   fontWeight: 700,
                   textDecoration: "none",
                   cursor: "pointer",
+                  background: "none",
+                  border: "none",
                   borderBottom: `1.5px solid ${ink}`,
+                  padding: 0,
                 }}
               >
                 {t.signup}
-              </a>
+              </button>
             </span>
           </div>
         </div>

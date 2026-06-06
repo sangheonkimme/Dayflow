@@ -62,17 +62,21 @@ export const OnboardingScreen = ({
               />
             ))}
           </div>
-          <a
+          <button
+            type="button"
             style={{
               fontSize: 12,
               fontWeight: 600,
               color: mute,
               cursor: "pointer",
               textDecoration: "none",
+              background: "none",
+              border: "none",
+              padding: 0,
             }}
           >
             {t.skip}
-          </a>
+          </button>
         </div>
 
         <div
@@ -281,7 +285,8 @@ export const OnboardingScreen = ({
                   <span>31</span>
                 </div>
               </div>
-              <a
+              <button
+                type="button"
                 style={{
                   marginTop: 18,
                   textAlign: "center",
@@ -290,10 +295,13 @@ export const OnboardingScreen = ({
                   fontWeight: 600,
                   cursor: "pointer",
                   textDecoration: "underline",
+                  background: "none",
+                  border: "none",
+                  padding: 0,
                 }}
               >
                 {t.skipDay}
-              </a>
+              </button>
             </>
           )}
 
@@ -543,17 +551,21 @@ export const OnboardingScreen = ({
           >
             {step + 1} / {totalSteps}
           </span>
-          <a
+          <button
+            type="button"
             style={{
               fontSize: 12,
               fontWeight: 600,
               color: mute,
               cursor: "pointer",
               textDecoration: "none",
+              background: "none",
+              border: "none",
+              padding: 0,
             }}
           >
             {t.skip}
-          </a>
+          </button>
         </div>
 
         <div
@@ -787,17 +799,21 @@ export const OnboardingScreen = ({
     >
       <div style={{ display: "flex", justifyContent: "space-between" }}>
         <BrandMark dark={dark} size={24} />
-        <a
+        <button
+          type="button"
           style={{
             fontSize: 12,
             fontWeight: 600,
             color: mute,
             cursor: "pointer",
             textDecoration: "none",
+            background: "none",
+            border: "none",
+            padding: 0,
           }}
         >
           {t.skip}
-        </a>
+        </button>
       </div>
 
       <div style={{ flex: 1, paddingTop: 36 }}>
