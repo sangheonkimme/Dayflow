@@ -17,7 +17,7 @@ export function LandingPage({ onGoToAuth }: LandingProps = {}) {
   return (
     <div className="landing-root">
       <Nav onGoToAuth={onGoToAuth} />
-      <Hero />
+      <Hero onGoToAuth={onGoToAuth} />
       <Features />
       <StatsBand />
       <InteractiveDemo />
@@ -104,16 +104,16 @@ function Nav({ onGoToAuth }: { onGoToAuth?: () => void }) {
 }
 
 // ---------- HERO ----------
-function Hero() {
+function Hero({ onGoToAuth }: { onGoToAuth?: () => void }) {
   return (
     <Fragment>
-      <HeroDesktop/>
-      <HeroMobile/>
+      <HeroDesktop onGoToAuth={onGoToAuth} />
+      <HeroMobile onGoToAuth={onGoToAuth} />
     </Fragment>
   );
 }
 
-function HeroDesktop() {
+function HeroDesktop({ onGoToAuth }: { onGoToAuth?: () => void }) {
   return (
     <section className="hero hero-desktop">
       {/* paper deco */}
@@ -133,10 +133,10 @@ function HeroDesktop() {
           가계부 · 일정 · 메모 · 구독 관리까지. 손글씨로 끄적이던 그 자유로움은 그대로 두고, 자동 정리와 검색만 살짝 보태드릴게요.
         </p>
         <div className="hero-cta">
-          <a href="#cta" className="btn btn-primary btn-lg">
+          <button type="button" className="btn btn-primary btn-lg" onClick={onGoToAuth}>
             지금 무료로 시작하기
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-          </a>
+          </button>
           <a href="#demo" className="btn btn-secondary btn-lg">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4l14 8-14 8z"/></svg>
             라이브 데모 보기
@@ -187,7 +187,7 @@ function HeroDesktop() {
   );
 }
 
-function HeroMobile() {
+function HeroMobile({ onGoToAuth }: { onGoToAuth?: () => void }) {
   return (
     <section className="hero-mobile">
       {/* layered paper background */}
@@ -271,10 +271,10 @@ function HeroMobile() {
 
       {/* CTAs */}
       <div className="hm-cta">
-        <a href="#cta" className="btn btn-primary btn-lg hm-cta-primary">
+        <button type="button" className="btn btn-primary btn-lg hm-cta-primary" onClick={onGoToAuth}>
           지금 무료로 시작하기
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-        </a>
+        </button>
         <a href="#demo" className="btn btn-secondary btn-lg hm-cta-secondary">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4l14 8-14 8z"/></svg>
           라이브 데모 보기

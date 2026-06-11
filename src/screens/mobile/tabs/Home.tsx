@@ -172,7 +172,14 @@ export const MobileHome = ({ onNavigate, onAddTxn, onAddEvent }: any) => {
             <div
               className={`${styles.dfmCheckBox} ${styles.add}`}
               onClick={addTodo}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  addTodo();
+                }
+              }}
               role="button"
+              tabIndex={0}
               aria-label="할 일 추가"
             >
               <svg width="12" height="12" viewBox="0 0 12 12">
@@ -259,7 +266,10 @@ export const MobileHome = ({ onNavigate, onAddTxn, onAddEvent }: any) => {
                 },
               ]}
             >
-              <div className={styles.dfmMoneyRow} onClick={() => openTxnDetail(t)}>
+              <div
+                className={styles.dfmMoneyRow}
+                onClick={() => openTxnDetail(t)}
+              >
                 <div className={styles.ico}>
                   <Ico name={t.ico} size={16} />
                 </div>
