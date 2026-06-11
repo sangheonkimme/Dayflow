@@ -2,9 +2,9 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Stack snapshot (2026-06-06)
+## Stack snapshot (2026-06-12)
 
-**Next.js 16 (App Router, Turbopack 기본) + React 19 + TypeScript + Supabase (`@supabase/ssr`) + TanStack Query + Zustand + Tailwind v3 (preflight off, 점진 도입).**
+**Next.js 16 (App Router, Turbopack 기본) + React 19 + TypeScript + Supabase (`@supabase/ssr`) + TanStack Query + Zustand + Tailwind v3 (preflight off, 점진 도입).** 메모 에디터는 TipTap(+tiptap-markdown), tools 페이지는 react-easy-crop / pdf-lib. 배포는 Vercel (`vercel.json`, region icn1).
 
 > Next 16 으로 dev/build 둘 다 Turbopack 이 기본. 보호 라우트 진입 가드는 Next 16 컨벤션에 맞춰 `middleware.ts` → 레포 루트 **`proxy.ts`** (export `proxy()`) 로 이전 완료. `eslint-config-next` 는 ESLint 9 flat config 이행 전까지 v15 에 고정.
 
@@ -19,8 +19,9 @@ Vite SPA 잔재는 모두 제거됨 (vitest 포함). 글로벌 `src/styles/style
 - `pnpm start` — production 서버 (기본 포트 3000). dev 와 동일한 NODE_OPTIONS.
 - `pnpm typecheck` — `tsc --noEmit`. ts-nocheck 신규 추가는 ESLint 가 차단.
 - `pnpm lint` — `eslint . --ext .js,.jsx,.ts,.tsx --max-warnings 0`.
+- `pnpm verify` — typecheck + lint + build 일괄 실행. **커밋 전 게이트로 이걸 돌릴 것.**
 
-> 테스트 러너 없음 (vitest 제거). 검증은 typecheck + lint + build + 수동 동작 확인.
+> 테스트 러너 없음 (vitest 제거). 검증은 `pnpm verify` + 수동 동작 확인.
 
 Path alias `@/*` → `src/*`. `app/`, `proxy.ts` 는 레포 루트에 위치하고 별도 alias 없이 상대/절대 import.
 
@@ -131,6 +132,7 @@ component → useXxx() (TanStack Query) → Repository → Store (useSyncExterna
   - 라우트 page.tsx 는 가능한 RSC. 인터랙션 leaf 만 `'use client'`.
   - useState/useRef/useEffect 가 필요한 모든 컴포넌트는 `'use client'`.
 - Lazy import 패턴: `lazy(() => import("...").then((m) => ({ default: m.X })))` (다중 named export 호환).
+- **a11y (jsx-a11y recommended 적용)**: 클릭 가능한 요소는 진짜 `<button>`/`<a href>` 사용 — `<a>` 의사 링크 금지 (anchor-is-valid 전수 정리 완료, 2026-06). `no-autofocus` 는 의도적으로 off — 모달/다이얼로그 첫 입력 포커스는 허용, 페이지 첫 로드 autofocus 신규 추가는 개별 검토. `click-events-have-key-events` 등은 warn 이지만 `--max-warnings 0` 이라 사실상 error.
 
 ## Commit message convention
 
@@ -140,8 +142,11 @@ component → useXxx() (TanStack Query) → Repository → Store (useSyncExterna
 
 ## 도메인 ↔ DB 스키마
 
+- **`supabase/migrations/*.sql`** — 적용된 마이그레이션 (records, finance/calendar, schema alignment, RLS initplan fix, FK 인덱스, checklist completed_at). 스키마 변경은 여기에 새 파일 추가.
 - `docs/schema-alignment.md` — 도메인 타입 vs Supabase 컬럼 매핑. A(add column) / B(selector derive) / C(mapper rename) 분류.
 - `docs/supabase-plan.md` — 테이블 DDL, RLS(`auth.uid() = user_id`), `handle_new_user` 트리거.
+- `docs/supabase-e2e-checklist.md` — Supabase 연동 수동 검증 체크리스트.
 - `docs/nextjs-migration-plan.md` — Phase 0~5 마이그레이션 체크리스트 (현 상태 추적).
 - `docs/css-global-audit.md` — 글로벌 CSS leak 감사 결과 + 규칙.
 - `docs/ts-nocheck-inventory.md` — Phase 5 에서 27→0건 회복 완료.
+- `docs/monetization-plan.md` — 추가기능 로드맵(Phase A~C) + 수익화 기획 (Pro 플랜·제휴·KPI). 우선순위 ★ 표기.
