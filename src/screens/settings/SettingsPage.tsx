@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useCallback } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Icon } from "@/components/Icon";
 import { pressable } from "@/lib/a11y";
 import { ProfileSection } from "@/screens/settings/sections/Profile";
@@ -10,53 +11,65 @@ import { SecuritySection } from "@/screens/settings/sections/Security";
 import { DataSection } from "@/screens/settings/sections/Data";
 import { AccountSection } from "@/screens/settings/sections/Account";
 
+// 8개 섹션 정의 — 탭 라우팅(?tab=)·검색 필터의 단일 소스.
+const SECTIONS = [
+  { id: "profile", icon: "home", label: "프로필", sub: "이름 · 이메일 · 사진" },
+  {
+    id: "appearance",
+    icon: "sparkle",
+    label: "테마 · 외관",
+    sub: "다크 모드 · 색상",
+  },
+  {
+    id: "ledger",
+    icon: "wallet",
+    label: "가계부 설정",
+    sub: "월급일 · 카테고리 · 통화",
+  },
+  {
+    id: "notifications",
+    icon: "bell",
+    label: "알림",
+    sub: "푸시 · 이메일 · 사운드",
+  },
+  {
+    id: "tools",
+    icon: "settings",
+    label: "도구 설정",
+    sub: "타이머 · 메모 기본값",
+  },
+  {
+    id: "security",
+    icon: "settings",
+    label: "보안 · 잠금",
+    sub: "비밀번호 · 생체 인증",
+  },
+  { id: "data", icon: "wallet", label: "데이터", sub: "백업 · 내보내기 · 삭제" },
+  { id: "account", icon: "coin", label: "계정 · 결제", sub: "플랜 · 청구" },
+] as const;
+
+const SECTION_IDS = SECTIONS.map((s) => s.id) as readonly string[];
+const DEFAULT_SECTION = "profile";
+
 export const SettingsPage = ({ tweaks, setTweak }: any) => {
-  const [section, setSection] = useState("profile");
-  const sections = [
-    {
-      id: "profile",
-      icon: "home",
-      label: "프로필",
-      sub: "이름 · 이메일 · 사진",
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // 탭 상태는 URL ?tab= 에 보관 → 딥링크/새로고침/뒤로가기 지원.
+  const rawTab = searchParams.get("tab");
+  const section =
+    rawTab && SECTION_IDS.includes(rawTab) ? rawTab : DEFAULT_SECTION;
+
+  const setSection = useCallback(
+    (id: string) => {
+      const next = new URLSearchParams(searchParams.toString());
+      next.set("tab", id);
+      router.replace(`?${next.toString()}`, { scroll: false });
     },
-    {
-      id: "appearance",
-      icon: "sparkle",
-      label: "테마 · 외관",
-      sub: "다크 모드 · 색상",
-    },
-    {
-      id: "ledger",
-      icon: "wallet",
-      label: "가계부 설정",
-      sub: "월급일 · 카테고리 · 통화",
-    },
-    {
-      id: "notifications",
-      icon: "bell",
-      label: "알림",
-      sub: "푸시 · 이메일 · 사운드",
-    },
-    {
-      id: "tools",
-      icon: "settings",
-      label: "도구 설정",
-      sub: "타이머 · 메모 기본값",
-    },
-    {
-      id: "security",
-      icon: "settings",
-      label: "보안 · 잠금",
-      sub: "비밀번호 · 생체 인증",
-    },
-    {
-      id: "data",
-      icon: "wallet",
-      label: "데이터",
-      sub: "백업 · 내보내기 · 삭제",
-    },
-    { id: "account", icon: "coin", label: "계정 · 결제", sub: "플랜 · 청구" },
-  ];
+    [router, searchParams],
+  );
+
+  const sections = SECTIONS;
 
   return (
     <div data-screen-label="04 환경설정">
