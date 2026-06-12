@@ -121,7 +121,11 @@ export const SecuritySection = () => {
             </small>
           )}
           {msg && (
-            <small style={{ color: msg.ok ? "#4a8d5a" : "#c0392b" }}>
+            <small
+              role="status"
+              aria-live="polite"
+              style={{ color: msg.ok ? "#4a8d5a" : "#c0392b" }}
+            >
               {msg.text}
             </small>
           )}

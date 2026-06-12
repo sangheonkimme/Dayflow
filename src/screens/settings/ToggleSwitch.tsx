@@ -9,7 +9,13 @@ export const ToggleSwitch = ({ on, onChange }: any) => {
     else setVal(!val);
   };
   return (
-    <button className={"switch" + (v ? " on" : "")} onClick={toggle}>
+    <button
+      type="button"
+      role="switch"
+      aria-checked={!!v}
+      className={"switch" + (v ? " on" : "")}
+      onClick={toggle}
+    >
       <span className="switch-thumb" />
     </button>
   );

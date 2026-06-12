@@ -91,6 +91,8 @@ export const ProfileSection = () => {
           </div>
           {msg && (
             <div
+              role="status"
+              aria-live="polite"
               style={{
                 fontSize: 12,
                 marginTop: 6,

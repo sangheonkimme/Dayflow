@@ -377,7 +377,9 @@
 
 .cal-nav {
   height: 32px;
-  width: 36px;
+  min-width: 36px;
+  padding: 0 10px;
+  white-space: nowrap;
   border: none;
   background: transparent;
   font-family: inherit;
@@ -476,6 +478,46 @@
   cursor: pointer;
   color: var(--ink-soft);
   font-size: 13px;
+  /* button reset (a11y: 진짜 button 으로 키보드 내비/포커스 지원) */
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+  background: transparent;
+  border: none;
+}
+.settings-nav-item:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+.settings-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  margin-bottom: 6px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg-paper);
+  color: var(--ink-mute);
+}
+.settings-search:focus-within {
+  border-color: var(--ink);
+}
+.settings-search input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--ink);
+}
+.settings-empty {
+  padding: 16px 12px;
+  font-size: 12px;
+  color: var(--ink-mute);
+  text-align: center;
 }
 .settings-nav-item:hover {
   background: var(--bg-paper);
