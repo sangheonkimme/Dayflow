@@ -32,6 +32,8 @@ export interface AuthView {
    *  실패면 AuthResult 로 반환. */
   signInWithGoogle: (next?: string) => Promise<AuthResult>;
   sendPasswordReset: (email: string) => Promise<AuthResult>;
+  /** 로그인 세션에서 비밀번호 변경. */
+  updatePassword: (newPassword: string) => Promise<AuthResult>;
   signOut: () => Promise<void>;
   updateDisplayName: (name: string) => Promise<AuthResult>;
 }
@@ -216,6 +218,24 @@ export function useAuth(): AuthView {
     [],
   );
 
+  // ── updatePassword ──
+  const updatePassword = useCallback(
+    async (newPassword: string): Promise<AuthResult> => {
+      const pw = newPassword.trim();
+      if (pw.length < 6)
+        return { ok: false, message: "비밀번호는 6자 이상이어야 해요." };
+      if (supabase) {
+        const { error } = await supabase.auth.updateUser({ password: pw });
+        if (error) return { ok: false, message: translateError(error.message) };
+        return { ok: true };
+      }
+      // mock: 로그인 상태에서만 성공 처리(실제 저장 없음)
+      if (!user) return { ok: false, message: "로그인 정보를 찾을 수 없어요." };
+      return { ok: true };
+    },
+    [user],
+  );
+
   // ── updateDisplayName ──
   const updateDisplayName = useCallback(
     async (name: string): Promise<AuthResult> => {
@@ -294,6 +314,7 @@ export function useAuth(): AuthView {
     signUp,
     signInWithGoogle,
     sendPasswordReset,
+    updatePassword,
     signOut,
     updateDisplayName,
   };

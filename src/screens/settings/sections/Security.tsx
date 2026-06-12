@@ -1,7 +1,37 @@
+"use client";
+
+import { useState } from "react";
 import { SettingRow } from "@/screens/settings/SettingRow";
 import { ToggleSwitch } from "@/screens/settings/ToggleSwitch";
+import { useAuth } from "@/data/auth";
 
 export const SecuritySection = () => {
+  const { status, updatePassword } = useAuth();
+  const [pw, setPw] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
+
+  const authed = status === "authed";
+
+  const submit = async () => {
+    setMsg(null);
+    if (pw !== confirm) {
+      setMsg({ ok: false, text: "두 비밀번호가 일치하지 않아요." });
+      return;
+    }
+    setBusy(true);
+    const res = await updatePassword(pw);
+    setBusy(false);
+    if (res.ok) {
+      setPw("");
+      setConfirm("");
+      setMsg({ ok: true, text: "비밀번호가 변경되었어요." });
+    } else {
+      setMsg({ ok: false, text: res.message ?? "변경에 실패했어요." });
+    }
+  };
+
   return (
     <>
       <div className="settings-group">
@@ -23,9 +53,57 @@ export const SecuritySection = () => {
       </div>
       <div className="settings-group">
         <h3>인증</h3>
-        <SettingRow label="비밀번호 변경">
-          <button className="timer-btn">변경</button>
-        </SettingRow>
+        <div className="field">
+          <label htmlFor="sec-new-pw">새 비밀번호</label>
+          <input
+            id="sec-new-pw"
+            className="set-input"
+            type="password"
+            value={pw}
+            onChange={(e) => setPw(e.target.value)}
+            placeholder="6자 이상"
+            autoComplete="new-password"
+            disabled={!authed || busy}
+          />
+        </div>
+        <div className="field" style={{ marginTop: 10 }}>
+          <label htmlFor="sec-confirm-pw">새 비밀번호 확인</label>
+          <input
+            id="sec-confirm-pw"
+            className="set-input"
+            type="password"
+            value={confirm}
+            onChange={(e) => setConfirm(e.target.value)}
+            autoComplete="new-password"
+            disabled={!authed || busy}
+          />
+        </div>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            marginTop: 12,
+          }}
+        >
+          <button
+            className="timer-btn primary"
+            onClick={submit}
+            disabled={!authed || busy || !pw || !confirm}
+          >
+            {busy ? "변경 중…" : "비밀번호 변경"}
+          </button>
+          {!authed && (
+            <small style={{ color: "var(--ink-soft)" }}>
+              로그인 후 변경할 수 있어요.
+            </small>
+          )}
+          {msg && (
+            <small style={{ color: msg.ok ? "#4a8d5a" : "#c0392b" }}>
+              {msg.text}
+            </small>
+          )}
+        </div>
         <SettingRow label="생체 인증" sub="Face ID / 지문" comingSoon>
           <ToggleSwitch on={true} />
         </SettingRow>
