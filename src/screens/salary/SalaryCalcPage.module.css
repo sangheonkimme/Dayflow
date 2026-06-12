@@ -65,7 +65,8 @@
 .salaryField:last-of-type {
   border-bottom: none;
 }
-.salaryField label {
+.salaryField label,
+.salaryField .fieldCap {
   font-size: 13px;
   font-weight: 600;
   color: var(--ink-soft);

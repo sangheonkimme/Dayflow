@@ -196,7 +196,7 @@ function SalaryCalcPage() {
             </div>
 
             <div className={styles.salaryField}>
-              <label>연봉/월급 선택</label>
+              <span className={styles.fieldCap}>연봉/월급 선택</span>
               <div className={styles.salarySeg}>
                 <button
                   className={mode === "yearly" ? styles.on : ""}
@@ -237,7 +237,7 @@ function SalaryCalcPage() {
             <div className={styles.salaryOptionsLabel}>추가 옵션</div>
 
             <div className={styles.salaryField}>
-              <label>퇴직금</label>
+              <span className={styles.fieldCap}>퇴직금</span>
               <div className={styles.salarySeg}>
                 <button
                   className={severance === "separate" ? styles.on : ""}
@@ -255,9 +255,10 @@ function SalaryCalcPage() {
             </div>
 
             <div className={styles.salaryField}>
-              <label>비과세액 (연간 총액)</label>
+              <label htmlFor="salary-nontax">비과세액 (연간 총액)</label>
               <div className={styles.salaryInputWrap}>
                 <input
+                  id="salary-nontax"
                   type="text"
                   inputMode="numeric"
                   value={nonTax.toLocaleString()}
@@ -277,12 +278,12 @@ function SalaryCalcPage() {
             </div>
 
             <div className={styles.salaryField}>
-              <label>부양가족수 (본인 포함)</label>
+              <span className={styles.fieldCap}>부양가족수 (본인 포함)</span>
               <NumStepper value={dependents} onChange={setDependents} min={1} />
             </div>
 
             <div className={styles.salaryField}>
-              <label>8세 이상 20세 이하 자녀수</label>
+              <span className={styles.fieldCap}>8세 이상 20세 이하 자녀수</span>
               <NumStepper value={kids} onChange={setKids} />
             </div>
 

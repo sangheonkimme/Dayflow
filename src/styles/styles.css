@@ -296,7 +296,8 @@ body {
   flex-direction: column;
   gap: 6px;
 }
-.field label {
+.field label,
+.field .field-cap {
   font-size: 12px;
   font-weight: 600;
   color: var(--ink-soft);

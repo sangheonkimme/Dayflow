@@ -386,6 +386,7 @@ function ReceiptUploadModal({ open, onClose, onAttach }: any) {
                   </label>
                 ))}
                 <label
+                  aria-label="새 거래내역으로 추가"
                   className={`${styles.rcptLinkRow} ${styles.new} ${linkTxn === "new" ? styles.on : ""}`}
                 >
                   <input

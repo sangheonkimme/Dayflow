@@ -463,21 +463,26 @@ function SubEditModal({ sub, onClose, onAnalyze }) {
         </div>
 
         <div className="field">
-          <label>서비스명</label>
-          <input value={name} onChange={(e) => setName(e.target.value)} />
+          <label htmlFor="sub-name">서비스명</label>
+          <input
+            id="sub-name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
         </div>
 
         <div className="field-row">
           <div className="field">
-            <label>금액</label>
+            <label htmlFor="sub-price">금액</label>
             <input
+              id="sub-price"
               type="number"
               value={price}
               onChange={(e) => setPrice(parseInt(e.target.value || "0", 10))}
             />
           </div>
           <div className="field">
-            <label>주기</label>
+            <span className="field-cap">주기</span>
             <div className="seg">
               <button
                 className={cycle === "월" ? "on" : ""}
@@ -514,7 +519,7 @@ function SubEditModal({ sub, onClose, onAnalyze }) {
         </div>
 
         <div className="field">
-          <label>카테고리</label>
+          <span className="field-cap">카테고리</span>
           <div className="cat-chip-row">
             {SUB_CATS.map((c) => (
               <span
@@ -540,7 +545,7 @@ function SubEditModal({ sub, onClose, onAnalyze }) {
         </div>
 
         <div className="field">
-          <label>색상</label>
+          <span className="field-cap">색상</span>
           <div className="color-chip-row">
             {SUB_PALETTE.map((c) => (
               <div
@@ -554,7 +559,7 @@ function SubEditModal({ sub, onClose, onAnalyze }) {
         </div>
 
         <div className="field">
-          <label>상태</label>
+          <span className="field-cap">상태</span>
           <div className={styles.statusSeg}>
             <button
               className={status === "active" ? "on" : ""}

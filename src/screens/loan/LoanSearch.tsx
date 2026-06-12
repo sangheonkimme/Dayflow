@@ -136,9 +136,10 @@ function LoanCalcPage() {
 
         <div className={styles.loanGrid2}>
           <div className={styles.loanField}>
-            <label>대출 금액</label>
+            <label htmlFor="loan-principal">대출 금액</label>
             <div className={styles.loanInputWrap}>
               <input
+                id="loan-principal"
                 type="text"
                 inputMode="numeric"
                 value={principal.toLocaleString()}
@@ -152,9 +153,10 @@ function LoanCalcPage() {
           </div>
 
           <div className={styles.loanField}>
-            <label>연이자율</label>
+            <label htmlFor="loan-rate">연이자율</label>
             <div className={styles.loanInputWrap}>
               <input
+                id="loan-rate"
                 type="number"
                 step="0.1"
                 min="0"
@@ -169,9 +171,10 @@ function LoanCalcPage() {
 
         <div className={styles.loanGrid3}>
           <div className={styles.loanField}>
-            <label>기간 (년)</label>
+            <label htmlFor="loan-years">기간 (년)</label>
             <div className={styles.loanInputWrap}>
               <input
+                id="loan-years"
                 type="number"
                 min="0"
                 max="50"
@@ -195,9 +198,10 @@ function LoanCalcPage() {
           </div>
 
           <div className={styles.loanField}>
-            <label>기간 (개월)</label>
+            <label htmlFor="loan-extra-months">기간 (개월)</label>
             <div className={styles.loanInputWrap}>
               <input
+                id="loan-extra-months"
                 type="number"
                 min="0"
                 max="11"
@@ -224,9 +228,10 @@ function LoanCalcPage() {
           </div>
 
           <div className={styles.loanField}>
-            <label>거치기간 (개월)</label>
+            <label htmlFor="loan-grace">거치기간 (개월)</label>
             <div className={styles.loanInputWrap}>
               <input
+                id="loan-grace"
                 type="number"
                 min="0"
                 value={grace}

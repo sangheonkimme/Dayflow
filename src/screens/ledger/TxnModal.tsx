@@ -121,8 +121,9 @@ function TxnEdit({ onClose, editing, onDelete, onSave }) {
           {parseInt(amt || "0", 10).toLocaleString()}
         </div>
         <div className="field">
-          <label>금액</label>
+          <label htmlFor="txn-amount">금액</label>
           <input
+            id="txn-amount"
             type="number"
             value={amt}
             onChange={(e) => setAmt(e.target.value)}
@@ -131,8 +132,9 @@ function TxnEdit({ onClose, editing, onDelete, onSave }) {
         </div>
         <div className="field-row">
           <div className="field">
-            <label>날짜</label>
+            <label htmlFor="txn-date">날짜</label>
             <input
+              id="txn-date"
               type="date"
               defaultValue={
                 editing?.date || new Date().toISOString().slice(0, 10)
@@ -140,12 +142,16 @@ function TxnEdit({ onClose, editing, onDelete, onSave }) {
             />
           </div>
           <div className="field">
-            <label>시간</label>
-            <input type="time" defaultValue={editing?.time || "12:00"} />
+            <label htmlFor="txn-time">시간</label>
+            <input
+              id="txn-time"
+              type="time"
+              defaultValue={editing?.time || "12:00"}
+            />
           </div>
         </div>
         <div className="field">
-          <label>카테고리</label>
+          <span className="field-cap">카테고리</span>
           <div className="cat-chip-row">
             {list.map((c) => (
               <span
@@ -159,20 +165,25 @@ function TxnEdit({ onClose, editing, onDelete, onSave }) {
           </div>
         </div>
         <div className="field">
-          <label>내용</label>
-          <input value={memo} onChange={(e) => setMemo(e.target.value)} />
+          <label htmlFor="txn-memo">내용</label>
+          <input
+            id="txn-memo"
+            value={memo}
+            onChange={(e) => setMemo(e.target.value)}
+          />
         </div>
         <div className="field">
-          <label>메모</label>
+          <label htmlFor="txn-note">메모</label>
           <input
+            id="txn-note"
             value={note}
             onChange={(e) => setNote(e.target.value)}
             placeholder="부가 설명"
           />
         </div>
         <div className="field">
-          <label>결제 수단</label>
-          <select defaultValue={editing?.method || "card"}>
+          <label htmlFor="txn-method">결제 수단</label>
+          <select id="txn-method" defaultValue={editing?.method || "card"}>
             <option value="card">신용카드 — 신한 1234</option>
             <option value="cash">현금</option>
             <option value="bank">계좌이체 — 카카오뱅크</option>
@@ -492,7 +503,7 @@ function TxnDetailed({ onClose, onSave, onBack }) {
             ))}
           </div>
           <div className="field" style={{ marginTop: 18 }}>
-            <label>날짜 / 시간</label>
+            <span className="field-cap">날짜 / 시간</span>
             <div className="field-row">
               <input
                 type="date"
@@ -510,8 +521,9 @@ function TxnDetailed({ onClose, onSave, onBack }) {
             마지막으로 메모와 결제수단
           </div>
           <div className="field">
-            <label>내용 / 메모</label>
+            <label htmlFor="txn-step-memo">내용 / 메모</label>
             <input
+              id="txn-step-memo"
               placeholder={
                 type === "in" ? "예: 11월 급여" : "예: 점심 — 김밥천국"
               }
@@ -521,8 +533,8 @@ function TxnDetailed({ onClose, onSave, onBack }) {
             />
           </div>
           <div className="field" style={{ marginTop: 14 }}>
-            <label>결제 수단</label>
-            <select defaultValue="card">
+            <label htmlFor="txn-step-method">결제 수단</label>
+            <select id="txn-step-method" defaultValue="card">
               <option value="card">신용카드 — 신한 1234</option>
               <option value="cash">현금</option>
               <option value="bank">계좌이체 — 카카오뱅크</option>

@@ -147,8 +147,9 @@ function EventEdit({ onClose, editing, onDelete, onSave, isDraft }: any) {
         style={{ gap: 14, maxHeight: "70vh", overflowY: "auto" }}
       >
         <div className="field">
-          <label>제목</label>
+          <label htmlFor="evt-title">제목</label>
           <input
+            id="evt-title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             autoFocus
@@ -157,16 +158,18 @@ function EventEdit({ onClose, editing, onDelete, onSave, isDraft }: any) {
 
         <div className="field-row">
           <div className="field">
-            <label>날짜</label>
+            <label htmlFor="evt-date">날짜</label>
             <input
+              id="evt-date"
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
             />
           </div>
           <div className="field">
-            <label>반복</label>
+            <label htmlFor="evt-repeat">반복</label>
             <select
+              id="evt-repeat"
               value={repeat}
               onChange={(e) => setRepeat(e.target.value)}
             >
@@ -222,7 +225,7 @@ function EventEdit({ onClose, editing, onDelete, onSave, isDraft }: any) {
         </div>
 
         <div className="field">
-          <label>카테고리</label>
+          <span className="field-cap">카테고리</span>
           <div className="cat-chip-row">
             {cats.map((c) => (
               <span
@@ -237,7 +240,7 @@ function EventEdit({ onClose, editing, onDelete, onSave, isDraft }: any) {
         </div>
 
         <div className="field">
-          <label>색상</label>
+          <span className="field-cap">색상</span>
           <div className="color-chip-row">
             {colors.map((c) => (
               <div
@@ -251,8 +254,9 @@ function EventEdit({ onClose, editing, onDelete, onSave, isDraft }: any) {
         </div>
 
         <div className="field">
-          <label>장소</label>
+          <label htmlFor="evt-place">장소</label>
           <input
+            id="evt-place"
             value={place}
             onChange={(e) => setPlace(e.target.value)}
             placeholder="예: 회의실 A / Zoom"
@@ -260,8 +264,9 @@ function EventEdit({ onClose, editing, onDelete, onSave, isDraft }: any) {
         </div>
 
         <div className="field">
-          <label>메모</label>
+          <label htmlFor="evt-memo">메모</label>
           <textarea
+            id="evt-memo"
             rows={2}
             value={memo}
             onChange={(e) => setMemo(e.target.value)}
@@ -270,8 +275,12 @@ function EventEdit({ onClose, editing, onDelete, onSave, isDraft }: any) {
         </div>
 
         <div className="field">
-          <label>알림</label>
-          <select value={alarm} onChange={(e) => setAlarm(e.target.value)}>
+          <label htmlFor="evt-alarm">알림</label>
+          <select
+            id="evt-alarm"
+            value={alarm}
+            onChange={(e) => setAlarm(e.target.value)}
+          >
             <option value="0">없음</option>
             <option value="5">5분 전</option>
             <option value="15">15분 전</option>
@@ -540,8 +549,9 @@ function EventDetailed({ onClose, onSave, onBack }) {
       {step === 0 && (
         <div className="step-content" style={{ paddingBottom: 20 }}>
           <div className="field" style={{ marginBottom: 16 }}>
-            <label>제목</label>
+            <label htmlFor="evt-s-title">제목</label>
             <input
+              id="evt-s-title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="예: 팀 스탠드업"
@@ -645,8 +655,8 @@ function EventDetailed({ onClose, onSave, onBack }) {
             ))}
           </div>
           <div className="field" style={{ marginTop: 18 }}>
-            <label>장소</label>
-            <input placeholder="예: 회의실 A / Zoom" />
+            <label htmlFor="evt-s-place">장소</label>
+            <input id="evt-s-place" placeholder="예: 회의실 A / Zoom" />
           </div>
         </div>
       )}
@@ -654,12 +664,12 @@ function EventDetailed({ onClose, onSave, onBack }) {
       {step === 2 && (
         <div className="step-content" style={{ paddingBottom: 20 }}>
           <div className="field">
-            <label>메모</label>
-            <textarea rows={3} placeholder="자료 / 준비물 / 참고사항" />
+            <label htmlFor="evt-s-memo">메모</label>
+            <textarea id="evt-s-memo" rows={3} placeholder="자료 / 준비물 / 참고사항" />
           </div>
           <div className="field" style={{ marginTop: 14 }}>
-            <label>알림</label>
-            <select defaultValue="15">
+            <label htmlFor="evt-s-alarm">알림</label>
+            <select id="evt-s-alarm" defaultValue="15">
               <option value="0">없음</option>
               <option value="5">5분 전</option>
               <option value="15">15분 전</option>
@@ -669,8 +679,8 @@ function EventDetailed({ onClose, onSave, onBack }) {
             </select>
           </div>
           <div className="field" style={{ marginTop: 14 }}>
-            <label>반복</label>
-            <select defaultValue="none">
+            <label htmlFor="evt-s-repeat">반복</label>
+            <select id="evt-s-repeat" defaultValue="none">
               <option value="none">반복 안함</option>
               <option>매일</option>
               <option>매주</option>
