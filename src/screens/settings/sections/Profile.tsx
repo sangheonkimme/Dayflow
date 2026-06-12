@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import styles from "@/screens/settings/SettingsPage.module.css";
 import { SettingRow } from "@/screens/settings/SettingRow";
 import { useAuth } from "@/data/auth";
 
@@ -35,9 +36,9 @@ export const ProfileSection = () => {
 
   return (
     <>
-      <div className="settings-group">
+      <div className={styles.group}>
         <h3>프로필</h3>
-        <div className="profile-hero">
+        <div className={styles.profileHero}>
           <div
             className="avatar"
             style={{
@@ -72,7 +73,7 @@ export const ProfileSection = () => {
         <SettingRow label="이름" sub="대시보드 인사말과 사이드바에 표시돼요">
           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
             <input
-              className="set-input"
+              className={styles.setInput}
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
               onKeyDown={(e) => {
@@ -105,7 +106,7 @@ export const ProfileSection = () => {
         </SettingRow>
         <SettingRow label="이메일">
           <input
-            className="set-input"
+            className={styles.setInput}
             value={user?.email ?? ""}
             readOnly
             disabled

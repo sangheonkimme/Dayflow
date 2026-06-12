@@ -1,5 +1,6 @@
 import { Icon } from "@/components/Icon";
 import { pressable } from "@/lib/a11y";
+import styles from "@/screens/settings/SettingsPage.module.css";
 import { SettingRow } from "@/screens/settings/SettingRow";
 import { ToggleSwitch } from "@/screens/settings/ToggleSwitch";
 
@@ -12,7 +13,7 @@ export const AppearanceSection = ({ tweaks, setTweak }: any) => {
   ];
   return (
     <>
-      <div className="settings-group">
+      <div className={styles.group}>
         <h3>테마</h3>
         <SettingRow label="다크 모드" sub="저녁 작업에 편한 어두운 테마">
           <ToggleSwitch
@@ -25,7 +26,10 @@ export const AppearanceSection = ({ tweaks, setTweak }: any) => {
             {accents.map((a) => (
               <div
                 key={a.id}
-                className={"acc-swatch" + (tweaks.accent === a.id ? " on" : "")}
+                className={
+                  styles.accSwatch +
+                  (tweaks.accent === a.id ? " " + styles.on : "")
+                }
                 style={{ background: a.c }}
                 {...pressable(() => setTweak("accent", a.id))}
                 title={a.label}
@@ -43,17 +47,17 @@ export const AppearanceSection = ({ tweaks, setTweak }: any) => {
         </SettingRow>
       </div>
 
-      <div className="settings-group">
+      <div className={styles.group}>
         <h3>글꼴 · 타이포그래피</h3>
         <SettingRow label="기본 글꼴">
-          <select className="set-input" defaultValue="jakarta">
+          <select className={styles.setInput} defaultValue="jakarta">
             <option value="jakarta">Plus Jakarta Sans</option>
             <option>Pretendard</option>
             <option>Noto Sans KR</option>
           </select>
         </SettingRow>
         <SettingRow label="글자 크기" sub="앱 전체 기준">
-          <select className="set-input" defaultValue="m">
+          <select className={styles.setInput} defaultValue="m">
             <option value="s">작게</option>
             <option value="m">보통</option>
             <option value="l">크게</option>

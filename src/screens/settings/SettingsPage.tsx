@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Icon } from "@/components/Icon";
+import styles from "@/screens/settings/SettingsPage.module.css";
 import { ProfileSection } from "@/screens/settings/sections/Profile";
 import { AppearanceSection } from "@/screens/settings/sections/Appearance";
 import { LedgerSettingsSection } from "@/screens/settings/sections/Ledger";
@@ -124,9 +125,9 @@ export const SettingsPage = ({ tweaks, setTweak }: any) => {
         </button>
       </div>
 
-      <div className="settings-layout">
-        <aside className="settings-nav" aria-label="환경설정 섹션">
-          <div className="settings-search" role="search">
+      <div className={styles.layout}>
+        <aside className={styles.nav} aria-label="환경설정 섹션">
+          <div className={styles.search} role="search">
             <Icon name="search" size={14} />
             <input
               type="search"
@@ -137,7 +138,7 @@ export const SettingsPage = ({ tweaks, setTweak }: any) => {
             />
           </div>
           {filtered.length === 0 ? (
-            <div className="settings-empty" role="status">
+            <div className={styles.empty} role="status">
               “{query}” 검색 결과가 없어요
             </div>
           ) : (
@@ -146,7 +147,7 @@ export const SettingsPage = ({ tweaks, setTweak }: any) => {
                 key={s.id}
                 type="button"
                 className={
-                  "settings-nav-item" + (section === s.id ? " on" : "")
+                  styles.navItem + (section === s.id ? " " + styles.on : "")
                 }
                 aria-current={section === s.id ? "page" : undefined}
                 onClick={() => setSection(s.id)}
@@ -161,7 +162,7 @@ export const SettingsPage = ({ tweaks, setTweak }: any) => {
           )}
         </aside>
 
-        <div className="settings-main">
+        <div className={styles.main}>
           {section === "profile" && <ProfileSection />}
           {section === "appearance" && (
             <AppearanceSection tweaks={tweaks} setTweak={setTweak} />

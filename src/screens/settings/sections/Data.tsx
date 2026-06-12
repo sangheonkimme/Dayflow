@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import styles from "@/screens/settings/SettingsPage.module.css";
 import { SettingRow } from "@/screens/settings/SettingRow";
 import { ToggleSwitch } from "@/screens/settings/ToggleSwitch";
 import { DeleteAccountModal } from "@/screens/settings/DeleteAccountModal";
@@ -59,7 +60,7 @@ export const DataSection = () => {
 
   return (
     <>
-      <div className="settings-group">
+      <div className={styles.group}>
         <h3>백업 · 내보내기</h3>
         <SettingRow label="자동 백업" sub="매일 자정 클라우드에 저장" comingSoon>
           <ToggleSwitch on={true} />
@@ -79,7 +80,7 @@ export const DataSection = () => {
           </button>
         </SettingRow>
       </div>
-      <div className="settings-group danger">
+      <div className={`${styles.group} ${styles.danger}`}>
         <h3>위험 구역</h3>
         <SettingRow label="모든 메모 삭제" sub="복구할 수 없습니다" comingSoon>
           <button className="timer-btn danger-btn">삭제</button>

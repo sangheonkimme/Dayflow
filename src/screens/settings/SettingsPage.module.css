@@ -1,0 +1,255 @@
+/* 환경설정 페이지 전용 스타일 — 전역 pages.css 에서 이전(Phase 4b CSS Module).
+   공유 chrome(timer-btn / field / avatar / muted / row / page-head 등)은 전역 유지.
+   timer-btn.danger-btn 은 전역 timer-btn 베이스의 modifier 라 pages.css 에 잔존. */
+
+.layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 22px;
+  align-items: flex-start;
+}
+.nav {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  position: sticky;
+  top: 18px;
+}
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  color: var(--ink-soft);
+  font-size: 13px;
+  /* button reset (a11y: 진짜 button 으로 키보드 내비/포커스 지원) */
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+  background: transparent;
+  border: none;
+}
+.navItem:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+.navItem:hover {
+  background: var(--bg-paper);
+  color: var(--ink);
+}
+.navItem.on {
+  background: var(--ink);
+  color: var(--yellow);
+}
+.navItem.on small {
+  color: rgba(255, 226, 122, 0.65);
+}
+.navItem b {
+  display: block;
+  font-weight: 700;
+  line-height: 1.2;
+}
+.navItem small {
+  display: block;
+  font-size: 11px;
+  color: var(--ink-mute);
+  margin-top: 2px;
+  font-weight: 400;
+}
+
+.search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  margin-bottom: 6px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg-paper);
+  color: var(--ink-mute);
+}
+.search:focus-within {
+  border-color: var(--ink);
+}
+.search input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--ink);
+}
+.empty {
+  padding: 16px 12px;
+  font-size: 12px;
+  color: var(--ink-mute);
+  text-align: center;
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.group {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 22px 24px;
+}
+.group h3 {
+  margin: 0 0 14px;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+.group.danger {
+  border-color: rgba(226, 92, 77, 0.35);
+  background: #fff5f3;
+}
+.group.danger h3 {
+  color: var(--red);
+  border-bottom-color: rgba(226, 92, 77, 0.25);
+}
+
+.settingRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px dashed var(--line);
+}
+.settingRow:last-child {
+  border-bottom: none;
+}
+.settingLabel b {
+  font-size: 13px;
+  font-weight: 600;
+  display: block;
+}
+.settingLabel small {
+  font-size: 12px;
+  color: var(--ink-mute);
+  margin-top: 2px;
+  display: block;
+}
+.settingControl {
+  flex-shrink: 0;
+}
+
+.setInput {
+  height: 34px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  background: var(--bg-paper);
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 13px;
+  outline: none;
+  min-width: 200px;
+}
+textarea.setInput {
+  padding: 8px 12px;
+  height: auto;
+  resize: vertical;
+}
+.setInput:focus {
+  border-color: var(--ink);
+}
+
+/* Toggle (on/off switch) */
+.toggle {
+  width: 42px;
+  height: 24px;
+  border-radius: 99px;
+  background: var(--line-strong);
+  border: none;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.18s;
+  padding: 0;
+}
+.toggle.on {
+  background: var(--ink);
+}
+.toggleThumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: white;
+  transition: transform 0.18s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+.toggle.on .toggleThumb {
+  transform: translateX(18px);
+  background: var(--yellow);
+}
+
+.accSwatch {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  display: grid;
+  place-items: center;
+  color: var(--ink);
+  transition: transform 0.12s;
+}
+.accSwatch:hover {
+  transform: scale(1.05);
+}
+.accSwatch.on {
+  border-color: var(--ink);
+  box-shadow: 0 0 0 2px var(--bg);
+}
+
+.profileHero {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 0 18px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 12px;
+}
+
+.planCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg-paper);
+  margin-top: 10px;
+}
+.planCard.pro {
+  border-color: var(--ink);
+  background: linear-gradient(135deg, var(--yellow) 0%, #ffd76a 100%);
+}
+
+@media (max-width: 1100px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+  .nav {
+    position: static;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+}

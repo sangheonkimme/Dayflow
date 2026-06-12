@@ -1,10 +1,11 @@
+import styles from "@/screens/settings/SettingsPage.module.css";
 
 export const AccountSection = () => {
   return (
     <>
-      <div className="settings-group">
+      <div className={styles.group}>
         <h3>현재 플랜</h3>
-        <div className="plan-card">
+        <div className={styles.planCard}>
           <div>
             <b style={{ fontSize: 18 }}>무료 플랜</b>
             <div className="muted" style={{ fontSize: 12, marginTop: 4 }}>
@@ -15,7 +16,7 @@ export const AccountSection = () => {
             Pro로 업그레이드 — 준비 중
           </button>
         </div>
-        <div className="plan-card pro">
+        <div className={`${styles.planCard} ${styles.pro}`}>
           <div>
             <b style={{ fontSize: 18 }}>Pro 플랜 — ₩4,900/월</b>
             <div className="muted" style={{ fontSize: 12, marginTop: 4 }}>
