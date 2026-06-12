@@ -6,7 +6,8 @@ import { ToggleSwitch } from "@/screens/settings/ToggleSwitch";
 import { useAuth } from "@/data/auth";
 
 export const SecuritySection = () => {
-  const { status, updatePassword } = useAuth();
+  const { status, updatePassword, reauthenticate } = useAuth();
+  const [current, setCurrent] = useState("");
   const [pw, setPw] = useState("");
   const [confirm, setConfirm] = useState("");
   const [busy, setBusy] = useState(false);
@@ -21,9 +22,17 @@ export const SecuritySection = () => {
       return;
     }
     setBusy(true);
+    // 현재 비밀번호로 본인 재인증 후 변경 진행.
+    const reauth = await reauthenticate(current);
+    if (!reauth.ok) {
+      setBusy(false);
+      setMsg({ ok: false, text: reauth.message ?? "현재 비밀번호를 확인해주세요." });
+      return;
+    }
     const res = await updatePassword(pw);
     setBusy(false);
     if (res.ok) {
+      setCurrent("");
       setPw("");
       setConfirm("");
       setMsg({ ok: true, text: "비밀번호가 변경되었어요." });
@@ -54,6 +63,19 @@ export const SecuritySection = () => {
       <div className="settings-group">
         <h3>인증</h3>
         <div className="field">
+          <label htmlFor="sec-current-pw">현재 비밀번호</label>
+          <input
+            id="sec-current-pw"
+            className="set-input"
+            type="password"
+            value={current}
+            onChange={(e) => setCurrent(e.target.value)}
+            placeholder="변경 전 본인 확인"
+            autoComplete="current-password"
+            disabled={!authed || busy}
+          />
+        </div>
+        <div className="field" style={{ marginTop: 10 }}>
           <label htmlFor="sec-new-pw">새 비밀번호</label>
           <input
             id="sec-new-pw"
@@ -89,7 +111,7 @@ export const SecuritySection = () => {
           <button
             className="timer-btn primary"
             onClick={submit}
-            disabled={!authed || busy || !pw || !confirm}
+            disabled={!authed || busy || !current || !pw || !confirm}
           >
             {busy ? "변경 중…" : "비밀번호 변경"}
           </button>
