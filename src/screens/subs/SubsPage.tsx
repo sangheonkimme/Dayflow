@@ -5,6 +5,7 @@ import { formatWon } from "@/lib/format";
 import { DOW } from "@/lib/date";
 import { sumBy } from "@/lib/aggregate";
 import { useSubscriptions } from "@/data/subscriptions";
+import { pressable } from "@/lib/a11y";
 import type { Subscription } from "@/types";
 import {
   subscriptionColor,
@@ -87,13 +88,13 @@ function SubsPage({ onAdd }: { onAdd?: () => void }) {
         a.name.localeCompare(b.name, "ko"),
     }[sortBy];
     return [...active.sort(sorter), ...paused];
-  }, [sortBy]);
+  }, [SUBS, sortBy]);
 
   // upcoming 7 days strip
   const next7Days = useMemo(() => {
     const arr: { date: Date; day: number; items: Subscription[]; isToday: boolean }[] = [];
     for (let i = 0; i < 7; i++) {
-      const dt = new Date(today);
+      const dt = new Date();
       dt.setDate(todayDate + i);
       const day = dt.getDate();
       const items = SUBS.filter(
@@ -102,7 +103,7 @@ function SubsPage({ onAdd }: { onAdd?: () => void }) {
       arr.push({ date: dt, day, items, isToday: i === 0 });
     }
     return arr;
-  }, [todayDate]);
+  }, [SUBS, todayDate]);
 
   return (
     <div data-screen-label="06 정기구독">
@@ -210,7 +211,7 @@ function SubsPage({ onAdd }: { onAdd?: () => void }) {
               <span
                 key={k}
                 className={"filter-tab" + (sortBy === k ? " on" : "")}
-                onClick={() => setSortBy(k)}
+                {...pressable(() => setSortBy(k))}
               >
                 {l}
               </span>
@@ -235,7 +236,7 @@ function SubsPage({ onAdd }: { onAdd?: () => void }) {
                 className={
                   styles.subCard + (s.status === "paused" ? ` ${styles.paused}` : "")
                 }
-                onClick={() => setEditing(s)}
+                {...pressable(() => setEditing(s))}
               >
                 <div
                   className={styles.subMark}
@@ -525,7 +526,7 @@ function SubEditModal({ sub, onClose, onAnalyze }) {
               <span
                 key={c}
                 className={"cat-chip" + (cat === c ? " on" : "")}
-                onClick={() => setCat(c)}
+                {...pressable(() => setCat(c))}
               >
                 <span
                   style={{
@@ -552,7 +553,7 @@ function SubEditModal({ sub, onClose, onAnalyze }) {
                 key={c}
                 className={"color-chip" + (color === c ? " on" : "")}
                 style={{ background: c }}
-                onClick={() => setColor(c)}
+                {...pressable(() => setColor(c))}
               />
             ))}
           </div>

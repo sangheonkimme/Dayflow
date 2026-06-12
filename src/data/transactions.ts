@@ -457,15 +457,19 @@ export function useTransactions(filter?: TransactionsFilter): TransactionsView {
   });
   const { data: all } = view;
 
+  const hasFilter = !!filter;
+  const fMonth = filter?.month;
+  const fType = filter?.type;
+  const fCat = filter?.cat;
   const data = useMemo(() => {
-    if (!filter) return all;
+    if (!hasFilter) return all;
     return all.filter((t) => {
-      if (filter.month && !t.date.startsWith(filter.month)) return false;
-      if (filter.type && t.type !== filter.type) return false;
-      if (filter.cat && t.cat !== filter.cat) return false;
+      if (fMonth && !t.date.startsWith(fMonth)) return false;
+      if (fType && t.type !== fType) return false;
+      if (fCat && t.cat !== fCat) return false;
       return true;
     });
-  }, [all, filter?.month, filter?.type, filter?.cat]);
+  }, [all, hasFilter, fMonth, fType, fCat]);
 
   return useMemo(() => ({ ...view, data, all }), [view, data, all]);
 }

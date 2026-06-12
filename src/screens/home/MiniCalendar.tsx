@@ -38,7 +38,10 @@ export function MiniCalendar({
     () => daysWithEventsInMonth(events, yr, mo),
     [events, yr, mo],
   );
-  const upcoming = useMemo(() => upcomingEvents(events, 2, today), [events]);
+  const upcoming = useMemo(
+    () => upcomingEvents(events, 2, new Date()),
+    [events],
+  );
   const monthKey = `${yr}-${String(mo + 1).padStart(2, "0")}`;
   const selectedEvents = useMemo(() => {
     if (selectedDay == null) return [];

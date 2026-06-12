@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { MobileCalEvents } from "@/screens/mobile/tabs/Calendar";
 import { openTxnDetail } from "@/screens/mobile/shared/TxnDetailBridge";
 import { DOW } from "@/lib/date";
@@ -11,9 +11,10 @@ import { daysWithEventsInMonth } from "@/data/events";
 import { Ico } from "@/screens/mobile/shared/Ico";
 import { SectionHeader } from "@/screens/mobile/shared/SectionHeader";
 import { SwipeRow } from "@/screens/mobile/shared/SwipeRow";
+import { pressable } from "@/lib/a11y";
 import styles from "@/screens/mobile/mobile.module.css";
 
-export const MobileHome = ({ onNavigate, onAddTxn, onAddEvent }: any) => {
+export const MobileHome = ({ onNavigate, _onAddTxn, _onAddEvent }: any) => {
   const {
     data: todoTasks,
     upsert: upsertTodo,
@@ -80,10 +81,10 @@ export const MobileHome = ({ onNavigate, onAddTxn, onAddEvent }: any) => {
     () =>
       daysWithEventsInMonth(
         monthEvents,
-        todayDate.getFullYear(),
-        todayDate.getMonth(),
+        new Date().getFullYear(),
+        new Date().getMonth(),
       ),
-    [monthEvents, todayDate],
+    [monthEvents],
   );
   const eventDays = useMemo(() => [...eventDaySet], [eventDaySet]);
   const cells: { d: number; muted?: boolean }[] = [];
@@ -139,7 +140,7 @@ export const MobileHome = ({ onNavigate, onAddTxn, onAddEvent }: any) => {
         <div className={styles.dfmChecklist}>
           {todos.map((t, i) => (
             <SwipeRow key={i} onDelete={() => removeTodo(i)}>
-              <div className={styles.dfmCheckRow} onClick={() => toggle(i)}>
+              <div className={styles.dfmCheckRow} {...pressable(() => toggle(i))}>
                 <div
                   className={`${styles.dfmCheckBox} ${t.done ? styles.on : ""}`}
                 >
@@ -166,6 +167,7 @@ export const MobileHome = ({ onNavigate, onAddTxn, onAddEvent }: any) => {
             </SwipeRow>
           ))}
           <div
+            role="presentation"
             className={`${styles.dfmCheckRow} ${styles.dfmTodoAdd}`}
             onClick={(e) => e.stopPropagation()}
           >
@@ -268,7 +270,7 @@ export const MobileHome = ({ onNavigate, onAddTxn, onAddEvent }: any) => {
             >
               <div
                 className={styles.dfmMoneyRow}
-                onClick={() => openTxnDetail(t)}
+                {...pressable(() => openTxnDetail(t))}
               >
                 <div className={styles.ico}>
                   <Ico name={t.ico} size={16} />
