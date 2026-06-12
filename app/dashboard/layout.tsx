@@ -24,7 +24,7 @@ import { DemoBanner } from "@/components/DemoBanner";
 import { TxnModal } from "@/screens/ledger/TxnModal";
 import { EventModal } from "@/screens/calendar/EventModal";
 import { useMediaQuery } from "@/lib/useMediaQuery";
-import { usePreferences } from "@/data/preferences";
+import { usePreferences, usePreferencesSync } from "@/data/preferences";
 import { useAuth } from "@/data/auth";
 import { useTransactions } from "@/data/transactions";
 import { useEvents } from "@/data/events";
@@ -73,6 +73,9 @@ export default function AppLayout({
   const mode = useDataModeStore((s) => s.mode);
   const userId = auth.user?.id ?? null;
   const sourceKey = `${mode}:${userId ?? "guest"}`;
+
+  // 환경설정 Supabase 동기화 (로그인 사용자 한정, 비로그인은 no-op).
+  usePreferencesSync(userId, auth.status === "authed");
   const [readyKey, setReadyKey] = useState<string | null>(null);
 
   const modal = useModalStore((s) => s.modal);
