@@ -56,7 +56,8 @@ app/
 │  ├ layout.tsx        — Sidebar(usePathname)+Modals+SearchOverlay+Tweaks
 │  ├ page.tsx          — RSC: prefetch 6 도메인 → HydrationBoundary → HomeClient
 │  ├ ledger/calendar/memo/subs/txns: page.tsx (RSC prefetch) + *Client.tsx
-│  └ settings/salary/loan/cash: page.tsx (클라 전용)
+│  ├ settings: page.tsx (클라 전용) — 단일 라우트. 8개 섹션을 useState 탭으로 전환(섹션별 하위 라우트 아님)
+│  └ salary/loan/cash: page.tsx (클라 전용)
 └ (레포 루트) proxy.ts — /dashboard/* 보호 (Supabase 미인증 → /login?next=)
 ```
 
