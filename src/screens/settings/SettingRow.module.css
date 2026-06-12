@@ -1,0 +1,35 @@
+/* 준비 중(미구현) 설정 행 — "준비중" 뱃지 + 컨트롤 비활성 */
+
+.labelRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.badge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--ink-soft, #8a8f98);
+  background: var(--line, #ececec);
+  border-radius: 999px;
+  padding: 2px 7px;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+/* 컨트롤 묶음 — fieldset reset 후 비활성 시 흐리게 (내부 input/select/button 자동 disabled) */
+.control {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.control:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

@@ -68,7 +68,7 @@ export const LedgerSettingsSection = ({ tweaks, setTweak }: any) => {
             <option value="custom">사용자 지정</option>
           </select>
         </SettingRow>
-        <SettingRow label="주말일 때 처리" sub="월급일이 주말/공휴일이면">
+        <SettingRow label="주말일 때 처리" sub="월급일이 주말/공휴일이면" comingSoon>
           <select className="set-input" defaultValue="prev">
             <option value="prev">앞당겨서 입금</option>
             <option value="next">뒤로 미뤄서 입금</option>
@@ -79,7 +79,7 @@ export const LedgerSettingsSection = ({ tweaks, setTweak }: any) => {
 
       <div className="settings-group">
         <h3>예산 · 한도</h3>
-        <SettingRow label="월 예산 알림" sub="예산의 80% 도달 시 알림">
+        <SettingRow label="월 예산 알림" sub="예산의 80% 도달 시 알림" comingSoon>
           <ToggleSwitch on={true} />
         </SettingRow>
         <SettingRow label="기본 통화">
@@ -94,7 +94,7 @@ export const LedgerSettingsSection = ({ tweaks, setTweak }: any) => {
             <option value="EUR">유로 (€)</option>
           </select>
         </SettingRow>
-        <SettingRow label="천 단위 표기" sub="₩1,000,000 vs 1백만">
+        <SettingRow label="천 단위 표기" sub="₩1,000,000 vs 1백만" comingSoon>
           <select className="set-input" defaultValue="comma">
             <option value="comma">콤마 (1,000,000)</option>
             <option value="korean">한글 (1백만)</option>
@@ -108,16 +108,18 @@ export const LedgerSettingsSection = ({ tweaks, setTweak }: any) => {
         <SettingRow
           label="자동 카테고리 인식"
           sub="가맹점명으로 카테고리 자동 분류"
+          comingSoon
         >
           <ToggleSwitch on={true} />
         </SettingRow>
         <SettingRow
           label="정기 결제 자동 등록"
           sub="동일 금액 반복 시 구독으로 추정"
+          comingSoon
         >
           <ToggleSwitch on={true} />
         </SettingRow>
-        <SettingRow label="카테고리 관리">
+        <SettingRow label="카테고리 관리" comingSoon>
           <button className="timer-btn">편집</button>
         </SettingRow>
       </div>

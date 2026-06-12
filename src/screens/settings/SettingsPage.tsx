@@ -67,7 +67,13 @@ export const SettingsPage = ({ tweaks, setTweak }: any) => {
           </h1>
           <div className="page-sub">앱 동작과 모양을 자유롭게 바꿔보세요</div>
         </div>
-        <button className="timer-btn primary">변경 저장</button>
+        <button
+          className="timer-btn"
+          disabled
+          title="변경 사항은 자동으로 저장돼요"
+        >
+          자동 저장됨
+        </button>
       </div>
 
       <div className="settings-layout">
