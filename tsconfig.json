@@ -40,5 +40,12 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
   ],
-  "exclude": ["node_modules", "dist", ".next", "WLD (4)", "archive"]
+  "exclude": [
+    "node_modules",
+    "dist",
+    ".next",
+    "WLD (4)",
+    "archive",
+    "supabase/functions"
+  ]
 }

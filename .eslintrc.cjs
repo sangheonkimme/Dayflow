@@ -22,7 +22,7 @@ module.exports = {
     "plugin:jsx-a11y/recommended",
   ],
   settings: { react: { version: "19.0" } },
-  ignorePatterns: ["dist", "node_modules", "WLD (4)", "archive", ".next", "*.cjs"],
+  ignorePatterns: ["dist", "node_modules", "WLD (4)", "archive", ".next", "*.cjs", "supabase/functions"],
   rules: {
     // @ts-nocheck 신규 추가 금지 (Phase 5 마지막에 전수 회복 완료, 2026-05-09).
     "@typescript-eslint/ban-ts-comment": [

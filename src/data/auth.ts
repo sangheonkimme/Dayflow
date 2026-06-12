@@ -34,6 +34,10 @@ export interface AuthView {
   sendPasswordReset: (email: string) => Promise<AuthResult>;
   /** 로그인 세션에서 비밀번호 변경. */
   updatePassword: (newPassword: string) => Promise<AuthResult>;
+  /** 현재 비밀번호로 본인 재인증(비번 변경·탈퇴 등 민감 작업 전 게이트). */
+  reauthenticate: (password: string) => Promise<AuthResult>;
+  /** 회원 탈퇴 — Edge Function 으로 auth.users 삭제(FK cascade). 성공 시 로그아웃. */
+  deleteAccount: () => Promise<AuthResult>;
   signOut: () => Promise<void>;
   updateDisplayName: (name: string) => Promise<AuthResult>;
 }
@@ -236,6 +240,55 @@ export function useAuth(): AuthView {
     [user],
   );
 
+  // ── reauthenticate ──
+  // 현재 비밀번호로 재로그인해 본인을 확인한다(같은 세션 갱신 — 안전).
+  // OAuth 전용 사용자는 비밀번호가 없어 실패한다(상위 UI 에서 안내).
+  const reauthenticate = useCallback(
+    async (password: string): Promise<AuthResult> => {
+      const pw = password.trim();
+      if (!pw) return { ok: false, message: "현재 비밀번호를 입력해 주세요." };
+      if (supabase) {
+        if (!user?.email)
+          return { ok: false, message: "이메일 정보를 찾을 수 없어요." };
+        const { error } = await supabase.auth.signInWithPassword({
+          email: user.email,
+          password: pw,
+        });
+        if (error)
+          return { ok: false, message: "현재 비밀번호가 올바르지 않아요." };
+        return { ok: true };
+      }
+      // mock: 로그인 상태면 통과
+      if (!user) return { ok: false, message: "로그인 정보를 찾을 수 없어요." };
+      return { ok: true };
+    },
+    [user],
+  );
+
+  // ── deleteAccount ──
+  const deleteAccount = useCallback(async (): Promise<AuthResult> => {
+    if (supabase) {
+      const { data, error } = await supabase.functions.invoke<{
+        ok?: boolean;
+        error?: string;
+      }>("delete-account", { method: "POST" });
+      if (error)
+        return {
+          ok: false,
+          message: "탈퇴 처리에 실패했어요. 잠시 후 다시 시도해주세요.",
+        };
+      if (data?.error)
+        return { ok: false, message: "탈퇴 처리 중 오류가 발생했어요." };
+      await supabase.auth.signOut();
+      return { ok: true };
+    }
+    // mock: 즉시 로그아웃 처리
+    saveMock(null);
+    setUser(null);
+    setStatus("guest");
+    return { ok: true };
+  }, []);
+
   // ── updateDisplayName ──
   const updateDisplayName = useCallback(
     async (name: string): Promise<AuthResult> => {
@@ -315,6 +368,8 @@ export function useAuth(): AuthView {
     signInWithGoogle,
     sendPasswordReset,
     updatePassword,
+    reauthenticate,
+    deleteAccount,
     signOut,
     updateDisplayName,
   };

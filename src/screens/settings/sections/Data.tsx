@@ -1,11 +1,17 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { SettingRow } from "@/screens/settings/SettingRow";
 import { ToggleSwitch } from "@/screens/settings/ToggleSwitch";
+import { DeleteAccountModal } from "@/screens/settings/DeleteAccountModal";
 import {
   buildFullExportJson,
   buildTransactionsCsv,
   exportFilename,
   triggerDownload,
 } from "@/screens/settings/exportData";
+import { useAuth } from "@/data/auth";
 import { useTransactions } from "@/data/transactions";
 import { useEvents } from "@/data/events";
 import { useMemos } from "@/data/memos";
@@ -15,6 +21,10 @@ import { useSubscriptions } from "@/data/subscriptions";
 import { usePinnedInfo } from "@/data/pinned-info";
 
 export const DataSection = () => {
+  const router = useRouter();
+  const { status } = useAuth();
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const authed = status === "authed";
   const txns = useTransactions();
   const events = useEvents();
   const memos = useMemos();
@@ -74,10 +84,24 @@ export const DataSection = () => {
         <SettingRow label="모든 메모 삭제" sub="복구할 수 없습니다" comingSoon>
           <button className="timer-btn danger-btn">삭제</button>
         </SettingRow>
-        <SettingRow label="계정 삭제" sub="모든 데이터가 영구 삭제됩니다" comingSoon>
-          <button className="timer-btn danger-btn">계정 삭제</button>
+        <SettingRow label="계정 삭제" sub="모든 데이터가 영구 삭제됩니다">
+          <button
+            className="timer-btn danger-btn"
+            onClick={() => setDeleteOpen(true)}
+            disabled={!authed}
+            title={authed ? undefined : "로그인 후 이용할 수 있어요."}
+          >
+            계정 삭제
+          </button>
         </SettingRow>
       </div>
+
+      {deleteOpen && (
+        <DeleteAccountModal
+          onClose={() => setDeleteOpen(false)}
+          onDeleted={() => router.replace("/")}
+        />
+      )}
     </>
   );
 };
