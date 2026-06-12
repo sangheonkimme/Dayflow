@@ -18,6 +18,8 @@ export type SetPreference = <K extends keyof Tweaks>(
 interface PreferencesState {
   tweaks: Tweaks;
   setTweak: SetPreference;
+  /** 서버에서 받은 환경설정을 로컬에 머지 (Supabase 동기화 — 서버 우선). */
+  mergeTweaks: (patch: Partial<Tweaks>) => void;
   resetTweaks: () => void;
 }
 
@@ -29,6 +31,8 @@ export const usePreferencesStore = create<PreferencesState>()(
       tweaks: { ...TWEAK_DEFAULTS },
       setTweak: (key, value) =>
         set((s) => ({ tweaks: { ...s.tweaks, [key]: value } })),
+      mergeTweaks: (patch) =>
+        set((s) => ({ tweaks: { ...s.tweaks, ...patch } })),
       resetTweaks: () => set({ tweaks: { ...TWEAK_DEFAULTS } }),
     }),
     {
