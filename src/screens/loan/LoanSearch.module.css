@@ -288,3 +288,7 @@
     grid-template-columns: 1fr;
   }
 }
+
+.loanPartners {
+  margin-top: 18px;
+}

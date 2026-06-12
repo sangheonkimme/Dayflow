@@ -377,3 +377,7 @@
     grid-template-columns: 1fr;
   }
 }
+
+.salaryPartners {
+  margin-top: 18px;
+}

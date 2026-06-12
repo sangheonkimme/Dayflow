@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { Icon } from "@/components/Icon";
+import { PartnerLinks } from "@/components/PartnerLinks";
 import { formatWon } from "@/lib/format";
 import styles from "./SalaryCalcPage.module.css";
 
@@ -395,6 +396,13 @@ function SalaryCalcPage() {
           </div>
         </div>
       </div>
+
+      {/* ===== 제휴 링크 — 실지급액 확인 후 절세·신용 관리 동선 ===== */}
+      <PartnerLinks
+        surface="salary"
+        title="실수령액, 여기서 더 챙겨보세요"
+        className={styles.salaryPartners}
+      />
     </div>
   );
 }

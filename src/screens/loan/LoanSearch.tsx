@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { PartnerLinks } from "@/components/PartnerLinks";
 import styles from "./LoanSearch.module.css";
 
 // ============================================================
@@ -321,6 +322,13 @@ function LoanCalcPage() {
           실제 금융기관 조건과 차이가 있을 수 있으며 참고용으로만 사용해주세요.
         </p>
       </div>
+
+      {/* ===== 제휴 링크 — 총 이자 확인 직후가 금리 비교 의향이 가장 높은 시점 ===== */}
+      <PartnerLinks
+        surface="loan"
+        title="이자 줄이는 법, 여기서 비교해보세요"
+        className={styles.loanPartners}
+      />
 
       {/* ===== 월별 상환 일정 ===== */}
       <div
