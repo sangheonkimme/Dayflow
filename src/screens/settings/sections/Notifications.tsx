@@ -1,10 +1,11 @@
+import styles from "@/screens/settings/SettingsPage.module.css";
 import { SettingRow } from "@/screens/settings/SettingRow";
 import { ToggleSwitch } from "@/screens/settings/ToggleSwitch";
 
 export const NotificationsSection = () => {
   return (
     <>
-      <div className="settings-group">
+      <div className={styles.group}>
         <h3>알림</h3>
         <SettingRow label="포모도로 종료" sub="집중 / 휴식 끝났을 때 알림" comingSoon>
           <ToggleSwitch on={true} />
@@ -22,13 +23,13 @@ export const NotificationsSection = () => {
           <ToggleSwitch on={false} />
         </SettingRow>
       </div>
-      <div className="settings-group">
+      <div className={styles.group}>
         <h3>방해 금지 시간</h3>
         <SettingRow label="시작 시간" comingSoon>
-          <input className="set-input" type="time" defaultValue="22:00" />
+          <input className={styles.setInput} type="time" defaultValue="22:00" />
         </SettingRow>
         <SettingRow label="종료 시간" comingSoon>
-          <input className="set-input" type="time" defaultValue="07:00" />
+          <input className={styles.setInput} type="time" defaultValue="07:00" />
         </SettingRow>
       </div>
     </>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import styles from "@/screens/settings/SettingsPage.module.css";
 import { SettingRow } from "@/screens/settings/SettingRow";
 import { ToggleSwitch } from "@/screens/settings/ToggleSwitch";
 import { useAuth } from "@/data/auth";
@@ -43,7 +44,7 @@ export const SecuritySection = () => {
 
   return (
     <>
-      <div className="settings-group">
+      <div className={styles.group}>
         <h3>앱 잠금</h3>
         <SettingRow label="앱 진입 시 잠금" sub="시작할 때 인증 요구" comingSoon>
           <ToggleSwitch on={false} />
@@ -52,7 +53,7 @@ export const SecuritySection = () => {
           <ToggleSwitch on={true} />
         </SettingRow>
         <SettingRow label="자동 잠금 시간" comingSoon>
-          <select className="set-input" defaultValue="5">
+          <select className={styles.setInput} defaultValue="5">
             <option value="0">즉시</option>
             <option value="1">1분 후</option>
             <option value="5">5분 후</option>
@@ -60,13 +61,13 @@ export const SecuritySection = () => {
           </select>
         </SettingRow>
       </div>
-      <div className="settings-group">
+      <div className={styles.group}>
         <h3>인증</h3>
         <div className="field">
           <label htmlFor="sec-current-pw">현재 비밀번호</label>
           <input
             id="sec-current-pw"
-            className="set-input"
+            className={styles.setInput}
             type="password"
             value={current}
             onChange={(e) => setCurrent(e.target.value)}
@@ -79,7 +80,7 @@ export const SecuritySection = () => {
           <label htmlFor="sec-new-pw">새 비밀번호</label>
           <input
             id="sec-new-pw"
-            className="set-input"
+            className={styles.setInput}
             type="password"
             value={pw}
             onChange={(e) => setPw(e.target.value)}
@@ -92,7 +93,7 @@ export const SecuritySection = () => {
           <label htmlFor="sec-confirm-pw">새 비밀번호 확인</label>
           <input
             id="sec-confirm-pw"
-            className="set-input"
+            className={styles.setInput}
             type="password"
             value={confirm}
             onChange={(e) => setConfirm(e.target.value)}
@@ -121,7 +122,11 @@ export const SecuritySection = () => {
             </small>
           )}
           {msg && (
-            <small style={{ color: msg.ok ? "#4a8d5a" : "#c0392b" }}>
+            <small
+              role="status"
+              aria-live="polite"
+              style={{ color: msg.ok ? "#4a8d5a" : "#c0392b" }}
+            >
               {msg.text}
             </small>
           )}

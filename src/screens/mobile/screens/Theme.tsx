@@ -5,23 +5,33 @@ import { SectionHeader } from "@/screens/mobile/shared/SectionHeader";
 import { Ico } from "@/screens/mobile/shared/Ico";
 import { SubHeader } from "@/screens/mobile/shared/SubHeader";
 import { pressable } from "@/lib/a11y";
+import { usePreferences } from "@/data/preferences";
+import type { AccentColor } from "@/types";
 
 export const ThemeScreen = ({ onBack }: any) => {
-  const [mode, setMode] = useState("auto"); // light | dark | auto
-  const [accent, setAccent] = useState("yellow");
+  // 다크 모드·포인트 컬러는 데스크톱 Settings(Appearance)와 동일한 소스를
+  // 공유한다 — usePreferences(Zustand+persist, 로그인 시 Supabase 동기화).
+  // AppLayout 의 effect 가 body.dark / --yellow 를 토글하므로 모바일에서도
+  // 즉시 앱 전역에 반영된다. (이전엔 로컬 useState 라 아무 효과 없는 가짜
+  // 컨트롤이었다.)
+  const [tweaks, setTweak] = usePreferences();
+  const mode = tweaks.dark ? "dark" : "light";
+  const accent = tweaks.accent;
+  // 폰트·글자크기·간격·종이질감·햅틱은 데스크톱에서도 미저장(미리보기 전용)
+  // 이라 로컬 상태로 유지한다 — 실제 저장 로직이 생기면 그때 공유 소스로 승격.
   const [font, setFont] = useState("hand"); // hand | sans | serif
   const [size, setSize] = useState(2); // 1..4
   const [density, setDensity] = useState("comfy"); // cozy | comfy | compact
   const [paper, setPaper] = useState(true);
   const [haptics, setHaptics] = useState(true);
 
-  const accents = [
-    { id: "yellow", name: "노랑", color: "#ffd84d" },
-    { id: "pink", name: "핑크", color: "#ffb38a" },
+  // 포인트 컬러는 데스크톱과 동일한 정규 팔레트(AccentColor)만 사용 —
+  // 선택값이 그대로 persist 되고 앱 전역에 적용되도록.
+  const accents: { id: AccentColor; name: string; color: string }[] = [
+    { id: "yellow", name: "노랑", color: "#ffe27a" },
+    { id: "coral", name: "코랄", color: "#ffb38a" },
     { id: "mint", name: "민트", color: "#b9e7c9" },
-    { id: "blue", name: "블루", color: "#cfe7ff" },
     { id: "lilac", name: "라일락", color: "#d4c1f0" },
-    { id: "ink", name: "잉크", color: "#3a3528" },
   ];
   const sizes = ["작게", "보통", "크게", "더 크게"];
 
@@ -96,7 +106,7 @@ export const ThemeScreen = ({ onBack }: any) => {
               padding: "5px 10px",
               borderRadius: 999,
               background: accentColor,
-              color: accent === "ink" ? "#ffd84d" : "#3a3528",
+              color: "#3a3528",
               fontSize: 11,
               fontWeight: 600,
             }}
@@ -125,18 +135,17 @@ export const ThemeScreen = ({ onBack }: any) => {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)",
+            gridTemplateColumns: "repeat(2, 1fr)",
             gap: 4,
           }}
         >
           {[
             { id: "light", label: "라이트", ico: "sun" },
             { id: "dark", label: "다크", ico: "moon" },
-            { id: "auto", label: "자동", ico: "refresh" },
           ].map((m) => (
             <button
               key={m.id}
-              onClick={() => setMode(m.id)}
+              onClick={() => setTweak("dark", m.id === "dark")}
               style={{
                 padding: "12px 8px",
                 borderRadius: 10,
@@ -173,7 +182,7 @@ export const ThemeScreen = ({ onBack }: any) => {
           {accents.map((a) => (
             <button
               key={a.id}
-              onClick={() => setAccent(a.id)}
+              onClick={() => setTweak("accent", a.id)}
               aria-pressed={accent === a.id}
               style={{
                 width: 44,
@@ -201,7 +210,7 @@ export const ThemeScreen = ({ onBack }: any) => {
                 >
                   <path
                     d="M3 7l3 3 5-6"
-                    stroke={a.id === "ink" ? "#ffd84d" : "#3a3528"}
+                    stroke="#3a3528"
                     strokeWidth="1.8"
                     fill="none"
                     strokeLinecap="round"

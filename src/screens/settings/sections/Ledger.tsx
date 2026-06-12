@@ -1,3 +1,4 @@
+import styles from "@/screens/settings/SettingsPage.module.css";
 import { SettingRow } from "@/screens/settings/SettingRow";
 import { ToggleSwitch } from "@/screens/settings/ToggleSwitch";
 
@@ -8,11 +9,11 @@ export const LedgerSettingsSection = ({ tweaks, setTweak }: any) => {
   const startDay = tweaks.cycleStart || "payday";
   return (
     <>
-      <div className="settings-group">
+      <div className={styles.group}>
         <h3>월급일 · 가계부 주기</h3>
         <SettingRow label="월급일 유형" sub="실제 입금 패턴에 맞춰 선택하세요">
           <select
-            className="set-input"
+            className={styles.setInput}
             value={paydayType}
             onChange={(e) => setTweak("paydayType", e.target.value)}
           >
@@ -32,7 +33,7 @@ export const LedgerSettingsSection = ({ tweaks, setTweak }: any) => {
                 type="number"
                 min="1"
                 max="31"
-                className="set-input"
+                className={styles.setInput}
                 style={{
                   minWidth: 80,
                   textAlign: "center",
@@ -59,7 +60,7 @@ export const LedgerSettingsSection = ({ tweaks, setTweak }: any) => {
         )}
         <SettingRow label="가계부 주기 시작일" sub="한 달 통계의 시작점">
           <select
-            className="set-input"
+            className={styles.setInput}
             value={startDay}
             onChange={(e) => setTweak("cycleStart", e.target.value)}
           >
@@ -69,7 +70,7 @@ export const LedgerSettingsSection = ({ tweaks, setTweak }: any) => {
           </select>
         </SettingRow>
         <SettingRow label="주말일 때 처리" sub="월급일이 주말/공휴일이면" comingSoon>
-          <select className="set-input" defaultValue="prev">
+          <select className={styles.setInput} defaultValue="prev">
             <option value="prev">앞당겨서 입금</option>
             <option value="next">뒤로 미뤄서 입금</option>
             <option value="exact">그대로 표시</option>
@@ -77,14 +78,14 @@ export const LedgerSettingsSection = ({ tweaks, setTweak }: any) => {
         </SettingRow>
       </div>
 
-      <div className="settings-group">
+      <div className={styles.group}>
         <h3>예산 · 한도</h3>
         <SettingRow label="월 예산 알림" sub="예산의 80% 도달 시 알림" comingSoon>
           <ToggleSwitch on={true} />
         </SettingRow>
         <SettingRow label="기본 통화">
           <select
-            className="set-input"
+            className={styles.setInput}
             value={currency}
             onChange={(e) => setTweak("currency", e.target.value)}
           >
@@ -95,7 +96,7 @@ export const LedgerSettingsSection = ({ tweaks, setTweak }: any) => {
           </select>
         </SettingRow>
         <SettingRow label="천 단위 표기" sub="₩1,000,000 vs 1백만" comingSoon>
-          <select className="set-input" defaultValue="comma">
+          <select className={styles.setInput} defaultValue="comma">
             <option value="comma">콤마 (1,000,000)</option>
             <option value="korean">한글 (1백만)</option>
             <option value="short">단축 (1M)</option>
@@ -103,7 +104,7 @@ export const LedgerSettingsSection = ({ tweaks, setTweak }: any) => {
         </SettingRow>
       </div>
 
-      <div className="settings-group">
+      <div className={styles.group}>
         <h3>카테고리 · 자동 분류</h3>
         <SettingRow
           label="자동 카테고리 인식"

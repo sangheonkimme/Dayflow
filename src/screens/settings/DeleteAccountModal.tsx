@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Modal } from "@/components/Modal";
+import styles from "@/screens/settings/SettingsPage.module.css";
 import { useAuth } from "@/data/auth";
 
 const CONFIRM_WORD = "삭제";
@@ -60,7 +61,7 @@ export const DeleteAccountModal = ({
         <label htmlFor="del-confirm-text">확인 문구</label>
         <input
           id="del-confirm-text"
-          className="set-input"
+          className={styles.setInput}
           value={confirmText}
           onChange={(e) => setConfirmText(e.target.value)}
           placeholder={`"${CONFIRM_WORD}" 입력`}
@@ -72,7 +73,7 @@ export const DeleteAccountModal = ({
         <label htmlFor="del-password">현재 비밀번호</label>
         <input
           id="del-password"
-          className="set-input"
+          className={styles.setInput}
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
