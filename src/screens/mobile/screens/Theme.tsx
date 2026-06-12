@@ -4,8 +4,7 @@ import { NotifToggleRow } from "@/screens/mobile/shared/NotifToggleRow";
 import { SectionHeader } from "@/screens/mobile/shared/SectionHeader";
 import { Ico } from "@/screens/mobile/shared/Ico";
 import { SubHeader } from "@/screens/mobile/shared/SubHeader";
-import { DfmSwitch } from "@/screens/mobile/shared/DfmSwitch";
-import { usePreferences } from "@/data/preferences";
+import { pressable } from "@/lib/a11y";
 
 export const ThemeScreen = ({ onBack }: any) => {
   const [mode, setMode] = useState("auto"); // light | dark | auto
@@ -253,7 +252,7 @@ export const ThemeScreen = ({ onBack }: any) => {
         ].map((f, i, arr) => (
           <div
             key={f.id}
-            onClick={() => setFont(f.id)}
+            {...pressable(() => setFont(f.id))}
             style={{
               display: "flex",
               alignItems: "center",

@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { AUTH_TEXT } from "@/screens/auth/authText";
 import { BrandMark } from "@/screens/auth/BrandMark";
-import { Field } from "@/screens/auth/Field";
 import { Btn } from "@/screens/auth/Btn";
 
 export const OnboardingScreen = ({

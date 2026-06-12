@@ -1,4 +1,4 @@
-import {    useState , useMemo , useEffect , useRef } from "react";
+import { useState, useEffect } from "react";
 import { Ico } from "@/screens/mobile/shared/Ico";
 import styles from "@/screens/mobile/mobile.module.css";
 
@@ -60,6 +60,7 @@ export const UpgradeSheet = ({ open, onClose }: any) => {
   return (
     <>
       <div
+        role="presentation"
         className={`${styles.dfmSheetScrim} ${open ? styles.on : ""}`}
         onClick={onClose}
       />

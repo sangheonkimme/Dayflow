@@ -3,6 +3,7 @@ import { Icon } from "@/components/Icon";
 import { Modal } from "@/components/Modal";
 import { useTransactions } from "@/data/transactions";
 import { recent as selectRecent } from "@/data/transactions";
+import { pressable } from "@/lib/a11y";
 import styles from "./ReceiptUploadModal.module.css";
 
 // ============================================================
@@ -151,7 +152,7 @@ function ReceiptUploadModal({ open, onClose, onAttach }: any) {
               }}
               onDragLeave={() => setIsDragging(false)}
               onDrop={onDrop}
-              onClick={() => inputRef.current?.click()}
+              {...pressable(() => inputRef.current?.click())}
               ref={dragRef}
             >
               <div className={styles.receiptDropIco}>📄</div>

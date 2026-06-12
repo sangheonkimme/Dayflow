@@ -260,7 +260,7 @@ function TweaksPanel({ title = "Tweaks", children }: TweaksPanelProps) {
         data-noncommentable=""
         style={{ right: offsetRef.current.x, bottom: offsetRef.current.y }}
       >
-        <div className="twk-hd" onMouseDown={onDragStart}>
+        <div className="twk-hd" role="presentation" onMouseDown={onDragStart}>
           <b>{title}</b>
           <button
             className="twk-x"

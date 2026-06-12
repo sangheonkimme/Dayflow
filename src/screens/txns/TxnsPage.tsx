@@ -6,6 +6,7 @@ import { TRANSACTION_CATEGORIES } from "@/lib/categories";
 import { ReceiptUploadModal } from "@/screens/ledger/ReceiptUploadModal";
 import { useTransactions } from "@/data/transactions";
 import { inferIcon } from "@/data/transactions";
+import { pressable } from "@/lib/a11y";
 import type { Txn } from "@/types";
 import styles from "./TxnsPage.module.css";
 import "@/styles/flows-extra.css";
@@ -152,7 +153,7 @@ function TxnsPage({ onAdd, onEditTxn }) {
             <span
               key={k}
               className={"cat-chip" + (type === k ? " on" : "")}
-              onClick={() => setType(k)}
+              {...pressable(() => setType(k))}
             >
               {l}
             </span>
@@ -169,7 +170,7 @@ function TxnsPage({ onAdd, onEditTxn }) {
             <span
               key={k}
               className={"cat-chip" + (range === k ? " on" : "")}
-              onClick={() => setRange(k)}
+              {...pressable(() => setRange(k))}
             >
               {l}
             </span>
@@ -179,7 +180,7 @@ function TxnsPage({ onAdd, onEditTxn }) {
           <span className={styles.txnFilterLabel}>카테고리</span>
           <span
             className={"cat-chip" + (cat === "all" ? " on" : "")}
-            onClick={() => setCat("all")}
+            {...pressable(() => setCat("all"))}
           >
             전체
           </span>
@@ -187,7 +188,7 @@ function TxnsPage({ onAdd, onEditTxn }) {
             <span
               key={c}
               className={"cat-chip" + (cat === c ? " on" : "")}
-              onClick={() => setCat(c)}
+              {...pressable(() => setCat(c))}
               style={
                 cat === c
                   ? undefined
@@ -204,7 +205,7 @@ function TxnsPage({ onAdd, onEditTxn }) {
           <span className={styles.txnFilterLabel}>결제</span>
           <span
             className={"cat-chip" + (pay === "all" ? " on" : "")}
-            onClick={() => setPay("all")}
+            {...pressable(() => setPay("all"))}
           >
             전체
           </span>
@@ -212,7 +213,7 @@ function TxnsPage({ onAdd, onEditTxn }) {
             <span
               key={p}
               className={"cat-chip" + (pay === p ? " on" : "")}
-              onClick={() => setPay(p)}
+              {...pressable(() => setPay(p))}
             >
               {p}
             </span>
@@ -273,7 +274,7 @@ function TxnsPage({ onAdd, onEditTxn }) {
                         ? `${styles.txnRow} ${styles.on}`
                         : styles.txnRow
                     }
-                    onClick={() => setActiveId(t.id)}
+                    {...pressable(() => setActiveId(t.id))}
                   >
                     <div className={styles.thlCol}>
                       <div className="tr-time">{t.time}</div>

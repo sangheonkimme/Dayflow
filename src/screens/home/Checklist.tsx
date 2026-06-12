@@ -105,6 +105,7 @@ export function Checklist() {
 
       <ul className={styles.tasks}>
         {pending.map((t) => (
+          // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions -- 행 클릭은 포인터 편의용 보조 토글. li 에 role/tabIndex 를 주면 no-noninteractive-element-to-interactive-role 에러가 나서 시맨틱 리스트를 유지한 채 예외 처리.
           <li
             key={t.id}
             className={styles.task}
@@ -134,6 +135,7 @@ export function Checklist() {
           </li>
         )}
         {completed.map((t) => (
+          // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions -- 위 pending 행과 동일 사유 (시맨틱 li 유지).
           <li
             key={t.id}
             className={`${styles.task} ${styles.done}`}

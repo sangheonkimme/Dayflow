@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Ico } from "@/screens/mobile/shared/Ico";
 import { useSubscriptions } from "@/data/subscriptions";
 import styles from "@/screens/mobile/mobile.module.css";
@@ -51,6 +51,7 @@ export const AddSubSheet = ({ open, onClose }: any) => {
   return (
     <>
       <div
+        role="presentation"
         className={`${styles.dfmSheetScrim} ${open ? styles.on : ""}`}
         onClick={onClose}
       />

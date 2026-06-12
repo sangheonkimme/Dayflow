@@ -203,7 +203,8 @@ export function SearchOverlay({ open, onClose, onNavigate }: SearchOverlayProps)
   if (!open) return null;
 
   return (
-    <div className={styles.searchOverlay} onClick={onClose}>
+    <div role="presentation" className={styles.searchOverlay} onClick={onClose}>
+      {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions -- 다이얼로그 패널의 클릭 전파 차단 전용. role="dialog" 시맨틱을 유지해야 하고, 닫기는 ESC 로 제공됨 */}
       <div
         className={styles.searchModal}
         onClick={(e) => e.stopPropagation()}

@@ -1,6 +1,3 @@
-import { useState } from "react";
-import { EyeIcon } from "@/screens/auth/EyeIcon";
-
 export const Field = ({
   label,
   type = "text",

@@ -1,9 +1,9 @@
 import { pwdScore } from "@/screens/auth/pwdScore";
+import { pressable } from "@/lib/a11y";
 import { useState } from "react";
 import { useAuth } from "@/data/auth";
 import { AUTH_TEXT } from "@/screens/auth/authText";
 import { EyeIcon } from "@/screens/auth/EyeIcon";
-import { BrandMark } from "@/screens/auth/BrandMark";
 import { Field } from "@/screens/auth/Field";
 import { Btn } from "@/screens/auth/Btn";
 
@@ -458,7 +458,7 @@ export const ForgotScreen = ({
                 dark={dark}
                 autoFocus
                 rightSlot={
-                  <div onClick={() => setShowPwd((s) => !s)}>
+                  <div {...pressable(() => setShowPwd((s) => !s))}>
                     <EyeIcon on={showPwd} dark={dark} />
                   </div>
                 }

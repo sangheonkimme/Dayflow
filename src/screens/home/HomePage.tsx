@@ -9,6 +9,7 @@ import { MoneyFlow } from "@/screens/home/MoneyFlow";
 import { MiniCalendar } from "@/screens/home/MiniCalendar";
 import { ToolCard } from "@/screens/home/ToolCard";
 import { IMAGE_TOOLS_PUBLIC } from "@/lib/feature-flags";
+import { pressable } from "@/lib/a11y";
 import type { Tweaks, EventDraft } from "@/types";
 import type { SetPreference } from "@/data/preferences";
 
@@ -94,7 +95,7 @@ export function HomePage({
 
       <div className="section-h" style={{ marginTop: 26 }}>
         <h2>타이머</h2>
-        <span className="more" onClick={() => setActive("settings")}>
+        <span className="more" {...pressable(() => setActive("settings"))}>
           설정 →
         </span>
       </div>
@@ -106,16 +107,12 @@ export function HomePage({
 
       <div className="section-h" style={{ marginTop: 26 }}>
         <h2>한눈에 보기</h2>
-        <span className="more" onClick={() => setActive("ledger")}>
+        <span className="more" {...pressable(() => setActive("ledger"))}>
           자세히 →
         </span>
       </div>
       <div className="grid">
-        <MoneyFlow
-          onAdd={() => openTxn()}
-          onOpenLedger={() => setActive("ledger")}
-          onEditTxn={onEditTxn}
-        />
+        <MoneyFlow onAdd={() => openTxn()} onEditTxn={onEditTxn} />
         {tweaks.showCalendar && (
           <MiniCalendar
             onOpen={() => setActive("calendar")}

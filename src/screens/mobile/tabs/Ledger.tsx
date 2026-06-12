@@ -7,6 +7,7 @@ import { inferIcon } from "@/data/transactions";
 import { Ico } from "@/screens/mobile/shared/Ico";
 import { SectionHeader } from "@/screens/mobile/shared/SectionHeader";
 import { SwipeRow } from "@/screens/mobile/shared/SwipeRow";
+import { pressable } from "@/lib/a11y";
 import styles from "@/screens/mobile/mobile.module.css";
 
 export const MobileLedger = () => {
@@ -289,7 +290,7 @@ export const MobileLedger = () => {
               >
                 <div
                   className={styles.dfmMoneyRow}
-                  onClick={() => openTxnDetail(it)}
+                  {...pressable(() => openTxnDetail(it))}
                 >
                   <div className={styles.ico}>
                     <Ico name={it.ico} size={16} />

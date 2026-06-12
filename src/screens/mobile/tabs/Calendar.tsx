@@ -1,8 +1,9 @@
-import {    useState , useMemo , useEffect , useRef } from "react";
+import { useState, useMemo } from "react";
 import { DOW } from "@/lib/date";
 import { useEvents, useEventsByDate } from "@/data/events";
 import { Ico } from "@/screens/mobile/shared/Ico";
 import { SectionHeader } from "@/screens/mobile/shared/SectionHeader";
+import { pressable } from "@/lib/a11y";
 import styles from "@/screens/mobile/mobile.module.css";
 
 export const MobileCalEvents = () => {
@@ -79,7 +80,7 @@ export const MobileCalendar = () => {
   const [sel, setSel] = useState(today);
 
   const selEvents = eventsByDay[sel] || [];
-  const selDow = dayNames[(sel + 6) % 7]; // Nov 1 2026 = Sunday → day d's dow = (d-1)%7? Actually Nov 1 2026 is Sunday, so day d → dow = (d-1)%7. We'll compute below.
+  // Nov 1 2026 is Sunday, so day d → dow = (d-1)%7.
   const dow = dayNames[(sel - 1) % 7];
 
   return (
@@ -113,7 +114,9 @@ export const MobileCalendar = () => {
             return (
               <div
                 key={i}
-                onClick={() => !muted && setSel(d)}
+                {...pressable(() => {
+                  if (!muted) setSel(d);
+                })}
                 className={[
                   styles.dfmCalDay,
                   muted ? styles.muted : "",

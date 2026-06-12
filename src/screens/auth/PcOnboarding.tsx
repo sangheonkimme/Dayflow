@@ -1,9 +1,7 @@
 import { BrandMark } from "@/screens/auth/BrandMark";
 import { useState } from "react";
 import { AUTH_TEXT } from "@/screens/auth/authText";
-import { PCField } from "@/screens/auth/PcField";
 import { PCBtn } from "@/screens/auth/PcBtn";
-import { BrandPanel } from "@/screens/auth/PcBrandPanel";
 
 export const PCOnboarding = ({
   lang = "ko",

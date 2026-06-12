@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Icon } from "@/components/Icon";
 import { TIMER_PRESETS } from "@/data/lookups";
+import { pressable } from "@/lib/a11y";
 import styles from "@/screens/home/timers/timers.module.css";
 
 export function GeneralTimer() {
@@ -103,7 +104,7 @@ export function GeneralTimer() {
           <span
             key={p}
             className={styles.preset + (activePreset === p ? " " + styles.on : "")}
-            onClick={() => setPreset(p)}
+            {...pressable(() => setPreset(p))}
           >
             {p}M
           </span>

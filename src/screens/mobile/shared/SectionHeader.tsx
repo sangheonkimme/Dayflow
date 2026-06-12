@@ -1,4 +1,5 @@
 import styles from "@/screens/mobile/mobile.module.css";
+import { pressable } from "@/lib/a11y";
 
 export const SectionHeader = ({ title, action, onAction }: any) => {
   return (
@@ -7,7 +8,7 @@ export const SectionHeader = ({ title, action, onAction }: any) => {
       {action && (
         <span
           className={styles.more + (onAction ? " " + styles.clickable : "")}
-          onClick={onAction}
+          {...(onAction ? pressable(onAction) : {})}
           style={onAction ? { cursor: "pointer" } : undefined}
         >
           {action} →

@@ -2,6 +2,7 @@ import { Icon } from "@/components/Icon";
 import { DOW } from "@/lib/date";
 import { useAuth } from "@/data/auth";
 import { IMAGE_TOOLS_PUBLIC } from "@/lib/feature-flags";
+import { pressable } from "@/lib/a11y";
 import s from "@/components/Shell.module.css";
 
 // ============================================================
@@ -105,7 +106,7 @@ function Sidebar({ active, onSelect }: SidebarProps) {
               <div
                 key={it.id}
                 className={`${s.navItem}${active === it.id ? ` ${s.active}` : ""}`}
-                onClick={() => onSelect(it.id)}
+                {...pressable(() => onSelect(it.id))}
               >
                 <Icon name={it.icon} size={18} />
                 <div className={s.labelWrap}>
@@ -187,7 +188,7 @@ function Topbar({ dark, onToggleDark, onSearch }: TopbarProps) {
         </div>
       </div>
       <div className={s.topbarActions}>
-        <div className={s.search} onClick={onSearch}>
+        <div className={s.search} {...pressable(() => onSearch?.())}>
           <Icon name="search" size={14} />
           <input placeholder="검색하기..." readOnly />
           <kbd>⌘K</kbd>

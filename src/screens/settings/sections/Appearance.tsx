@@ -1,4 +1,5 @@
 import { Icon } from "@/components/Icon";
+import { pressable } from "@/lib/a11y";
 import { SettingRow } from "@/screens/settings/SettingRow";
 import { ToggleSwitch } from "@/screens/settings/ToggleSwitch";
 
@@ -26,7 +27,7 @@ export const AppearanceSection = ({ tweaks, setTweak }: any) => {
                 key={a.id}
                 className={"acc-swatch" + (tweaks.accent === a.id ? " on" : "")}
                 style={{ background: a.c }}
-                onClick={() => setTweak("accent", a.id)}
+                {...pressable(() => setTweak("accent", a.id))}
                 title={a.label}
               >
                 {tweaks.accent === a.id && <Icon name="check" size={14} />}

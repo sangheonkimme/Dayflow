@@ -3,8 +3,6 @@ import styles from "@/screens/mobile/mobile.module.css";
 import { SectionHeader } from "@/screens/mobile/shared/SectionHeader";
 import { Ico } from "@/screens/mobile/shared/Ico";
 import { SubHeader } from "@/screens/mobile/shared/SubHeader";
-import { SwipeRow } from "@/screens/mobile/shared/SwipeRow";
-import { useSubscriptions } from "@/data/subscriptions";
 
 export const SubscriptionsScreen = ({ onBack, onAdd }: any) => {
   const subs = [

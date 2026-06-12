@@ -4,6 +4,7 @@ import { SectionHeader } from "@/screens/mobile/shared/SectionHeader";
 import { Ico } from "@/screens/mobile/shared/Ico";
 import { SubHeader } from "@/screens/mobile/shared/SubHeader";
 import { NotifToggleRow } from "@/screens/mobile/shared/NotifToggleRow";
+import { pressable } from "@/lib/a11y";
 
 export const NotificationsScreen = ({ onBack }: any) => {
   const [s, setS] = useState({
@@ -245,7 +246,7 @@ export const NotificationsScreen = ({ onBack }: any) => {
         {["기본", "차임", "조약돌", "물방울", "무음"].map((opt, i, arr) => (
           <div
             key={opt}
-            onClick={() => set("sound", opt)}
+            {...pressable(() => set("sound", opt))}
             style={{
               display: "flex",
               alignItems: "center",

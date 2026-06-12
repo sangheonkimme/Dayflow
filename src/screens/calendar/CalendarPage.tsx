@@ -3,6 +3,7 @@ import { Icon } from "@/components/Icon";
 import { DOW } from "@/lib/date";
 import { EVENT_CATEGORY_COLORS } from "@/lib/categories";
 import { useEvents } from "@/data/events";
+import { pressable } from "@/lib/a11y";
 import styles from "./CalendarPage.module.css";
 
 export const CalendarPage = ({ onAdd, onEditEvent }: any) => {
@@ -174,7 +175,9 @@ export const CalendarPage = ({ onAdd, onEditEvent }: any) => {
                       (isToday ? " today" : "") +
                       (!c.muted && c.d === selDay ? " selected" : "")
                     }
-                    onClick={() => !c.muted && setSelDay(c.d)}
+                    {...pressable(() => {
+                      if (!c.muted) setSelDay(c.d);
+                    })}
                   >
                     <div
                       className={

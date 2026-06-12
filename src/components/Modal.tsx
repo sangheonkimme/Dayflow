@@ -31,10 +31,12 @@ export function Modal({
 
   return (
     <div
+      role="presentation"
       className={("modal-overlay " + overlayClassName).trim()}
       onClick={onClose}
     >
       <div
+        role="presentation"
         className={("modal " + className).trim()}
         onClick={(e) => e.stopPropagation()}
       >

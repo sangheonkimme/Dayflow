@@ -5,6 +5,7 @@ import { DOW } from "@/lib/date";
 import { TRANSACTION_CATEGORIES } from "@/lib/categories";
 import { useTransactions } from "@/data/transactions";
 import { inferIcon } from "@/data/transactions";
+import { pressable } from "@/lib/a11y";
 import type { Txn } from "@/types";
 import {
   monthlyTotals,
@@ -239,7 +240,7 @@ export const LedgerPage = ({ onAdd, onEditTxn }: any) => {
               <span
                 key={k}
                 className={"filter-tab" + (filter === k ? " on" : "")}
-                onClick={() => setFilter(k)}
+                {...pressable(() => setFilter(k))}
               >
                 {l}
               </span>

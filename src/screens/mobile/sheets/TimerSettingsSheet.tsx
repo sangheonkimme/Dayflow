@@ -1,6 +1,4 @@
-import { useState, useEffect } from "react";
 import { Ico } from "@/screens/mobile/shared/Ico";
-import { DfmSwitch } from "@/screens/mobile/shared/DfmSwitch";
 import styles from "@/screens/mobile/mobile.module.css";
 
 export const TimerSettingsSheet = ({ open, onClose, settings, onChange }: any) => {
@@ -68,6 +66,7 @@ export const TimerSettingsSheet = ({ open, onClose, settings, onChange }: any) =
   return (
     <>
       <div
+        role="presentation"
         className={`${styles.dfmSheetScrim} ${open ? styles.on : ""}`}
         onClick={onClose}
       />

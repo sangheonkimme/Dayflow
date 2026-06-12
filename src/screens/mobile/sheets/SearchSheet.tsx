@@ -1,8 +1,5 @@
-import {  useState, useEffect, useMemo , useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Ico } from "@/screens/mobile/shared/Ico";
-import { useTransactions } from "@/data/transactions";
-import { useEvents } from "@/data/events";
-import { useMemos } from "@/data/memos";
 import { IMAGE_TOOLS_PUBLIC } from "@/lib/feature-flags";
 import styles from "@/screens/mobile/mobile.module.css";
 
@@ -249,6 +246,7 @@ export const SearchSheet = ({ open, onClose, onJump }: any) => {
   return (
     <>
       <div
+        role="presentation"
         className={`${styles.dfmSheetScrim} ${open ? styles.on : ""}`}
         onClick={onClose}
       />

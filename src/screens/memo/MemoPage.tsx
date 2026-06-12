@@ -4,6 +4,7 @@ import { useMemos, useMemoFacets } from "@/data/memos";
 import { FOLDERS } from "@/data/memos";
 import { memoExcerpt, memoWordCount, memoUpdatedLabel } from "@/data/memos";
 import { useDraftField } from "@/lib/useDraftField";
+import { pressable } from "@/lib/a11y";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
@@ -160,6 +161,7 @@ function MemoPage() {
           <div className={styles.memoSideH}>폴더</div>
           <ul className={styles.folderList}>
             {FOLDERS.map((f) => (
+              // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions -- ul>li 리스트 시맨틱 유지가 우선 (li 에 role="button" 은 no-noninteractive-element-to-interactive-role 위반). 키보드 접근은 내부 button 전환 리팩토링에서 처리 예정.
               <li
                 key={f.id}
                 className={`${styles.folderItem}${folder === f.id ? ` ${styles.on}` : ""}`}
@@ -188,7 +190,7 @@ function MemoPage() {
               <span
                 key={t}
                 className={styles.tagPill}
-                onClick={() => setSearch(`#${t}`)}
+                {...pressable(() => setSearch(`#${t}`))}
               >
                 #{t}
               </span>
@@ -241,7 +243,7 @@ function MemoPage() {
               <div
                 key={m.id}
                 className={`${styles.memoCard}${activeId === m.id ? ` ${styles.on}` : ""}`}
-                onClick={() => setActiveId(m.id)}
+                {...pressable(() => setActiveId(m.id))}
               >
                 <div className={styles.memoCardHead}>
                   {m.pinned && <Icon name="pinFilled" size={12} />}
@@ -750,6 +752,7 @@ function MemoEditor({
 
       {historyOpen && (
         <div
+          role="presentation"
           style={{ position: "fixed", inset: 0, zIndex: 100 }}
           onClick={() => setHistoryOpen(false)}
         >
@@ -765,6 +768,7 @@ function MemoEditor({
               fontSize: 13,
               minWidth: 240,
             }}
+            role="presentation"
             onClick={(e) => e.stopPropagation()}
           >
             <div style={{ fontWeight: 600, marginBottom: 10 }}>이 메모 정보</div>
@@ -878,6 +882,7 @@ function MemoQuickSearch({ memos, onClose, onPick }: MemoQuickSearchProps) {
   return (
     <div
       className={styles.quickBackdrop}
+      role="presentation"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}

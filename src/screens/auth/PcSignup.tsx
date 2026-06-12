@@ -7,6 +7,7 @@ import { useAuth } from "@/data/auth";
 import { PCField } from "@/screens/auth/PcField";
 import { PCBtn } from "@/screens/auth/PcBtn";
 import { BrandPanel } from "@/screens/auth/PcBrandPanel";
+import { pressable } from "@/lib/a11y";
 
 export const PCSignup = ({ lang = "ko", dark = false, onSwitch }: any) => {
   const t = AUTH_TEXT[lang];
@@ -48,7 +49,7 @@ export const PCSignup = ({ lang = "ko", dark = false, onSwitch }: any) => {
 
   const Check = ({ on, onClick, label, required }: any) => (
     <label
-      onClick={onClick}
+      {...pressable(onClick)}
       style={{
         display: "flex",
         alignItems: "flex-start",
@@ -228,7 +229,7 @@ export const PCSignup = ({ lang = "ko", dark = false, onSwitch }: any) => {
                 placeholder="8+ chars"
                 dark={dark}
                 rightSlot={
-                  <div onClick={() => setShowPwd((s) => !s)}>
+                  <div {...pressable(() => setShowPwd((s) => !s))}>
                     <EyeIcon on={showPwd} dark={dark} />
                   </div>
                 }

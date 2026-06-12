@@ -1,6 +1,7 @@
 import { Ico } from "@/screens/mobile/shared/Ico";
 import { SectionHeader } from "@/screens/mobile/shared/SectionHeader";
 import { IMAGE_TOOLS_PUBLIC } from "@/lib/feature-flags";
+import { pressable } from "@/lib/a11y";
 import styles from "@/screens/mobile/mobile.module.css";
 
 export const MobileMenu = ({ onNavigate, onProfile }: any) => {
@@ -21,7 +22,7 @@ export const MobileMenu = ({ onNavigate, onProfile }: any) => {
     <div>
       <div
         className={styles.dfmCard}
-        onClick={onProfile}
+        {...pressable(() => onProfile?.())}
         style={{
           display: "flex",
           alignItems: "center",
@@ -59,7 +60,9 @@ export const MobileMenu = ({ onNavigate, onProfile }: any) => {
         {links.map(([icoName, ttl, sub, route], i) => (
           <div
             key={i}
-            onClick={() => route && onNavigate?.(route)}
+            {...pressable(() => {
+              if (route) onNavigate?.(route);
+            })}
             style={{
               display: "flex",
               alignItems: "center",

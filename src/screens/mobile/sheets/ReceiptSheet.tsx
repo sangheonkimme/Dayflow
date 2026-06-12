@@ -1,7 +1,4 @@
-import { useEffect } from "react";
-import { DOW } from "@/lib/date";
 import { Ico } from "@/screens/mobile/shared/Ico";
-import { inferIcon } from "@/data/transactions";
 import styles from "@/screens/mobile/mobile.module.css";
 
 export const ReceiptSheet = ({ txn, onClose }: any) => {
@@ -66,6 +63,7 @@ export const ReceiptSheet = ({ txn, onClose }: any) => {
   return (
     <>
       <div
+        role="presentation"
         className={`${styles.dfmSheetScrim} ${open ? styles.on : ""}`}
         onClick={onClose}
       />

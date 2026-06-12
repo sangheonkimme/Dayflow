@@ -46,6 +46,7 @@ export const AddEventSheet = ({ open, onClose }: any) => {
   return (
     <>
       <div
+        role="presentation"
         className={`${styles.dfmSheetScrim} ${open ? styles.on : ""}`}
         onClick={onClose}
       />

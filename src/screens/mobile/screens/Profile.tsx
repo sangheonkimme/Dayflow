@@ -7,6 +7,7 @@ import { Ico } from "@/screens/mobile/shared/Ico";
 import { SubHeader } from "@/screens/mobile/shared/SubHeader";
 import { DfmSwitch } from "@/screens/mobile/shared/DfmSwitch";
 import { useAuth } from "@/data/auth";
+import { pressable } from "@/lib/a11y";
 
 export const ProfileScreen = ({ onBack, onUpgrade }: any) => {
   const { user, signOut } = useAuth();
@@ -27,7 +28,7 @@ export const ProfileScreen = ({ onBack, onUpgrade }: any) => {
   ];
   const Row = ({ ico, title, sub, right, last, onClick, danger }: any) => (
     <div
-      onClick={onClick}
+      {...(onClick ? pressable(onClick) : {})}
       style={{
         display: "flex",
         alignItems: "center",

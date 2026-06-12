@@ -133,7 +133,7 @@ component → useXxx() (TanStack Query) → Repository → Store (useSyncExterna
   - 라우트 page.tsx 는 가능한 RSC. 인터랙션 leaf 만 `'use client'`.
   - useState/useRef/useEffect 가 필요한 모든 컴포넌트는 `'use client'`.
 - Lazy import 패턴: `lazy(() => import("...").then((m) => ({ default: m.X })))` (다중 named export 호환).
-- **a11y (jsx-a11y recommended 적용)**: 클릭 가능한 요소는 진짜 `<button>`/`<a href>` 사용 — `<a>` 의사 링크 금지 (anchor-is-valid 전수 정리 완료, 2026-06). `no-autofocus` 는 의도적으로 off — 모달/다이얼로그 첫 입력 포커스는 허용, 페이지 첫 로드 autofocus 신규 추가는 개별 검토. `click-events-have-key-events` 등은 warn 이지만 `--max-warnings 0` 이라 사실상 error.
+- **a11y (jsx-a11y recommended 적용)**: 클릭 가능한 요소는 진짜 `<button>`/`<a href>` 사용 — `<a>` 의사 링크 금지 (anchor-is-valid 전수 정리 완료, 2026-06). `no-autofocus` 는 의도적으로 off — 모달/다이얼로그 첫 입력 포커스는 허용, 페이지 첫 로드 autofocus 신규 추가는 개별 검토. `click-events-have-key-events` 등은 warn 이지만 `--max-warnings 0` 이라 사실상 error (2026-06-12 전수 정리 완료, 경고 0 유지할 것). button 전환이 어려운 클릭 가능 div/span 은 `src/lib/a11y.ts` 의 `pressable()` spread, 백드롭/전파차단 래퍼는 `role="presentation"`.
 
 ## Commit message convention
 

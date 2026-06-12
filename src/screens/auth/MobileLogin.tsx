@@ -6,6 +6,7 @@ import { BrandMark } from "@/screens/auth/BrandMark";
 import { Field } from "@/screens/auth/Field";
 import { Btn } from "@/screens/auth/Btn";
 import { GoogleIcon } from "@/screens/auth/GoogleIcon";
+import { pressable } from "@/lib/a11y";
 
 export const LoginScreen = ({
   variant = "A",
@@ -106,7 +107,7 @@ export const LoginScreen = ({
             placeholder="••••••••"
             dark={dark}
             rightSlot={
-              <div onClick={() => setShowPwd((s) => !s)}>
+              <div {...pressable(() => setShowPwd((s) => !s))}>
                 <EyeIcon on={showPwd} dark={dark} />
               </div>
             }
@@ -307,7 +308,7 @@ export const LoginScreen = ({
               placeholder="••••••••"
               dark={dark}
               rightSlot={
-                <div onClick={() => setShowPwd((s) => !s)}>
+                <div {...pressable(() => setShowPwd((s) => !s))}>
                   <EyeIcon on={showPwd} dark={dark} />
                 </div>
               }
@@ -468,7 +469,7 @@ export const LoginScreen = ({
           placeholder="••••••••"
           dark={dark}
           rightSlot={
-            <div onClick={() => setShowPwd((s) => !s)}>
+            <div {...pressable(() => setShowPwd((s) => !s))}>
               <EyeIcon on={showPwd} dark={dark} />
             </div>
           }

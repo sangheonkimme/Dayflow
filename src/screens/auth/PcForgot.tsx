@@ -3,12 +3,9 @@ import { Btn } from "@/screens/auth/Btn";
 import { Field } from "@/screens/auth/Field";
 import { pwdScore } from "@/screens/auth/pwdScore";
 import { useState } from "react";
-import { useAuth } from "@/data/auth";
 import { AUTH_TEXT } from "@/screens/auth/authText";
 import { EyeIcon } from "@/screens/auth/EyeIcon";
-import { PCField } from "@/screens/auth/PcField";
-import { PCBtn } from "@/screens/auth/PcBtn";
-import { BrandPanel } from "@/screens/auth/PcBrandPanel";
+import { pressable } from "@/lib/a11y";
 
 export const PCForgot = ({ lang = "ko", dark = false, initialStep = 0 }: any) => {
   const t = AUTH_TEXT[lang];
@@ -549,7 +546,7 @@ export const PCForgot = ({ lang = "ko", dark = false, initialStep = 0 }: any) =>
                     dark={dark}
                     autoFocus
                     rightSlot={
-                      <div onClick={() => setShowPwd((s) => !s)}>
+                      <div {...pressable(() => setShowPwd((s) => !s))}>
                         <EyeIcon on={showPwd} dark={dark} />
                       </div>
                     }

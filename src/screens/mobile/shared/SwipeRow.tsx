@@ -171,6 +171,7 @@ export const SwipeRow = ({
         </div>
       )}
       <div
+        role="presentation"
         className={styles.dfmSwipeContent + (animating ? " " + styles.anim : "")}
         style={{ transform: `translateX(${dx}px)` }}
         onTouchStart={onTouchStart}

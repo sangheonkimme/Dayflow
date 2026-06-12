@@ -69,6 +69,7 @@ function Nav({ onGoToAuth }: { onGoToAuth?: () => void }) {
         </button>
       </nav>
       <div className={"mobile-menu " + (open ? "is-open" : "")}
+           role="presentation"
            onClick={(e) => { if (e.target === e.currentTarget) setOpen(false); }}>
         <div className="mobile-menu-inner">
           <a href="#features" onClick={() => setOpen(false)}>기능</a>

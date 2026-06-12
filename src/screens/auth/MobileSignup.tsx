@@ -7,6 +7,7 @@ import { Field } from "@/screens/auth/Field";
 import { Btn } from "@/screens/auth/Btn";
 import { GoogleIcon } from "@/screens/auth/GoogleIcon";
 import { pwdScore } from "@/screens/auth/pwdScore";
+import { pressable } from "@/lib/a11y";
 
 export const SignupScreen = ({
   variant = "A",
@@ -19,7 +20,7 @@ export const SignupScreen = ({
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [pwd, setPwd] = useState("");
-  const [pwd2, setPwd2] = useState("");
+  const [_pwd2, _setPwd2] = useState("");
   const [agree, setAgree] = useState(false);
   const [marketing, setMarketing] = useState(false);
   const [showPwd, setShowPwd] = useState(false);
@@ -93,7 +94,7 @@ export const SignupScreen = ({
 
   const Check = ({ on, onClick, label, required }: any) => (
     <label
-      onClick={onClick}
+      {...pressable(onClick)}
       style={{
         display: "flex",
         alignItems: "flex-start",
@@ -225,7 +226,7 @@ export const SignupScreen = ({
               placeholder="8+ chars"
               dark={dark}
               rightSlot={
-                <div onClick={() => setShowPwd((s) => !s)}>
+                <div {...pressable(() => setShowPwd((s) => !s))}>
                   <EyeIcon on={showPwd} dark={dark} />
                 </div>
               }
@@ -442,7 +443,7 @@ export const SignupScreen = ({
               dark={dark}
               placeholder="8+"
               rightSlot={
-                <div onClick={() => setShowPwd((s) => !s)}>
+                <div {...pressable(() => setShowPwd((s) => !s))}>
                   <EyeIcon on={showPwd} dark={dark} />
                 </div>
               }
@@ -654,7 +655,7 @@ export const SignupScreen = ({
               placeholder="8+"
               dark={dark}
               rightSlot={
-                <div onClick={() => setShowPwd((s) => !s)}>
+                <div {...pressable(() => setShowPwd((s) => !s))}>
                   <EyeIcon on={showPwd} dark={dark} />
                 </div>
               }

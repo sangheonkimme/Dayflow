@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Icon } from "@/components/Icon";
+import { pressable } from "@/lib/a11y";
 import styles from "@/screens/home/timers/timers.module.css";
 
 export function Pomodoro() {
@@ -53,13 +54,13 @@ export function Pomodoro() {
       >
         <span
           className={styles.preset + (mode === "focus" ? " " + styles.on : "")}
-          onClick={() => switchMode("focus")}
+          {...pressable(() => switchMode("focus"))}
         >
           집중 25
         </span>
         <span
           className={styles.preset + (mode === "break" ? " " + styles.on : "")}
-          onClick={() => switchMode("break")}
+          {...pressable(() => switchMode("break"))}
         >
           휴식 5
         </span>

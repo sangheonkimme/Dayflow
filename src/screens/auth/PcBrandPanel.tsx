@@ -1,8 +1,6 @@
 import { BrandMark } from "@/screens/auth/BrandMark";
-import { AUTH_TEXT } from "@/screens/auth/authText";
 
-export const BrandPanel = ({ dark, lang }: any) => {
-  const t = AUTH_TEXT[lang];
+export const BrandPanel = ({ dark: _dark, lang }: any) => {
   return (
     <div
       style={{

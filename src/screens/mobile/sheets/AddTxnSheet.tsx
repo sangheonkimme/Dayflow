@@ -1,6 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Ico } from "@/screens/mobile/shared/Ico";
-import { useTransactions } from "@/data/transactions";
 import styles from "@/screens/mobile/mobile.module.css";
 
 export const AddTxnSheet = ({ open, onClose }: any) => {
@@ -21,6 +20,7 @@ export const AddTxnSheet = ({ open, onClose }: any) => {
   return (
     <>
       <div
+        role="presentation"
         className={`${styles.dfmSheetScrim} ${open ? styles.on : ""}`}
         onClick={onClose}
       />

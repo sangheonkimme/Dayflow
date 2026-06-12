@@ -1,5 +1,4 @@
 import { Ico } from "@/screens/mobile/shared/Ico";
-import { DfmSwitch } from "@/screens/mobile/shared/DfmSwitch";
 import styles from "@/screens/mobile/mobile.module.css";
 
 export const NotifToggleRow = ({ ico, title, sub, value, onChange, last }: any) => {

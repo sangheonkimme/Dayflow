@@ -3,6 +3,7 @@ import { Icon } from "@/components/Icon";
 import { Modal } from "@/components/Modal";
 import { DOW } from "@/lib/date";
 import { EVENT_CATEGORIES, EVENT_COLOR_PALETTE } from "@/lib/categories";
+import { pressable } from "@/lib/a11y";
 
 // ─────────────────────────────────────────────
 // Helpers
@@ -231,7 +232,7 @@ function EventEdit({ onClose, editing, onDelete, onSave, isDraft }: any) {
               <span
                 key={c}
                 className={"cat-chip" + (cat === c ? " on" : "")}
-                onClick={() => setCat(c)}
+                {...pressable(() => setCat(c))}
               >
                 {c}
               </span>
@@ -247,7 +248,7 @@ function EventEdit({ onClose, editing, onDelete, onSave, isDraft }: any) {
                 key={c}
                 className={"color-chip" + (color === c ? " on" : "")}
                 style={{ background: c }}
-                onClick={() => setColor(c)}
+                {...pressable(() => setColor(c))}
               />
             ))}
           </div>
@@ -433,7 +434,7 @@ function EventQuick({ onClose, onSave, onDetailed }) {
               <div
                 key={i}
                 className="nl-example"
-                onClick={() => setVal(e.label)}
+                {...pressable(() => setVal(e.label))}
               >
                 <b>{e.label}</b>
                 <span>{e.desc}</span>
@@ -567,7 +568,7 @@ function EventDetailed({ onClose, onSave, onBack }) {
               <div
                 key={i}
                 className={"time-chip" + (dateIdx === i ? " on" : "")}
-                onClick={() => setDateIdx(i)}
+                {...pressable(() => setDateIdx(i))}
               >
                 <div className="tc-day">{d.d}</div>
                 <div className="tc-date">{d.n}</div>
@@ -650,7 +651,7 @@ function EventDetailed({ onClose, onSave, onBack }) {
                 key={c}
                 className={"color-chip" + (color === c ? " on" : "")}
                 style={{ background: c }}
-                onClick={() => setColor(c)}
+                {...pressable(() => setColor(c))}
               />
             ))}
           </div>

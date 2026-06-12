@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Icon } from "@/components/Icon";
+import { pressable } from "@/lib/a11y";
 import { ProfileSection } from "@/screens/settings/sections/Profile";
 import { AppearanceSection } from "@/screens/settings/sections/Appearance";
 import { LedgerSettingsSection } from "@/screens/settings/sections/Ledger";
@@ -82,7 +83,7 @@ export const SettingsPage = ({ tweaks, setTweak }: any) => {
             <div
               key={s.id}
               className={"settings-nav-item" + (section === s.id ? " on" : "")}
-              onClick={() => setSection(s.id)}
+              {...pressable(() => setSection(s.id))}
             >
               <Icon name={s.icon} size={16} />
               <div>

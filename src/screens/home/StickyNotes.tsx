@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Icon } from "@/components/Icon";
 import { useDraftField } from "@/lib/useDraftField";
+import { pressable } from "@/lib/a11y";
 import type { StickyColor } from "@/types";
 import {
   useStickyNotes,
@@ -65,7 +66,7 @@ export function StickyNotes() {
                         ? "var(--pink)"
                         : "var(--blue)",
                 }}
-                onClick={() => setActiveColor(c)}
+                {...pressable(() => setActiveColor(c))}
               />
             ))}
           </div>
@@ -92,7 +93,7 @@ export function StickyNotes() {
         {notes.length < 3 && (
           <div
             className={`${styles.sticky} ${styles.empty}`}
-            onClick={addNote}
+            {...pressable(addNote)}
             style={{ width: 220, minHeight: 200 }}
           >
             + 새 메모

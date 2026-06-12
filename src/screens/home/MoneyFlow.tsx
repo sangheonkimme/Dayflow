@@ -11,7 +11,7 @@ import {
 } from "@/data/transactions";
 import styles from "./MoneyFlow.module.css";
 
-export function MoneyFlow({ onAdd, onOpenLedger, onEditTxn }: any) {
+export function MoneyFlow({ onAdd, onEditTxn }: any) {
   const { all: txnsAll } = useTransactions();
 
   const {

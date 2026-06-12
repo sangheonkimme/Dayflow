@@ -1,9 +1,10 @@
 import { Icon } from "@/components/Icon";
+import { pressable } from "@/lib/a11y";
 import styles from "./ToolCard.module.css";
 
 export function ToolCard({ icon, title, desc, items, onClick }) {
   return (
-    <div className={`${styles.toolCard} col-4`} onClick={onClick}>
+    <div className={`${styles.toolCard} col-4`} {...pressable(onClick)}>
       <div className={styles.toolArrow}>
         <Icon name="arrow" size={16} />
       </div>

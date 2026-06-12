@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Icon } from "@/components/Icon";
 import { Modal } from "@/components/Modal";
+import { pressable } from "@/lib/a11y";
 import styles from "./TxnModal.module.css";
 
 // ─────────────────────────────────────────────
@@ -157,7 +158,7 @@ function TxnEdit({ onClose, editing, onDelete, onSave }) {
               <span
                 key={c}
                 className={"cat-chip" + (cat === c ? " on" : "")}
-                onClick={() => setCat(c)}
+                {...pressable(() => setCat(c))}
               >
                 {c}
               </span>
@@ -347,7 +348,7 @@ function TxnQuick({ onClose, onSave, onDetailed }: any) {
           <div className="qs-label">자주 쓴 항목</div>
           <div className="quick-suggest">
             {recent.map((r, i) => (
-              <span key={i} className="qs" onClick={() => setVal(r.label)}>
+              <span key={i} className="qs" {...pressable(() => setVal(r.label))}>
                 {r.icon} {r.label}
               </span>
             ))}

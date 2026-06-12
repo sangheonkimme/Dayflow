@@ -22,6 +22,7 @@ export const EditProfileSheet = ({
   return (
     <>
       <div
+        role="presentation"
         className={`${styles.dfmSheetScrim} ${open ? styles.on : ""}`}
         onClick={onClose}
       />
