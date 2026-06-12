@@ -94,6 +94,11 @@ export default function AppLayout({
   const isNarrowViewport = useMediaQuery("(max-width: 768px)");
   const isMobile = tweaks.forceMobile || isNarrowViewport;
 
+  // TweaksPanel 은 디자인/프로토타입용 개발 도구. 데이터모드·모바일강제 같은
+  // 개발 전용 토글이 들어 있고, 사용자용 항목(다크/액센트/달력)은 Settings 로
+  // 일원화됐다. production 빌드에선 mount 하지 않는다(중복 진입점 제거).
+  const showDevTweaks = process.env.NODE_ENV !== "production";
+
   // 데이터 소스 mode + userId 갱신.
   useEffect(() => {
     if (auth.status === "unknown") return;
@@ -155,7 +160,7 @@ export default function AppLayout({
       <Suspense fallback={<PageFallback />}>
         <DemoBanner />
         <MobileApp initialTab="home" />
-        <Tweaks tweaks={tweaks} setTweak={setTweak} />
+        {showDevTweaks && <Tweaks tweaks={tweaks} setTweak={setTweak} />}
       </Suspense>
     );
   }
@@ -200,7 +205,7 @@ export default function AppLayout({
         </Suspense>
       )}
 
-      <Tweaks tweaks={tweaks} setTweak={setTweak} />
+      {showDevTweaks && <Tweaks tweaks={tweaks} setTweak={setTweak} />}
     </>
   );
 }
