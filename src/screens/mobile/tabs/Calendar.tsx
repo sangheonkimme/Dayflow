@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { DOW } from "@/lib/date";
+import { DOW, MONTHS } from "@/lib/date";
 import { useEvents, useEventsByDate } from "@/data/events";
 import { Ico } from "@/screens/mobile/shared/Ico";
 import { SectionHeader } from "@/screens/mobile/shared/SectionHeader";
@@ -51,16 +51,21 @@ export const MobileCalEvents = () => {
 // PLACEHOLDER pages (other tabs — 골격 수준)
 // ────────────────────────────────────────────────
 
-export const MobileCalendar = () => {
-  // Events come from the events repo, grouped by day-of-month for the
-  // current calendar month.
+export const MobileCalendar = ({ onAddEvent }: any) => {
+  // 보고 있는 달은 cursor 로 관리(이전/다음 네비). 일정은 events repo 에서
+  // 해당 달 day-of-month 로 그룹.
   const { data: monthEventsAll } = useEvents();
   const todayDateObj = new Date();
-  const yr = todayDateObj.getFullYear(),
-    mo = todayDateObj.getMonth();
+  const [cursor, setCursor] = useState(() => new Date());
+  const yr = cursor.getFullYear();
+  const mo = cursor.getMonth();
+  const isCurrentMonth =
+    yr === todayDateObj.getFullYear() && mo === todayDateObj.getMonth();
+  const today = todayDateObj.getDate();
+  const daysInMonth = new Date(yr, mo + 1, 0).getDate();
   const monthPrefix = `${yr}-${String(mo + 1).padStart(2, "0")}-`;
   const eventsByDay = useMemo(() => {
-    const map = {};
+    const map: Record<number, any[]> = {};
     for (const ev of monthEventsAll) {
       if (!ev.date.startsWith(monthPrefix)) continue;
       const day = parseInt(ev.date.slice(8, 10), 10);
@@ -76,24 +81,49 @@ export const MobileCalendar = () => {
     return map;
   }, [monthEventsAll, monthPrefix]);
   const dayNames = DOW;
-  const today = todayDateObj.getDate();
   const [sel, setSel] = useState(today);
+  const selDay = Math.min(sel, daysInMonth);
 
-  const selEvents = eventsByDay[sel] || [];
-  // Nov 1 2026 is Sunday, so day d → dow = (d-1)%7.
-  const dow = dayNames[(sel - 1) % 7];
+  const selEvents = eventsByDay[selDay] || [];
+  const selDow = DOW[new Date(yr, mo, selDay).getDay()];
+  const selIsToday = isCurrentMonth && selDay === today;
+
+  // 실제 달력 그리드(요일 오프셋 + 말일 + 다음달 채움).
+  const cells = useMemo(() => {
+    const firstDow = new Date(yr, mo, 1).getDay();
+    const prevDays = new Date(yr, mo, 0).getDate();
+    const arr: { real: number; muted: boolean }[] = [];
+    for (let i = 0; i < firstDow; i++)
+      arr.push({ real: prevDays - firstDow + 1 + i, muted: true });
+    for (let i = 1; i <= daysInMonth; i++) arr.push({ real: i, muted: false });
+    let nd = 1;
+    while (arr.length % 7 !== 0 || arr.length < 35)
+      arr.push({ real: nd++, muted: true });
+    return arr;
+  }, [yr, mo, daysInMonth]);
+
+  const goPrev = () => {
+    setCursor(new Date(yr, mo - 1, 1));
+    setSel(1);
+  };
+  const goNext = () => {
+    setCursor(new Date(yr, mo + 1, 1));
+    setSel(1);
+  };
 
   return (
     <div>
-      <SectionHeader title="11월 일정" />
+      <SectionHeader title={`${MONTHS[mo]} 일정`} />
       <div className={styles.dfmCal}>
         <div className={styles.dfmCalH}>
-          <div className={styles.month}>2026 · 11월</div>
+          <div className={styles.month}>
+            {yr} · {MONTHS[mo]}
+          </div>
           <div className={styles.dfmCalNav}>
-            <button>
+            <button type="button" onClick={goPrev} aria-label="이전 달">
               <Ico name="chevL" size={14} />
             </button>
-            <button>
+            <button type="button" onClick={goNext} aria-label="다음 달">
               <Ico name="chevR" size={14} />
             </button>
           </div>
@@ -104,31 +134,28 @@ export const MobileCalendar = () => {
               {d}
             </div>
           ))}
-          {Array.from({ length: 35 }, (_, i) => {
-            const d = i - 1;
-            const muted = d < 1 || d > 31;
-            const real = muted ? (d < 1 ? 30 + d : d - 31) : d;
-            const isToday = !muted && d === today;
-            const isSel = !muted && d === sel;
-            const ev = !muted && !!eventsByDay[d];
+          {cells.map((c, i) => {
+            const isToday = !c.muted && isCurrentMonth && c.real === today;
+            const isSel = !c.muted && c.real === selDay;
+            const ev = !c.muted && !!eventsByDay[c.real];
             return (
               <div
                 key={i}
                 {...pressable(() => {
-                  if (!muted) setSel(d);
+                  if (!c.muted) setSel(c.real);
                 })}
                 className={[
                   styles.dfmCalDay,
-                  muted ? styles.muted : "",
+                  c.muted ? styles.muted : "",
                   isToday ? styles.today : "",
                   ev ? styles.hasEvent : "",
                   isSel ? styles.selected : "",
                 ]
                   .filter(Boolean)
                   .join(" ")}
-                style={{ cursor: muted ? "default" : "pointer" }}
+                style={{ cursor: c.muted ? "default" : "pointer" }}
               >
-                {real}
+                {c.real}
               </div>
             );
           })}
@@ -153,12 +180,12 @@ export const MobileCalendar = () => {
             fontFamily: "var(--hand)",
           }}
         >
-          11월 {sel}일
+          {MONTHS[mo]} {selDay}일
         </b>
         <span style={{ fontSize: 13, color: "var(--ink-mute)" }}>
-          {dow}요일
+          {selDow}요일
         </span>
-        {sel === today && (
+        {selIsToday && (
           <span
             style={{
               fontSize: 11,
@@ -174,7 +201,7 @@ export const MobileCalendar = () => {
             오늘
           </span>
         )}
-        {sel !== today && (
+        {!selIsToday && (
           <span
             style={{
               marginLeft: "auto",
@@ -207,6 +234,8 @@ export const MobileCalendar = () => {
             여유로운 하루를 보내세요
           </small>
           <button
+            type="button"
+            onClick={onAddEvent}
             style={{
               marginTop: 8,
               fontSize: 12,

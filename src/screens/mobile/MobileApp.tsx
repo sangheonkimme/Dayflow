@@ -95,7 +95,7 @@ const MobileApp = ({ initialTab = "home" }: any) => {
     ) : menuTop === "calendar" ? (
       <div>
         <SubHeader
-          title="11월 캘린더"
+          title="캘린더"
           onBack={popMenu}
           action={
             <button
@@ -107,7 +107,7 @@ const MobileApp = ({ initialTab = "home" }: any) => {
             </button>
           }
         />
-        <MobileCalendar />
+        <MobileCalendar onAddEvent={() => setAddEventOpen(true)} />
       </div>
     ) : (
       <MobileMenu onNavigate={navigate} onProfile={() => pushMenu("profile")} />
@@ -123,7 +123,7 @@ const MobileApp = ({ initialTab = "home" }: any) => {
     ) : tab === "ledger" ? (
       <MobileLedger />
     ) : tab === "calendar" ? (
-      <MobileCalendar />
+      <MobileCalendar onAddEvent={() => setAddEventOpen(true)} />
     ) : tab === "menu" ? (
       MenuPage
     ) : null;
