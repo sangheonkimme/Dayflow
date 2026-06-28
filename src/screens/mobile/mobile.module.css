@@ -252,6 +252,53 @@
 .dfmNote.add::before {
   display: none;
 }
+/* sticky 인라인 편집 — 기존 .dfmNoteTitle/.dfmNoteBody 룩앤필을 input/textarea로 재현 */
+.dfmNoteClose {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.5);
+  border: none;
+  color: rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  z-index: 1;
+}
+.dfmNoteTitleInput {
+  font-family: var(--hand);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 6px;
+  line-height: 1.1;
+  background: transparent;
+  border: none;
+  outline: none;
+  width: 100%;
+  padding: 0 18px 0 0;
+}
+.dfmNoteBodyInput {
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.45;
+  color: var(--ink);
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  resize: none;
+  width: 100%;
+  padding: 0;
+}
+.dfmNoteTitleInput::placeholder,
+.dfmNoteBodyInput::placeholder {
+  color: rgba(0, 0, 0, 0.3);
+}
 
 /* ---------- checklist ---------- */
 .dfmCard {
