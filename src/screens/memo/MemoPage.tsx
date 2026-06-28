@@ -7,6 +7,7 @@ import { useDraftField } from "@/lib/useDraftField";
 import { pressable } from "@/lib/a11y";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import Paragraph from "@tiptap/extension-paragraph";
 import Image from "@tiptap/extension-image";
 import Link from "@tiptap/extension-link";
 import TaskList from "@tiptap/extension-task-list";
@@ -15,6 +16,29 @@ import { Markdown } from "tiptap-markdown";
 import CharacterCount from "@tiptap/extension-character-count";
 import Placeholder from "@tiptap/extension-placeholder";
 import styles from "./MemoPage.module.css";
+
+// 빈 단락(빈 줄)을 마크다운 round-trip 에서 보존한다.
+// 기본 직렬화는 빈 단락에서 아무 것도 write 하지 않아 인접 단락 구분과 합쳐지고,
+// 저장 후 다시 열면 빈 줄이 사라진다. 빈 단락일 때 NBSP 한 글자를 써서
+// markdown-it 재파싱 시에도 단락으로 유지되게 한다(화면엔 그대로 빈 줄로 보임).
+const MarkdownAwareParagraph = Paragraph.extend({
+  addStorage() {
+    return {
+      markdown: {
+        serialize(state: any, node: any) {
+          if (node.content.size === 0) {
+            state.write("\u00A0");
+            state.closeBlock(node);
+            return;
+          }
+          state.renderInline(node);
+          state.closeBlock(node);
+        },
+        parse: {},
+      },
+    };
+  },
+});
 
 // ============================================================
 // MEMO PAGE — 장문 메모 detail page
@@ -418,7 +442,9 @@ function MemoEditor({
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [
-      StarterKit,
+      // 기본 paragraph 대신 빈 단락 보존 버전 사용.
+      StarterKit.configure({ paragraph: false }),
+      MarkdownAwareParagraph,
       Image,
       Link.configure({ openOnClick: false }),
       TaskList,
