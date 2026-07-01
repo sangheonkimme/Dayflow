@@ -1,13 +1,16 @@
 import { useState, useMemo } from "react";
 import { MobileCalEvents } from "@/screens/mobile/tabs/Calendar";
 import { openTxnDetail } from "@/screens/mobile/shared/TxnDetailBridge";
-import { DOW } from "@/lib/date";
+import { DOW, MONTHS } from "@/lib/date";
 import { useTransactions } from "@/data/transactions";
 import { useEvents } from "@/data/events";
 import { useChecklist } from "@/data/checklist";
+import { useStickyNotes, stickyDateLabel } from "@/data/sticky-notes";
 import { recent as selectRecent } from "@/data/transactions";
 import { inferIcon } from "@/data/transactions";
+import { currentMonthSummary, categoryShare } from "@/data/transactions";
 import { daysWithEventsInMonth } from "@/data/events";
+import { formatSignedWon } from "@/lib/format";
 import { Ico } from "@/screens/mobile/shared/Ico";
 import { SectionHeader } from "@/screens/mobile/shared/SectionHeader";
 import { SwipeRow } from "@/screens/mobile/shared/SwipeRow";
@@ -73,62 +76,87 @@ export const MobileHome = ({ onNavigate, _onAddTxn, _onAddEvent }: any) => {
   };
   const doneCount = todos.filter((t) => t.done).length;
 
-  // calendar event-days derived from real events for the current month.
+  // 스티커 메모 (오늘의 메모) — 실데이터. hook 이 최대 3개로 soft-cap.
+  const { data: stickyNotes } = useStickyNotes();
+
+  // 이번 달 머니플로우 — 실 거래 기반 집계.
+  const monthLabel = MONTHS[new Date().getMonth()] ?? "";
+  const summary = useMemo(() => currentMonthSummary(txnsAll), [txnsAll]);
+  const balance = summary.net;
+  // 전월 순액 대비 증감률(%).
+  const deltaPct = useMemo(() => {
+    const now = new Date();
+    const p = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const key = `${p.getFullYear()}-${String(p.getMonth() + 1).padStart(2, "0")}`;
+    let inc = 0;
+    let exp = 0;
+    for (const t of txnsAll) {
+      if (!t.date.startsWith(key)) continue;
+      if (t.type === "in") inc += t.amount;
+      else exp += Math.abs(t.amount);
+    }
+    const prevNet = inc - exp;
+    if (prevNet === 0) return 0;
+    return Math.round(((balance - prevNet) / Math.abs(prevNet)) * 1000) / 10;
+  }, [txnsAll, balance]);
+  // 카테고리 지출 분해 — 상위 4 + 나머지(기타).
+  const CAT_COLORS = ["#ffd84d", "#ffb38a", "#b9e7c9", "#d4c1f0", "#d8d2c2"];
+  const segments = useMemo(() => {
+    const shares = categoryShare(txnsAll, "expense");
+    const top = shares
+      .slice(0, 4)
+      .map((s, i) => ({ label: s.cat, pct: s.pct, color: CAT_COLORS[i]! }));
+    const restPct =
+      Math.round(shares.slice(4).reduce((a, s) => a + s.pct, 0) * 10) / 10;
+    return restPct > 0
+      ? [...top, { label: "기타", pct: restPct, color: CAT_COLORS[4]! }]
+      : top;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [txnsAll]);
+
+  // calendar — 현재 연/월 기준 실제 그리드 + 이벤트 표시일.
   const todayDate = new Date();
   const today = todayDate.getDate();
+  const calYear = todayDate.getFullYear();
+  const calMonth = todayDate.getMonth(); // 0-based
   const { data: monthEvents } = useEvents();
   const eventDaySet = useMemo(
-    () =>
-      daysWithEventsInMonth(
-        monthEvents,
-        new Date().getFullYear(),
-        new Date().getMonth(),
-      ),
-    [monthEvents],
+    () => daysWithEventsInMonth(monthEvents, calYear, calMonth),
+    [monthEvents, calYear, calMonth],
   );
   const eventDays = useMemo(() => [...eventDaySet], [eventDaySet]);
   const cells: { d: number; muted?: boolean }[] = [];
-  // 1일이 수요일이라 가정 → 앞에 muted 2칸
-  for (let i = 0; i < 2; i++) cells.push({ d: 28 + i, muted: true });
-  for (let i = 1; i <= 31; i++) cells.push({ d: i });
-  while (cells.length < 35) cells.push({ d: cells.length - 31, muted: true });
+  const firstDow = new Date(calYear, calMonth, 1).getDay(); // 0=일
+  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+  const prevMonthDays = new Date(calYear, calMonth, 0).getDate();
+  for (let i = firstDow - 1; i >= 0; i--)
+    cells.push({ d: prevMonthDays - i, muted: true });
+  for (let d = 1; d <= daysInMonth; d++) cells.push({ d });
+  let trailing = 1;
+  while (cells.length < 42 && (cells.length % 7 !== 0 || cells.length < 35))
+    cells.push({ d: trailing++, muted: true });
 
   return (
     <>
       <SectionHeader title="오늘의 메모" action="전체" />
       <div className={styles.dfmNotesRailWrap}>
         <div className={styles.dfmNotesRail}>
-          <div className={`${styles.dfmNote} ${styles.yellow}`}>
-            <div className={styles.dfmNoteTitle}>이번 주 회고</div>
-            <div className={styles.dfmNoteBody}>
-              디자인 리뷰 잘 마무리. 다음 주는 앱 버전 마이그레이션 작업이 메인.
+          {stickyNotes.map((n) => (
+            <div
+              key={n.id}
+              className={`${styles.dfmNote} ${styles[n.color] ?? styles.yellow}`}
+            >
+              <div className={styles.dfmNoteTitle}>
+                {n.emoji ? `${n.emoji} ` : ""}
+                {n.title}
+              </div>
+              <div className={styles.dfmNoteBody}>{n.text}</div>
+              <div className={styles.dfmNoteFoot}>
+                <span>{stickyDateLabel(n)}</span>
+                <span>{n.author ?? "나"}</span>
+              </div>
             </div>
-            <div className={styles.dfmNoteFoot}>
-              <span>월 11/24</span>
-              <span>·</span>
-            </div>
-          </div>
-          <div className={`${styles.dfmNote} ${styles.pink}`}>
-            <div className={styles.dfmNoteTitle}>살 것</div>
-            <div className={styles.dfmNoteBody}>
-              우유 · 계란 · 시리얼 · 바나나. 빵집 들러서 캄파뉴 한 덩이도.
-            </div>
-            <div className={styles.dfmNoteFoot}>
-              <span>화 11/25</span>
-              <span>5</span>
-            </div>
-          </div>
-          <div className={`${styles.dfmNote} ${styles.mint}`}>
-            <div className={styles.dfmNoteTitle}>아이디어</div>
-            <div className={styles.dfmNoteBody}>
-              Dayflow에 위젯 화면 — 잠금화면에서 오늘 예산 한 줄로 보이게.
-            </div>
-            <div className={styles.dfmNoteFoot}>
-              <span>오늘</span>
-              <span>💡</span>
-            </div>
-          </div>
-          <div className={`${styles.dfmNote} ${styles.add}`}>+ 새 메모</div>
+          ))}
         </div>
       </div>
 
@@ -214,39 +242,31 @@ export const MobileHome = ({ onNavigate, _onAddTxn, _onAddEvent }: any) => {
       <div className={styles.dfmMoney}>
         <div className={styles.dfmMoneyH}>
           <div>
-            <div className={styles.label}>11월 잔액</div>
-            <div className={styles.amount}>+₩ 842,300</div>
+            <div className={styles.label}>{monthLabel} 잔액</div>
+            <div className={styles.amount}>{formatSignedWon(balance)}</div>
           </div>
-          <div className={styles.delta}>+12.4%</div>
+          {deltaPct !== 0 && (
+            <div className={styles.delta}>
+              {deltaPct > 0 ? "+" : ""}
+              {deltaPct}%
+            </div>
+          )}
         </div>
         <div className={styles.dfmMoneyBar}>
-          <span style={{ width: "42%", background: "#ffd84d" }} />
-          <span style={{ width: "26%", background: "#ffb38a" }} />
-          <span style={{ width: "16%", background: "#b9e7c9" }} />
-          <span style={{ width: "10%", background: "#d4c1f0" }} />
-          <span style={{ width: "6%", background: "#d8d2c2" }} />
+          {segments.map((s) => (
+            <span
+              key={s.label}
+              style={{ width: `${s.pct}%`, background: s.color }}
+            />
+          ))}
         </div>
         <div className={styles.dfmMoneyLegend}>
-          <span>
-            <span className={styles.lgDot} style={{ background: "#ffd84d" }} />
-            식비
-          </span>
-          <span>
-            <span className={styles.lgDot} style={{ background: "#ffb38a" }} />
-            교통
-          </span>
-          <span>
-            <span className={styles.lgDot} style={{ background: "#b9e7c9" }} />
-            쇼핑
-          </span>
-          <span>
-            <span className={styles.lgDot} style={{ background: "#d4c1f0" }} />
-            구독
-          </span>
-          <span>
-            <span className={styles.lgDot} style={{ background: "#d8d2c2" }} />
-            기타
-          </span>
+          {segments.map((s) => (
+            <span key={s.label}>
+              <span className={styles.lgDot} style={{ background: s.color }} />
+              {s.label}
+            </span>
+          ))}
         </div>
 
         <div className={styles.dfmMoneyList}>
@@ -292,13 +312,15 @@ export const MobileHome = ({ onNavigate, _onAddTxn, _onAddEvent }: any) => {
       </div>
 
       <SectionHeader
-        title="11월"
+        title={monthLabel}
         action="전체 캘린더"
         onAction={() => onNavigate?.("calendar")}
       />
       <div className={styles.dfmCal}>
         <div className={styles.dfmCalH}>
-          <div className={styles.month}>2026 · 11월</div>
+          <div className={styles.month}>
+            {calYear} · {monthLabel}
+          </div>
           <div className={styles.dfmCalNav}>
             <button>
               <Ico name="chevL" size={14} />
