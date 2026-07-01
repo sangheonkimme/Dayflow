@@ -219,23 +219,34 @@ export const FOLDERS: MemoFolder[] = [
 // ─────────────────────────────────────────────
 // Derived display selectors
 // ─────────────────────────────────────────────
+/**
+ * 본문(body)에서 순수 텍스트만 뽑는다. body 는 HTML(신규 저장) 또는
+ * markdown(레거시) 둘 다일 수 있어 태그 제거 + 엔티티 디코드 + markdown 잡음 정리.
+ */
+export function memoPlainText(body: string | null | undefined): string {
+  return (body ?? "")
+    .replace(/<[^>]+>/g, " ") // HTML 태그 제거
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/\\(\r?\n)/g, "$1") // legacy markdown hardBreak 이스케이프("\\\n")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 export function memoExcerpt(
   memo: Pick<MemoDoc, "excerpt" | "body">,
   max = 140,
 ): string {
   if (memo.excerpt) return memo.excerpt;
-  // hardBreak 이스케이프("\\\n") 로 저장된 legacy 본문에서 백슬래시를 먼저 제거해
-  // 미리보기에 "\" 가 노출되지 않도록 한다. (본 저장 로직은 breaks:false 로 개행 변질 방지)
-  const flat = (memo.body ?? "")
-    .replace(/\\(\r?\n)/g, "$1")
-    .replace(/\s+/g, " ")
-    .trim();
+  const flat = memoPlainText(memo.body);
   return flat.length > max ? flat.slice(0, max) + "…" : flat;
 }
 
 export function memoWordCount(memo: Pick<MemoDoc, "word" | "body">): number {
   if (typeof memo.word === "number") return memo.word;
-  return (memo.body ?? "").replace(/\s/g, "").length;
+  return memoPlainText(memo.body).replace(/\s/g, "").length;
 }
 
 /**
