@@ -423,7 +423,14 @@ function MemoEditor({
       Link.configure({ openOnClick: false }),
       TaskList,
       TaskItem.configure({ nested: true }),
-      Markdown.configure({ html: false, breaks: true }),
+      // breaks:false (default). breaks:true 는 마크다운의 단일 개행(soft break)을
+      // hardBreak(<br>) 로 강제하는데, tiptap-markdown 은 hardBreak 를 "\\\n"
+      // (백슬래시+개행) 로 직렬화한다. 그 결과 자동저장(getMarkdown→store) 왕복마다
+      // 저장된 본문의 모든 개행 앞에 백슬래시가 주입되어(예: "A\nB" → "A\\\nB")
+      // 원문이 변질되고, 리스트 미리보기(memoExcerpt)에 "\" 가 노출된다.
+      // 문단(Enter=\n\n)·hardBreak(Shift+Enter) 는 breaks 설정과 무관하게 왕복이
+      // 안정적이므로 기본값(false)이면 사용자가 만든 개행은 그대로 보존된다.
+      Markdown.configure({ html: false }),
       CharacterCount,
       Placeholder.configure({
         placeholder: ({ node }) =>

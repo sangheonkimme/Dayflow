@@ -224,7 +224,12 @@ export function memoExcerpt(
   max = 140,
 ): string {
   if (memo.excerpt) return memo.excerpt;
-  const flat = (memo.body ?? "").replace(/\s+/g, " ").trim();
+  // hardBreak 이스케이프("\\\n") 로 저장된 legacy 본문에서 백슬래시를 먼저 제거해
+  // 미리보기에 "\" 가 노출되지 않도록 한다. (본 저장 로직은 breaks:false 로 개행 변질 방지)
+  const flat = (memo.body ?? "")
+    .replace(/\\(\r?\n)/g, "$1")
+    .replace(/\s+/g, " ")
+    .trim();
   return flat.length > max ? flat.slice(0, max) + "…" : flat;
 }
 
