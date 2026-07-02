@@ -2,7 +2,12 @@ import { useState, useMemo, useRef, useEffect } from "react";
 import { Icon } from "@/components/Icon";
 import { useMemos, useMemoFacets } from "@/data/memos";
 import { FOLDERS } from "@/data/memos";
-import { memoExcerpt, memoWordCount, memoUpdatedLabel } from "@/data/memos";
+import {
+  memoExcerpt,
+  memoWordCount,
+  memoUpdatedLabel,
+  memoPlainText,
+} from "@/data/memos";
 import { useDraftField } from "@/lib/useDraftField";
 import { pressable } from "@/lib/a11y";
 import { useEditor, EditorContent } from "@tiptap/react";
@@ -402,16 +407,16 @@ function MemoEditor({
   }, [onUpdateBody]);
 
   const flushTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const pendingMarkdownRef = useRef<string | null>(null);
+  const pendingBodyRef = useRef<string | null>(null);
 
   const flushBody = () => {
     if (flushTimerRef.current) {
       clearTimeout(flushTimerRef.current);
       flushTimerRef.current = null;
     }
-    if (pendingMarkdownRef.current !== null) {
-      onUpdateBodyRef.current(pendingMarkdownRef.current);
-      pendingMarkdownRef.current = null;
+    if (pendingBodyRef.current !== null) {
+      onUpdateBodyRef.current(pendingBodyRef.current);
+      pendingBodyRef.current = null;
     }
   };
 
@@ -423,7 +428,14 @@ function MemoEditor({
       Link.configure({ openOnClick: false }),
       TaskList,
       TaskItem.configure({ nested: true }),
-      Markdown.configure({ html: false, breaks: true }),
+      // 본문은 HTML 로 저장한다(getHTML). 이전엔 markdown(getMarkdown)으로 저장했는데,
+      // markdown 은 빈 문단(연속 빈 줄·후행 빈 줄)을 표현할 수 없어 자동저장 왕복에서
+      // 사용자가 Enter 로 만든 빈 줄이 사라지는 문제가 있었다. HTML 은 <p></p> 로
+      // 빈 문단을 그대로 보존한다.
+      // html:true → 기존에 markdown 으로 저장된 레거시 본문도 그대로 로드되고
+      // (markdown-it 이 파싱), 이후 첫 저장 때 HTML 로 자연 마이그레이션된다.
+      // breaks:true → 레거시 markdown 의 단일 개행을 <br> 로 렌더(기존 표시 유지).
+      Markdown.configure({ html: true, breaks: true }),
       CharacterCount,
       Placeholder.configure({
         placeholder: ({ node }) =>
@@ -442,12 +454,8 @@ function MemoEditor({
       },
     },
     onUpdate: ({ editor: ed }) => {
-      // tiptap-markdown 이 storage.markdown.getMarkdown() 을 제공.
-      const storage = ed.storage as unknown as {
-        markdown?: { getMarkdown?: () => string };
-      };
-      const md = storage.markdown?.getMarkdown?.() ?? "";
-      pendingMarkdownRef.current = md;
+      // HTML 로 저장 — 빈 문단(빈 줄) 보존을 위해 markdown 대신 getHTML 사용.
+      pendingBodyRef.current = ed.getHTML();
       if (flushTimerRef.current) clearTimeout(flushTimerRef.current);
       flushTimerRef.current = setTimeout(() => {
         flushBody();
@@ -842,7 +850,7 @@ function MemoQuickSearch({ memos, onClose, onPick }: MemoQuickSearchProps) {
     const scored = memos
       .map((m) => {
         const title = m.title.toLowerCase();
-        const body = (m.body ?? "").toLowerCase();
+        const body = memoPlainText(m.body).toLowerCase();
         const tagHit = m.tags.some((t) => t.toLowerCase().includes(query));
         let score = 0;
         if (title.includes(query)) score += title.startsWith(query) ? 30 : 20;

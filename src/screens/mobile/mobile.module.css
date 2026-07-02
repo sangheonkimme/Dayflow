@@ -227,6 +227,8 @@
   color: var(--ink);
   flex: 1;
   overflow: hidden;
+  /* 본문의 개행(\n)을 그대로 표시하되 나머지 공백은 접는다 */
+  white-space: pre-line;
   display: -webkit-box;
   -webkit-line-clamp: 5;
   -webkit-box-orient: vertical;
@@ -409,6 +411,18 @@
 .dfmSwipe .dfmCheckRow {
   border-bottom: none;
   padding: 10px 0;
+}
+
+/* SwipeRow content 는 기본적으로 --bg-paper 를 칠하는데, 카드(--card) 안에
+   들어가면 카드보다 어두운 탄색 블록으로 보인다. 카드 안 체크리스트/머니
+   행은 카드색과 블렌드시켜 배경이 튀지 않게 한다. (다크는 카드와 동일 톤) */
+.dfmChecklist .dfmSwipeContent,
+.dfmMoneyList .dfmSwipeContent {
+  background: var(--card);
+}
+:global(.dark) .dfmChecklist .dfmSwipeContent,
+:global(.dark) .dfmMoneyList .dfmSwipeContent {
+  background: #1f1d18;
 }
 
 /* money rows wrapped in SwipeRow: drop the swipe-row's border (parent list handles spacing) */

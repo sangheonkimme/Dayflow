@@ -1,93 +1,162 @@
 import { useState, useMemo } from "react";
 import { openTxnDetail } from "@/screens/mobile/shared/TxnDetailBridge";
-import { DOW } from "@/lib/date";
-import { useTransactions } from "@/data/transactions";
-import { groupByDay } from "@/data/transactions";
-import { inferIcon } from "@/data/transactions";
+import { DOW, MONTHS } from "@/lib/date";
+import {
+  useTransactions,
+  groupByDay,
+  inferIcon,
+  inferPayday,
+  currentMonthSummary,
+  monthlyTotals,
+  categoryShare,
+} from "@/data/transactions";
+import { TRANSACTION_CATEGORIES } from "@/lib/categories";
 import { Ico } from "@/screens/mobile/shared/Ico";
 import { SectionHeader } from "@/screens/mobile/shared/SectionHeader";
 import { SwipeRow } from "@/screens/mobile/shared/SwipeRow";
 import { pressable } from "@/lib/a11y";
 import styles from "@/screens/mobile/mobile.module.css";
 
+const catColor = (c: string) => TRANSACTION_CATEGORIES[c] ?? "#c9bd9f";
+
 export const MobileLedger = () => {
-  const [scope, setScope] = useState("all"); // all | out | in
+  const [scope, setScope] = useState("all"); // all | out | in | sub | uncat
+  const { all: ledgerTxns, remove: removeTxn } = useTransactions();
 
-  // 11월 데이터 (실수령 ₩3,200,000 기준 시나리오)
-  const income = 3650000;
-  const expense = 1847200;
-  const balance = income - expense;
-  const lastMonthBalance = 1602000;
-  const deltaPct = Math.round(
-    ((balance - lastMonthBalance) / lastMonthBalance) * 100,
+  // 이번 달 요약 — PC LedgerPage 와 동일 셀렉터. 이번 달 거래가 없으면
+  // 월급(3.2M) fallback 으로 헤드라인 숫자를 유지(Home/MoneyFlow 와 동일 정책).
+  const hero = useMemo(() => {
+    const now = new Date();
+    const m = now.getMonth();
+    const summary = currentMonthSummary(ledgerTxns);
+    const paydaySum = ledgerTxns
+      .filter((t) => t.date.startsWith(summary.key) && inferPayday(t))
+      .reduce((s, t) => s + t.amount, 0);
+    const income = paydaySum || 3_200_000;
+    const expense = summary.expense;
+    const balance = income - expense;
+
+    // 전월 잔액 대비 증감률
+    const prev = new Date(now.getFullYear(), m - 1, 1);
+    const prevKey = `${prev.getFullYear()}-${String(prev.getMonth() + 1).padStart(2, "0")}`;
+    let prevIn = 0;
+    let prevOut = 0;
+    for (const t of ledgerTxns) {
+      if (!t.date.startsWith(prevKey)) continue;
+      if (t.type === "in") prevIn += t.amount;
+      else prevOut += Math.abs(t.amount);
+    }
+    const prevBalance = (prevIn || 3_200_000) - prevOut;
+    const deltaPct =
+      prevBalance !== 0
+        ? Math.round(((balance - prevBalance) / Math.abs(prevBalance)) * 100)
+        : 0;
+
+    const inCount = ledgerTxns.filter(
+      (t) => t.date.startsWith(summary.key) && t.type === "in",
+    ).length;
+    const outCount = ledgerTxns.filter(
+      (t) => t.date.startsWith(summary.key) && t.type === "out",
+    ).length;
+
+    // 다음 월급일(매월 25일)까지 D-day
+    const today = now.getDate();
+    const payday =
+      today <= 25
+        ? new Date(now.getFullYear(), m, 25)
+        : new Date(now.getFullYear(), m + 1, 25);
+    const dPay = Math.max(
+      0,
+      Math.ceil(
+        (payday.getTime() - new Date(now.getFullYear(), m, today).getTime()) /
+          86_400_000,
+      ),
+    );
+
+    return {
+      monthLabel: MONTHS[m],
+      year: now.getFullYear(),
+      income,
+      expense,
+      balance,
+      deltaPct,
+      inCount,
+      outCount,
+      dPay,
+    };
+  }, [ledgerTxns]);
+
+  // 월별 추이 (만원 단위)
+  const trend = useMemo(() => {
+    const { in: tin, out: tout, months } = monthlyTotals(ledgerTxns);
+    const max = Math.max(90, ...tin, ...tout);
+    const nowKey = MONTHS[new Date().getMonth()];
+    return { tin, tout, months, max, nowKey };
+  }, [ledgerTxns]);
+
+  // 카테고리별 지출 (이번 달)
+  const cats = useMemo(
+    () => categoryShare(ledgerTxns, "expense").slice(0, 6),
+    [ledgerTxns],
   );
+  const catTotal = cats.reduce((a, c) => a + c.amount, 0);
 
-  // 11개월 추이 (만원 단위)
-  const trend = [
-    { m: "1", in: 280, out: 215 },
-    { m: "2", in: 285, out: 198 },
-    { m: "3", in: 285, out: 240 },
-    { m: "4", in: 300, out: 225 },
-    { m: "5", in: 320, out: 250 },
-    { m: "6", in: 285, out: 212 },
-    { m: "7", in: 300, out: 268 },
-    { m: "8", in: 340, out: 228 },
-    { m: "9", in: 285, out: 198 },
-    { m: "10", in: 330, out: 230 },
-    { m: "11", in: 365, out: 185, now: true },
-  ];
-  const trendMax = 400;
-
-  // 카테고리별 지출
-  const cats = [
-    { name: "식비", color: "#ffd84d", val: 482100 },
-    { name: "주거", color: "#1f1d18", val: 850000 },
-    { name: "교통", color: "#ffb38a", val: 188400 },
-    { name: "쇼핑", color: "#d4c1f0", val: 155100 },
-    { name: "구독", color: "#a8d4e3", val: 89000 },
-    { name: "건강", color: "#b9e7c9", val: 82600 },
-  ];
-  const catTotal = cats.reduce((a, c) => a + c.val, 0);
-
-  // donut path generation
-  const r = 42,
-    cx = 55,
-    cy = 55,
-    stroke = 14;
+  // donut geometry
+  const r = 42;
+  const cx = 55;
+  const cy = 55;
+  const stroke = 14;
   const C = 2 * Math.PI * r;
 
-  // 일자별 거래 그룹 — derived from real txns (most-recent first).
-  const { all: ledgerTxns } = useTransactions();
+  const counts = useMemo(
+    () => ({
+      all: ledgerTxns.length,
+      out: ledgerTxns.filter((t) => t.type === "out").length,
+      in: ledgerTxns.filter((t) => t.type === "in").length,
+      sub: ledgerTxns.filter((t) => t.cat === "구독").length,
+      uncat: ledgerTxns.filter((t) => !t.cat || t.cat === "기타").length,
+    }),
+    [ledgerTxns],
+  );
+
+  // 일자별 거래 그룹 — scope 필터 적용, 최근순 최대 6일.
   const days = useMemo(() => {
-    const grouped = groupByDay(ledgerTxns);
-    type DayItem = { ico: string; name: string; sub: string; amt: number; cat: string; income: boolean };
-    const out: { date: string; dow: string; total: number; items: DayItem[] }[] = [];
-    const todayKey = (() => {
-      const d = new Date();
-      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-    })();
+    const scoped = ledgerTxns.filter((t) => {
+      if (scope === "out") return t.type === "out";
+      if (scope === "in") return t.type === "in";
+      if (scope === "sub") return t.cat === "구독";
+      if (scope === "uncat") return !t.cat || t.cat === "기타";
+      return true;
+    });
+    const grouped = groupByDay(scoped);
+    const d = new Date();
+    const todayKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    const out: {
+      date: string;
+      dow: string;
+      total: number;
+      items: (typeof ledgerTxns)[number][];
+    }[] = [];
     let count = 0;
     for (const [date, items] of grouped) {
-      if (count >= 4) break;
+      if (count >= 6) break;
       count++;
       const dt = new Date(date);
       const md = `${dt.getMonth() + 1}월 ${dt.getDate()}일`;
       const dow = (date === todayKey ? "오늘 · " : "") + DOW[dt.getDay()];
-      const adapted = items.map((t) => ({
-        ico: inferIcon(t),
-        name: t.label,
-        sub: `${t.time || ""} · ${t.cat || ""}`,
-        amt: t.amount,
-        cat: t.cat || "",
-        income: t.type === "in",
-      }));
-      const total = adapted.reduce((a, x) => a + x.amt, 0);
-      out.push({ date: md, dow, total, items: adapted });
+      const total = items.reduce((a, t) => a + t.amount, 0);
+      out.push({ date: md, dow, total, items: [...items] });
     }
     return out;
-  }, [ledgerTxns]);
+  }, [ledgerTxns, scope]);
 
-  // chip filter is currently visual-only
+  const chips: [string, string, number][] = [
+    ["all", "전체", counts.all],
+    ["out", "지출", counts.out],
+    ["in", "수입", counts.in],
+    ["sub", "정기", counts.sub],
+    ["uncat", "미분류", counts.uncat],
+  ];
 
   return (
     <>
@@ -95,37 +164,49 @@ export const MobileLedger = () => {
       <div className={styles.dfmLedHero}>
         <div className={styles.dfmLedMonth}>
           <span>
-            <b>2026 · 11월</b>
+            <b>
+              {hero.year} · {hero.monthLabel}
+            </b>
           </span>
           <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
-            <Ico name="chevL" size={12} /> 11월 <Ico name="chevR" size={12} />
+            <Ico name="chevL" size={12} /> {hero.monthLabel}{" "}
+            <Ico name="chevR" size={12} />
           </span>
         </div>
         <div className={styles.dfmLedBalance}>
           <span className={styles.won}>₩</span>
-          {balance.toLocaleString()}
+          {hero.balance.toLocaleString()}
         </div>
         <div className={styles.dfmLedSub}>
-          전월 대비 <b>+{deltaPct}%</b> · 월급일까지 D-11
+          전월 대비{" "}
+          <b>
+            {hero.deltaPct > 0 ? "+" : ""}
+            {hero.deltaPct}%
+          </b>{" "}
+          · 월급일까지 D-{hero.dPay}
         </div>
 
         <div className={styles.dfmLedStats}>
           <div className={`${styles.dfmLedStat} ${styles.in}`}>
             <div className={styles.lbl}>수입</div>
-            <div className={styles.val}>+{(income / 10000).toFixed(0)}만</div>
-            <div className={styles.delta}>↗ 정기 1건</div>
+            <div className={styles.val}>
+              +{(hero.income / 10000).toFixed(0)}만
+            </div>
+            <div className={styles.delta}>↗ {hero.inCount}건</div>
           </div>
           <div className={styles.dfmLedDivider} />
           <div className={`${styles.dfmLedStat} ${styles.out}`}>
             <div className={styles.lbl}>지출</div>
-            <div className={styles.val}>-{(expense / 10000).toFixed(0)}만</div>
-            <div className={styles.delta}>↘ 23건</div>
+            <div className={styles.val}>
+              -{(hero.expense / 10000).toFixed(0)}만
+            </div>
+            <div className={styles.delta}>↘ {hero.outCount}건</div>
           </div>
         </div>
 
         <div className={styles.dfmTrend}>
           <div className={styles.dfmTrendHead}>
-            <span>월별 흐름 · 11개월</span>
+            <span>월별 흐름 · {trend.months.length}개월</span>
             <div className={styles.dfmTrendLegend}>
               <span>
                 <i style={{ background: "#b9e7c9" }} />
@@ -138,26 +219,28 @@ export const MobileLedger = () => {
             </div>
           </div>
           <div className={styles.dfmTrendBars}>
-            {trend.map((d, i) => (
+            {trend.months.map((m, i) => (
               <div
                 key={i}
-                className={`${styles.dfmTrendCol} ${d.now ? styles.now : ""}`}
+                className={`${styles.dfmTrendCol} ${m === trend.nowKey ? styles.now : ""}`}
               >
                 <div
                   className={styles.bIn}
-                  style={{ height: `${(d.in / trendMax) * 100}%` }}
+                  style={{ height: `${((trend.tin[i] ?? 0) / trend.max) * 100}%` }}
                 />
                 <div
                   className={styles.bOut}
-                  style={{ height: `${(d.out / trendMax) * 100}%` }}
+                  style={{
+                    height: `${((trend.tout[i] ?? 0) / trend.max) * 100}%`,
+                  }}
                 />
               </div>
             ))}
           </div>
           <div className={styles.dfmTrendLabels}>
-            {trend.map((d, i) => (
-              <span key={i} className={d.now ? styles.now : ""}>
-                {d.m}
+            {trend.months.map((m, i) => (
+              <span key={i} className={m === trend.nowKey ? styles.now : ""}>
+                {m.replace("월", "")}
               </span>
             ))}
           </div>
@@ -165,7 +248,7 @@ export const MobileLedger = () => {
       </div>
 
       {/* CATEGORY DONUT */}
-      <SectionHeader title="카테고리 분석" action="자세히" />
+      <SectionHeader title="카테고리 분석" />
       <div className={styles.dfmCatsCard}>
         <div className={styles.dfmDonutWrap}>
           <svg
@@ -185,7 +268,7 @@ export const MobileLedger = () => {
             {(() => {
               let off = 0;
               return cats.map((c, i) => {
-                const len = (c.val / catTotal) * C;
+                const len = catTotal > 0 ? (c.amount / catTotal) * C : 0;
                 const dashoffset = -off;
                 off += len;
                 return (
@@ -195,7 +278,7 @@ export const MobileLedger = () => {
                     cy={cy}
                     r={r}
                     fill="none"
-                    stroke={c.color}
+                    stroke={catColor(c.cat)}
                     strokeWidth={stroke}
                     strokeDasharray={`${len} ${C - len}`}
                     strokeDashoffset={dashoffset}
@@ -207,53 +290,71 @@ export const MobileLedger = () => {
           <div className={styles.dfmDonutCenter}>
             <div>
               <div className={styles.lbl}>총 지출</div>
-              <div className={styles.val}>{(catTotal / 10000).toFixed(0)}만</div>
+              <div className={styles.val}>
+                {(hero.expense / 10000).toFixed(0)}만
+              </div>
             </div>
           </div>
         </div>
         <div className={styles.dfmCatList}>
+          {cats.length === 0 && (
+            <div
+              style={{
+                fontSize: 12,
+                color: "var(--ink-mute)",
+                padding: "8px 0",
+              }}
+            >
+              이번 달 지출 내역이 없어요
+            </div>
+          )}
           {cats.slice(0, 5).map((c, i) => (
             <div key={i} className={styles.dfmCatRow}>
-              <span className={styles.swatch} style={{ background: c.color }} />
-              <span className={styles.name}>{c.name}</span>
+              <span
+                className={styles.swatch}
+                style={{ background: catColor(c.cat) }}
+              />
+              <span className={styles.name}>{c.cat}</span>
               <span className={styles.pct}>
-                {Math.round((c.val / catTotal) * 100)}%
+                {catTotal > 0 ? Math.round((c.amount / catTotal) * 100) : 0}%
               </span>
-              <span className={styles.amt}>{(c.val / 10000).toFixed(0)}만</span>
+              <span className={styles.amt}>
+                {(c.amount / 10000).toFixed(0)}만
+              </span>
             </div>
           ))}
         </div>
       </div>
 
       {/* TXN LIST */}
-      <SectionHeader title="거래 내역" action="검색" />
+      <SectionHeader title="거래 내역" />
 
       <div className={styles.dfmChips}>
-        <button
-          className={`${styles.dfmChip} ${scope === "all" ? styles.on : ""}`}
-          onClick={() => setScope("all")}
-        >
-          전체 <span className={styles.count}>23</span>
-        </button>
-        <button
-          className={`${styles.dfmChip} ${scope === "out" ? styles.on : ""}`}
-          onClick={() => setScope("out")}
-        >
-          지출 <span className={styles.count}>22</span>
-        </button>
-        <button
-          className={`${styles.dfmChip} ${scope === "in" ? styles.on : ""}`}
-          onClick={() => setScope("in")}
-        >
-          수입 <span className={styles.count}>1</span>
-        </button>
-        <button className={styles.dfmChip}>
-          정기 <span className={styles.count}>3</span>
-        </button>
-        <button className={styles.dfmChip}>
-          미분류 <span className={styles.count}>2</span>
-        </button>
+        {chips.map(([key, label, count]) => (
+          <button
+            key={key}
+            type="button"
+            className={`${styles.dfmChip} ${scope === key ? styles.on : ""}`}
+            onClick={() => setScope(key)}
+          >
+            {label} <span className={styles.count}>{count}</span>
+          </button>
+        ))}
       </div>
+
+      {days.length === 0 && (
+        <div
+          className={styles.dfmCard}
+          style={{
+            padding: "24px 16px",
+            textAlign: "center",
+            fontSize: 13,
+            color: "var(--ink-mute)",
+          }}
+        >
+          해당 조건의 거래가 없어요
+        </div>
+      )}
 
       {days.map((d, di) => (
         <div key={di} className={styles.dfmDay}>
@@ -270,7 +371,11 @@ export const MobileLedger = () => {
             </div>
           </div>
           <div className={styles.dfmDayRows}>
-            {d.items.map((it, i) => (
+            {d.items.map((t, i) => {
+              // ReceiptSheet 는 모바일 adapted 형태(name/amt/cat)를 읽으므로
+              // 상세 열기엔 adapted 객체를, 삭제엔 실제 t.id 를 쓴다.
+              const detail = { name: t.label, amt: t.amount, cat: t.cat || "" };
+              return (
               <SwipeRow
                 key={i}
                 actions={[
@@ -278,36 +383,39 @@ export const MobileLedger = () => {
                     label: "수정",
                     color: "edit",
                     icon: "edit",
-                    onClick: () => openTxnDetail(it),
+                    onClick: () => openTxnDetail(detail),
                   },
                   {
                     label: "삭제",
                     color: "delete",
                     icon: "trash",
-                    onClick: () => {},
+                    onClick: () => removeTxn(t.id),
                   },
                 ]}
               >
                 <div
                   className={styles.dfmMoneyRow}
-                  {...pressable(() => openTxnDetail(it))}
+                  {...pressable(() => openTxnDetail(detail))}
                 >
                   <div className={styles.ico}>
-                    <Ico name={it.ico} size={16} />
+                    <Ico name={inferIcon(t)} size={16} />
                   </div>
                   <div className={styles.who}>
-                    {it.name}
-                    <small>{it.sub}</small>
+                    {t.label}
+                    <small>
+                      {[t.time, t.cat].filter(Boolean).join(" · ")}
+                    </small>
                   </div>
                   <div
-                    className={`${styles.val} ${it.income ? styles.income : styles.expense}`}
+                    className={`${styles.val} ${t.type === "in" ? styles.income : styles.expense}`}
                   >
-                    {it.amt > 0 ? "+" : ""}
-                    {it.amt.toLocaleString()}
+                    {t.amount > 0 ? "+" : ""}
+                    {t.amount.toLocaleString()}
                   </div>
                 </div>
               </SwipeRow>
-            ))}
+              );
+            })}
           </div>
         </div>
       ))}
