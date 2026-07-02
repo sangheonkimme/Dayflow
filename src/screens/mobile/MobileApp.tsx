@@ -2,6 +2,7 @@
 import { useState } from "react";
 
 import styles from "@/screens/mobile/mobile.module.css";
+import { useAuth } from "@/data/auth";
 
 // 추출된 헬퍼/탭 (Phase 6c-1)
 import { Ico } from "@/screens/mobile/shared/Ico";
@@ -31,6 +32,9 @@ import { UpgradeSheet } from "@/screens/mobile/sheets/UpgradeSheet";
 // ============================================================
 
 const MobileApp = ({ initialTab = "home" }: any) => {
+  const { user } = useAuth();
+  const userName =
+    user?.displayName ?? user?.email?.split("@")[0] ?? "나비";
   const [tab, setTab] = useState(initialTab);
   const [openTxn, setOpenTxn] = useState<unknown>(null);
   const [addTxnOpen, setAddTxnOpen] = useState(false);
@@ -130,7 +134,7 @@ const MobileApp = ({ initialTab = "home" }: any) => {
 
   // top greeting differs per tab
   const titleByTab = {
-    home: { greet: "안녕하세요 ☀️", name: "나비님" },
+    home: { greet: "안녕하세요 ☀️", name: `${userName}님` },
     ledger: { greet: "11월의 흐름", name: "가계부" },
     calendar: { greet: "이번 달 일정", name: "캘린더" },
     menu: { greet: "내 정보", name: "메뉴" },

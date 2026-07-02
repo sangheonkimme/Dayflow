@@ -2,9 +2,14 @@ import { Ico } from "@/screens/mobile/shared/Ico";
 import { SectionHeader } from "@/screens/mobile/shared/SectionHeader";
 import { IMAGE_TOOLS_PUBLIC } from "@/lib/feature-flags";
 import { pressable } from "@/lib/a11y";
+import { useAuth } from "@/data/auth";
 import styles from "@/screens/mobile/mobile.module.css";
 
 export const MobileMenu = ({ onNavigate, onProfile }: any) => {
+  const { user } = useAuth();
+  const name = user?.displayName ?? user?.email?.split("@")[0] ?? "나비";
+  const email = user?.email ?? "게스트";
+  const avatarChar = (name[0] ?? "나").toUpperCase();
   const links = [
     ["wallet", "가계부 상세", "거래 내역 · 카테고리 분석", "ledger"],
     ["tag", "구독 관리", "12개 활성 · 이번 달 ₩47,000", "subs"],
@@ -45,12 +50,12 @@ export const MobileMenu = ({ onNavigate, onProfile }: any) => {
             border: "1px solid var(--yellow-edge)",
           }}
         >
-          나
+          {avatarChar}
         </div>
         <div style={{ flex: 1 }}>
-          <b style={{ fontSize: 15 }}>나비</b>
+          <b style={{ fontSize: 15 }}>{name}</b>
           <div style={{ fontSize: 12, color: "var(--ink-mute)" }}>
-            nabi@dayflow.app · 무료 플랜
+            {email} · 무료 플랜
           </div>
         </div>
         <Ico name="chevR" size={16} />
