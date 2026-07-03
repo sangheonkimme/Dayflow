@@ -39,7 +39,13 @@ export async function proxy(request: NextRequest) {
   if (pathname.startsWith(PROTECTED_PREFIX) && !user) {
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("next", pathname);
-    return NextResponse.redirect(loginUrl);
+    const redirect = NextResponse.redirect(loginUrl);
+    // getUser() 도중 토큰이 rotate 됐다면 갱신 쿠키를 redirect 에도 실어야 함.
+    // 누락 시 브라우저에 폐기된 refresh token 이 남아 다음 갱신에서 강제 로그아웃됨.
+    response.cookies.getAll().forEach((cookie) => {
+      redirect.cookies.set(cookie);
+    });
+    return redirect;
   }
 
   return response;
