@@ -52,36 +52,45 @@ export type Database = {
       };
       calendar_events: {
         Row: {
+          alarm: number | null;
           all_day: boolean;
+          cat: string | null;
           color: string | null;
           created_at: string;
           description: string | null;
           ends_at: string | null;
           id: string;
+          place: string | null;
           recurrence_rule: string | null;
           starts_at: string;
           title: string;
           user_id: string;
         };
         Insert: {
+          alarm?: number | null;
           all_day?: boolean;
+          cat?: string | null;
           color?: string | null;
           created_at?: string;
           description?: string | null;
           ends_at?: string | null;
           id?: string;
+          place?: string | null;
           recurrence_rule?: string | null;
           starts_at: string;
           title: string;
           user_id: string;
         };
         Update: {
+          alarm?: number | null;
           all_day?: boolean;
+          cat?: string | null;
           color?: string | null;
           created_at?: string;
           description?: string | null;
           ends_at?: string | null;
           id?: string;
+          place?: string | null;
           recurrence_rule?: string | null;
           starts_at?: string;
           title?: string;

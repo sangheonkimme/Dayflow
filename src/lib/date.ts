@@ -20,6 +20,14 @@ export const MONTHS = [
 
 export type DateInput = Date | string | number;
 
+/** 로컬 기준 "YYYY-MM-DD" — toISOString 은 UTC 라 자정 전후 날짜가 밀리므로 금지 */
+export const toLocalYmd = (d: Date): string =>
+  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+
+/** 로컬 기준 "HH:MM" */
+export const toLocalHm = (d: Date): string =>
+  `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+
 /** "MM.DD (요일)" — used for txn day groupings */
 export const formatDateWithDow = (date: DateInput): string => {
   const d = date instanceof Date ? date : new Date(date);

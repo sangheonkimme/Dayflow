@@ -1,58 +1,96 @@
 import { useState } from "react";
 import { Icon } from "@/components/Icon";
 import { Modal } from "@/components/Modal";
-import { DOW } from "@/lib/date";
-import { EVENT_CATEGORIES, EVENT_COLOR_PALETTE } from "@/lib/categories";
+import { DOW, toLocalYmd } from "@/lib/date";
+import {
+  EVENT_CATEGORIES,
+  EVENT_CATEGORY_COLORS,
+  EVENT_COLOR_PALETTE,
+} from "@/lib/categories";
 import { pressable } from "@/lib/a11y";
 
 // ─────────────────────────────────────────────
 // Helpers
 // ─────────────────────────────────────────────
-function parseEvent(input) {
-  const cats = EVENT_CATEGORIES;
+/** 카테고리 → 캘린더 범례 색상 (빠른 입력은 색을 안 고르므로 자동 매핑) */
+const CAT_COLOR: Record<string, string> = Object.fromEntries(
+  EVENT_CATEGORY_COLORS as [string, string][],
+);
+
+// 파싱한 토큰은 rest 에서 지워가며 남는 텍스트를 제목으로 쓴다.
+function parseEvent(input: string) {
+  let rest = input;
+
   const cat =
-    cats.find((c) => input.includes(c)) ||
-    (/(미팅|회의|스탠드업|리뷰)/.test(input)
+    EVENT_CATEGORIES.find((c) => rest.includes(c)) ||
+    (/(미팅|회의|스탠드업|리뷰)/.test(rest)
       ? "업무"
-      : /(운동|헬스|러닝|요가)/.test(input)
+      : /(운동|헬스|러닝|요가)/.test(rest)
         ? "운동"
         : "개인");
+  rest = rest.replace(cat, "");
 
+  // 반복: "매일/매주/매월"
+  let repeat: "none" | "매일" | "매주" | "매월" = "none";
+  const rep = rest.match(/매(일|주|월)/);
+  if (rep) {
+    repeat = `매${rep[1]}` as typeof repeat;
+    rest = rest.replace(rep[0], "");
+  }
+
+  // 날짜: 내일/모레 → "5/15" 형식 → "금요일"
   const today = new Date();
   const date = new Date(today);
-  if (/내일/.test(input)) date.setDate(date.getDate() + 1);
-  else if (/모레/.test(input)) date.setDate(date.getDate() + 2);
-  else {
-    const dows = DOW;
-    const m = input.match(/([일월화수목금토])요일?/);
+  const md = rest.match(/(\d{1,2})\s*\/\s*(\d{1,2})/);
+  if (/내일/.test(rest)) date.setDate(date.getDate() + 1);
+  else if (/모레/.test(rest)) date.setDate(date.getDate() + 2);
+  else if (md) {
+    date.setMonth(parseInt(md[1], 10) - 1, parseInt(md[2], 10));
+    // 이미 지난 날짜면 내년으로
+    const startOfToday = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate(),
+    );
+    if (date < startOfToday) date.setFullYear(date.getFullYear() + 1);
+    rest = rest.replace(md[0], "");
+  } else {
+    // "요" 필수 — 없으면 "월급/입금"의 월·금이 요일로 오인된다.
+    const m = rest.match(/([일월화수목금토])요(?:일)?/);
     if (m) {
-      const target = dows.indexOf(m[1]);
-      const cur = date.getDay();
-      let diff = target - cur;
+      const target = DOW.indexOf(m[1] as (typeof DOW)[number]);
+      let diff = target - date.getDay();
       if (diff <= 0) diff += 7;
       date.setDate(date.getDate() + diff);
+      rest = rest.replace(m[0], "");
+    }
+  }
+  rest = rest.replace(/(오늘|내일|모레)/, "");
+
+  // 종일 여부 (시간보다 먼저 소비)
+  const allDay = /종일/.test(rest);
+  rest = rest.replace(/종일/, "");
+
+  // 시간 (종일이면 무시) — 날짜 토큰 제거 후 매칭해야 "5/15"의 5를 시간으로 안 읽음
+  let hour = 14,
+    min = 0;
+  if (!allDay) {
+    // "3시" / "10:30" / "오전 11시 30분" — 맨숫자("3명" 등) 오인 방지로 시·분 표기는 필수
+    const tm = rest.match(
+      /(오전|오후)?\s*(\d{1,2})(?::(\d{2})\s*시?|\s*시)\s*(?:(\d{1,2})\s*분)?/,
+    );
+    if (tm) {
+      hour = parseInt(tm[2], 10);
+      min = tm[3] ? parseInt(tm[3], 10) : tm[4] ? parseInt(tm[4], 10) : 0;
+      if (tm[1] === "오후" && hour < 12) hour += 12;
+      if (tm[1] === "오전" && hour === 12) hour = 0;
+      rest = rest.replace(tm[0], "");
     }
   }
 
-  const tm = input.match(/(오전|오후)?\s*(\d{1,2})(?::(\d{2}))?\s*시?/);
-  let hour = 14,
-    min = 0;
-  if (tm) {
-    hour = parseInt(tm[2], 10);
-    min = tm[3] ? parseInt(tm[3], 10) : 0;
-    if (tm[1] === "오후" && hour < 12) hour += 12;
-    if (tm[1] === "오전" && hour === 12) hour = 0;
-  }
+  const title = rest.replace(/\s+/g, " ").trim() || "새 일정";
 
-  const title =
-    input
-      .replace(/(오늘|내일|모레)/, "")
-      .replace(/([일월화수목금토])요일?/, "")
-      .replace(/(오전|오후)?\s*\d{1,2}(?::\d{2})?\s*시?/, "")
-      .replace(cat, "")
-      .trim() || "새 일정";
-
-  return { date, hour, min, cat, title };
+  return { date, hour, min, cat, title, allDay, repeat };
 }
 
 const fmtDate = (d) =>
@@ -106,20 +144,31 @@ export function EventModal({ onClose, editing, onDelete, onSave }: any) {
 function EventEdit({ onClose, editing, onDelete, onSave, isDraft }: any) {
   const cats = EVENT_CATEGORIES;
   const colors = EVENT_COLOR_PALETTE;
+  const isExisting = editing?.id != null;
   const [title, setTitle] = useState(editing?.title || "");
   const [allDay, setAllDay] = useState(editing?.allDay || false);
   const [cat, setCat] = useState(editing?.cat || "업무");
   const [color, setColor] = useState(editing?.color || "var(--red)");
-  const [date, setDate] = useState(
-    editing?.date || new Date().toISOString().slice(0, 10),
-  );
+  // toISOString 은 UTC 기준이라 KST 오전 9시 전엔 어제 날짜가 나옴 — 로컬 기준 사용
+  const [date, setDate] = useState(editing?.date || toLocalYmd(new Date()));
   const [repeat, setRepeat] = useState(editing?.repeat || "none");
-  const [startTime, setStartTime] = useState(editing?.startTime || "14:00");
-  const [endTime, setEndTime] = useState(editing?.endTime || "15:00");
+  // 기존 일정은 원래 값 유지 — 시간 없는 일정에 14:00 이 몰래 주입되면 안 됨.
+  const [startTime, setStartTime] = useState(
+    isExisting ? editing?.startTime || "" : editing?.startTime || "14:00",
+  );
+  const [endTime, setEndTime] = useState(
+    isExisting ? editing?.endTime || "" : editing?.endTime || "15:00",
+  );
   const [place, setPlace] = useState(editing?.place || "");
   const [memo, setMemo] = useState(editing?.memo || "");
-  const [alarm, setAlarm] = useState(editing?.alarm || "15");
+  const [alarm, setAlarm] = useState(
+    isExisting ? String(editing.alarm ?? 0) : String(editing?.alarm ?? 15),
+  );
   const [confirmDel, setConfirmDel] = useState(false);
+
+  const canSave = title.trim().length > 0;
+  const timeInvalid =
+    !allDay && !!startTime && !!endTime && endTime < startTime;
 
   return (
     <>
@@ -223,6 +272,11 @@ function EventEdit({ onClose, editing, onDelete, onSave, isDraft }: any) {
               />
             </div>
           )}
+          {timeInvalid && (
+            <small style={{ color: "var(--red)", marginTop: 4 }}>
+              종료 시간이 시작 시간보다 빨라요
+            </small>
+          )}
         </div>
 
         <div className="field">
@@ -324,20 +378,24 @@ function EventEdit({ onClose, editing, onDelete, onSave, isDraft }: any) {
             </button>
             <button
               className="timer-btn primary"
+              disabled={!canSave || timeInvalid}
               onClick={() => {
+                if (!canSave || timeInvalid) return;
                 onSave?.({
                     ...editing,
-                    title,
+                    title: title.trim(),
                     cat,
                     color,
                     allDay,
                     date,
                     repeat,
-                    startTime,
-                    endTime,
-                    place,
-                    memo,
-                    alarm,
+                    // 종일이면 시간 무의미 — 잔존값이 "종일 · 14:00—15:00"로 새는 것 방지
+                    startTime: allDay || !startTime ? undefined : startTime,
+                    endTime:
+                      allDay || !startTime || !endTime ? undefined : endTime,
+                    place: place.trim() || undefined,
+                    memo: memo.trim() || undefined,
+                    alarm: alarm === "0" ? null : Number(alarm),
                   });
                 onClose();
               }}
@@ -357,14 +415,16 @@ function EventQuick({ onClose, onSave, onDetailed }) {
 
   const save = () => {
     if (!parsed) return;
-    const date = parsed.date as Date;
-    const yyyyMmDd = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
     const startTime = `${String(parsed.hour).padStart(2, "0")}:${String(parsed.min).padStart(2, "0")}`;
     onSave?.({
         title: parsed.title,
-        date: yyyyMmDd,
-        startTime,
+        date: toLocalYmd(parsed.date),
+        startTime: parsed.allDay ? undefined : startTime,
+        allDay: parsed.allDay || undefined,
+        repeat: parsed.repeat !== "none" ? parsed.repeat : undefined,
         cat: parsed.cat,
+        // 색을 고르는 단계가 없으므로 카테고리 범례 색으로 자동 지정
+        color: CAT_COLOR[parsed.cat],
       });
     onClose();
   };
@@ -400,7 +460,11 @@ function EventQuick({ onClose, onSave, onDetailed }) {
           onChange={(e) => setVal(e.target.value)}
           placeholder="예: 내일 오후 3시 팀 미팅"
           autoFocus
-          onKeyDown={(e) => e.key === "Enter" && val.trim() && save()}
+          onKeyDown={(e) => {
+            // 한글 조합 중 Enter(isComposing)는 무시 — 조합 확정 키로 저장되는 사고 방지
+            if (e.key === "Enter" && !e.nativeEvent.isComposing && val.trim())
+              save();
+          }}
         />
 
         {parsed && (
@@ -420,7 +484,9 @@ function EventQuick({ onClose, onSave, onDetailed }) {
               <div
                 style={{ fontSize: 12, color: "var(--ink-mute)", marginTop: 2 }}
               >
-                {fmtDate(parsed.date)} · {fmtTime(parsed.hour, parsed.min)}
+                {fmtDate(parsed.date)} ·{" "}
+                {parsed.allDay ? "종일" : fmtTime(parsed.hour, parsed.min)}
+                {parsed.repeat !== "none" ? ` · ${parsed.repeat} 반복` : ""}
               </div>
             </div>
             <span className="parsed-chip">{parsed.cat}</span>
@@ -444,7 +510,7 @@ function EventQuick({ onClose, onSave, onDetailed }) {
         </div>
 
         <div className="quick-tip">
-          <code>매주 화 9시</code> · <code>5/15 종일</code> ·{" "}
+          <code>매주 화요일 9시</code> · <code>5/15 종일</code> ·{" "}
           <code>오전 11시 30분</code>
         </div>
       </div>
@@ -472,6 +538,10 @@ function EventDetailed({ onClose, onSave, onBack }) {
   const [startHour, setStartHour] = useState(15);
   const [cat, setCat] = useState("");
   const [color, setColor] = useState("var(--red)");
+  const [place, setPlace] = useState("");
+  const [memo, setMemo] = useState("");
+  const [alarm, setAlarm] = useState("15");
+  const [repeat, setRepeat] = useState("none");
   const cats = EVENT_CATEGORIES;
   const colors = EVENT_COLOR_PALETTE;
   const today = new Date();
@@ -503,12 +573,16 @@ function EventDetailed({ onClose, onSave, onBack }) {
     const endMin = durMin % 60;
     const endTime = `${String(endHour).padStart(2, "0")}:${String(endMin).padStart(2, "0")}`;
     onSave?.({
-        title,
+        title: title.trim(),
         date: yyyyMmDd,
         startTime,
         endTime,
         cat: cat || "개인",
         color,
+        place: place.trim() || undefined,
+        memo: memo.trim() || undefined,
+        alarm: alarm === "0" ? null : Number(alarm),
+        repeat: repeat !== "none" ? repeat : undefined,
       });
     onClose();
   };
@@ -657,7 +731,12 @@ function EventDetailed({ onClose, onSave, onBack }) {
           </div>
           <div className="field" style={{ marginTop: 18 }}>
             <label htmlFor="evt-s-place">장소</label>
-            <input id="evt-s-place" placeholder="예: 회의실 A / Zoom" />
+            <input
+              id="evt-s-place"
+              value={place}
+              onChange={(e) => setPlace(e.target.value)}
+              placeholder="예: 회의실 A / Zoom"
+            />
           </div>
         </div>
       )}
@@ -666,11 +745,21 @@ function EventDetailed({ onClose, onSave, onBack }) {
         <div className="step-content" style={{ paddingBottom: 20 }}>
           <div className="field">
             <label htmlFor="evt-s-memo">메모</label>
-            <textarea id="evt-s-memo" rows={3} placeholder="자료 / 준비물 / 참고사항" />
+            <textarea
+              id="evt-s-memo"
+              rows={3}
+              value={memo}
+              onChange={(e) => setMemo(e.target.value)}
+              placeholder="자료 / 준비물 / 참고사항"
+            />
           </div>
           <div className="field" style={{ marginTop: 14 }}>
             <label htmlFor="evt-s-alarm">알림</label>
-            <select id="evt-s-alarm" defaultValue="15">
+            <select
+              id="evt-s-alarm"
+              value={alarm}
+              onChange={(e) => setAlarm(e.target.value)}
+            >
               <option value="0">없음</option>
               <option value="5">5분 전</option>
               <option value="15">15분 전</option>
@@ -681,7 +770,11 @@ function EventDetailed({ onClose, onSave, onBack }) {
           </div>
           <div className="field" style={{ marginTop: 14 }}>
             <label htmlFor="evt-s-repeat">반복</label>
-            <select id="evt-s-repeat" defaultValue="none">
+            <select
+              id="evt-s-repeat"
+              value={repeat}
+              onChange={(e) => setRepeat(e.target.value)}
+            >
               <option value="none">반복 안함</option>
               <option>매일</option>
               <option>매주</option>

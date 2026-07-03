@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { Icon } from "@/components/Icon";
-import { DOW } from "@/lib/date";
+import { DOW, toLocalYmd } from "@/lib/date";
 import { EVENT_CATEGORY_COLORS } from "@/lib/categories";
 import { useEvents } from "@/data/events";
 import { pressable } from "@/lib/a11y";
@@ -40,7 +40,7 @@ export const CalendarPage = ({ onAdd, onEditEvent }: any) => {
   // Group events into a day-of-month → adapted-shape map for the cursor month.
   const events = useMemo(() => {
     const monthPrefix = `${yr}-${String(mo + 1).padStart(2, "0")}-`;
-    const map = {};
+    const map: Record<number, any[]> = {};
     for (const ev of rawEvents) {
       if (!ev.date.startsWith(monthPrefix)) continue;
       const day = parseInt(ev.date.slice(8, 10), 10);
@@ -49,14 +49,36 @@ export const CalendarPage = ({ onAdd, onEditEvent }: any) => {
         t: ev.title,
         color: ev.color || "var(--ink)",
         time: ev.allDay ? "종일" : ev.startTime || "",
-        dur: ev.startTime && ev.endTime ? `${ev.startTime}—${ev.endTime}` : "",
+        dur:
+          !ev.allDay && ev.startTime && ev.endTime
+            ? `${ev.startTime}—${ev.endTime}`
+            : "",
         place: ev.place || "",
         _orig: ev,
       };
       (map[day] ||= []).push(adapted);
     }
+    // 종일 → 시간순 → 시간 미지정 순으로 정렬 ("!" < 숫자 < "~")
+    const sortKey = (e: any) =>
+      e._orig.allDay ? "!" : e._orig.startTime || "~";
+    for (const day of Object.keys(map))
+      map[Number(day)].sort((a, b) => sortKey(a).localeCompare(sortKey(b)));
     return map;
   }, [rawEvents, yr, mo]);
+
+  // 월 이동 — 오늘이 속한 달로 오면 오늘을, 아니면 1일을 선택
+  const goMonth = (m: number, day?: number) => {
+    const target = new Date(yr, m, 1);
+    setCursor(target);
+    if (day != null) setSelDay(day);
+    else
+      setSelDay(
+        target.getFullYear() === today.getFullYear() &&
+          target.getMonth() === today.getMonth()
+          ? today.getDate()
+          : 1,
+      );
+  };
 
   const dow = DOW;
   const selEvents = events[selDay] || [];
@@ -67,6 +89,7 @@ export const CalendarPage = ({ onAdd, onEditEvent }: any) => {
   // compute weekday for selected day
   const selDate = new Date(yr, mo, selDay);
   const selDow = dow[selDate.getDay()];
+  const selYmd = toLocalYmd(selDate);
 
   const monthNames = [
     "1월",
@@ -108,13 +131,7 @@ export const CalendarPage = ({ onAdd, onEditEvent }: any) => {
               background: "var(--card)",
             }}
           >
-            <button
-              className="cal-nav"
-              onClick={() => {
-                setCursor(new Date(yr, mo - 1, 1));
-                setSelDay(1);
-              }}
-            >
+            <button className="cal-nav" onClick={() => goMonth(mo - 1)}>
               ‹
             </button>
             <button
@@ -126,17 +143,11 @@ export const CalendarPage = ({ onAdd, onEditEvent }: any) => {
             >
               오늘
             </button>
-            <button
-              className="cal-nav"
-              onClick={() => {
-                setCursor(new Date(yr, mo + 1, 1));
-                setSelDay(1);
-              }}
-            >
+            <button className="cal-nav" onClick={() => goMonth(mo + 1)}>
               ›
             </button>
           </div>
-          <button className="timer-btn primary" onClick={onAdd}>
+          <button className="timer-btn primary" onClick={() => onAdd()}>
             + 일정 추가
           </button>
         </div>
@@ -176,7 +187,9 @@ export const CalendarPage = ({ onAdd, onEditEvent }: any) => {
                       (!c.muted && c.d === selDay ? " selected" : "")
                     }
                     {...pressable(() => {
-                      if (!c.muted) setSelDay(c.d);
+                      // 인접월 날짜 클릭 → 해당 월로 이동 + 그 날짜 선택
+                      if (c.muted) goMonth(c.mo, c.d);
+                      else setSelDay(c.d);
                     })}
                   >
                     <div
@@ -258,7 +271,7 @@ export const CalendarPage = ({ onAdd, onEditEvent }: any) => {
                 <button
                   className="timer-btn"
                   style={{ marginTop: 6 }}
-                  onClick={onAdd}
+                  onClick={() => onAdd({ date: selYmd })}
                 >
                   + 일정 추가
                 </button>

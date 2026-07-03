@@ -9,7 +9,13 @@ import styles from "@/screens/mobile/mobile.module.css";
 export const MobileCalEvents = () => {
   const d = new Date();
   const todayKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-  const events = useEventsByDate(todayKey);
+  const eventsRaw = useEventsByDate(todayKey);
+  // 종일 → 시간순 정렬 후 상위 3개만 노출
+  const events = [...eventsRaw].sort((a, b) => {
+    const key = (e: (typeof eventsRaw)[number]) =>
+      e.allDay ? "!" : e.startTime || "~";
+    return key(a).localeCompare(key(b));
+  });
   if (!events.length) {
     return (
       <div className={styles.dfmCalEvents}>
@@ -70,14 +76,21 @@ export const MobileCalendar = ({ onAddEvent }: any) => {
       if (!ev.date.startsWith(monthPrefix)) continue;
       const day = parseInt(ev.date.slice(8, 10), 10);
       const adapted = {
-        t: ev.allDay ? "전일" : ev.startTime || "",
-        dur: ev.endTime ? `${ev.startTime || ""}~${ev.endTime}` : "",
+        t: ev.allDay ? "종일" : ev.startTime || "",
+        dur:
+          !ev.allDay && ev.startTime && ev.endTime
+            ? `${ev.startTime}~${ev.endTime}`
+            : "",
         title: ev.title,
         place: ev.place || "",
         color: ev.color || "#cfe7ff",
+        _sort: ev.allDay ? "!" : ev.startTime || "~",
       };
       (map[day] ||= []).push(adapted);
     }
+    // 종일 → 시간순 → 시간 미지정 순
+    for (const day of Object.keys(map))
+      map[Number(day)].sort((a, b) => a._sort.localeCompare(b._sort));
     return map;
   }, [monthEventsAll, monthPrefix]);
   const dayNames = DOW;
