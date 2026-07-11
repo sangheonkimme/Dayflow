@@ -73,6 +73,9 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   themeColor: "#f7f1e3",
+  // 노치/홈 인디케이터 영역까지 화면을 확장 → CSS env(safe-area-inset-*) 가
+  // 실제 인셋값을 반환하게 한다 (모바일 셸이 이 값으로 여백 계산).
+  viewportFit: "cover",
   // iOS 가상 키보드가 뜰 때 뷰포트(=100dvh) 를 실제로 줄여 바텀 시트/입력이
   // 키보드에 가리지 않게 한다.
   interactiveWidget: "resizes-content",
