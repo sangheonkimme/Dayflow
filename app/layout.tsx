@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import {
   Plus_Jakarta_Sans,
   Gaegu,
@@ -44,6 +44,16 @@ export const metadata: Metadata = {
   description:
     "디지털로 옮긴 종이 책상. 가계부·달력·메모·체크리스트를 한 화면에서.",
   applicationName: "Dayflow",
+  // app/manifest.ts 존재 시 Next 가 <link rel="manifest"> 를 자동 주입.
+  // iOS 홈화면 추가 시 standalone 웹앱으로 동작. apple-touch-icon 은
+  // app/apple-icon.tsx 가 자동 주입. statusBarStyle "default" — 밝은 종이
+  // 테마라 불투명 상태바(검은 글자)가 안전 (black-translucent 는 흰 글자라
+  // 밝은 헤더 위에서 안 보임).
+  appleWebApp: {
+    capable: true,
+    title: "Dayflow",
+    statusBarStyle: "default",
+  },
   openGraph: {
     title: "Dayflow",
     description: "하루를, 종이에 적던 그대로.",
@@ -57,6 +67,18 @@ export const metadata: Metadata = {
     title: "Dayflow",
     description: "하루를, 종이에 적던 그대로.",
   },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#f7f1e3",
+  // 노치/홈 인디케이터 영역까지 화면을 확장 → CSS env(safe-area-inset-*) 가
+  // 실제 인셋값을 반환하게 한다 (모바일 셸이 이 값으로 여백 계산).
+  viewportFit: "cover",
+  // iOS 가상 키보드가 뜰 때 뷰포트(=100dvh) 를 실제로 줄여 바텀 시트/입력이
+  // 키보드에 가리지 않게 한다.
+  interactiveWidget: "resizes-content",
 };
 
 export default function RootLayout({
