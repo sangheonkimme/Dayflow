@@ -10,4 +10,5 @@ export const queryKeys = {
   subscriptions: ["subscriptions"] as const,
   pinnedInfo: ["pinnedInfo"] as const,
   dailyLog: ["dailyLog"] as const,
+  userPlan: ["userPlan"] as const,
 };
