@@ -27,9 +27,12 @@
    - 자손 결합자, hover/active 가상클래스, 미디어쿼리 그대로 보존.
 ============================================================ */
 
-/* iOS 프레임 안에서 풀-블리드 */
+/* 앱 셸 — 부모(dashboard layout)가 height:100dvh flex 컬럼을 제공.
+   flex:1 + min-height:0 으로 남은 뷰포트를 채우며 내부 .dfmBody 만 스크롤,
+   .dfmTabbar(absolute bottom:0) 는 셸 하단(=화면 하단)에 고정된다. */
 .dfm {
-  height: 100%;
+  flex: 1;
+  min-height: 0;
   width: 100%;
   background: var(--bg-paper);
   color: var(--ink);

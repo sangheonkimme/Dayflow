@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import {
   Plus_Jakarta_Sans,
   Gaegu,
@@ -67,6 +67,15 @@ export const metadata: Metadata = {
     title: "Dayflow",
     description: "하루를, 종이에 적던 그대로.",
   },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#f7f1e3",
+  // iOS 가상 키보드가 뜰 때 뷰포트(=100dvh) 를 실제로 줄여 바텀 시트/입력이
+  // 키보드에 가리지 않게 한다.
+  interactiveWidget: "resizes-content",
 };
 
 export default function RootLayout({

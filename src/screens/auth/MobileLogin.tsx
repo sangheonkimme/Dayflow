@@ -58,7 +58,7 @@ export const LoginScreen = ({
     return (
       <div
         style={{
-          minHeight: "100vh",
+          minHeight: "100dvh",
           background: dark ? "#0e0d0a" : "#faf7f0",
           padding: "48px 24px 32px",
           display: "flex",
@@ -221,7 +221,7 @@ export const LoginScreen = ({
     return (
       <div
         style={{
-          minHeight: "100vh",
+          minHeight: "100dvh",
           background: dark ? "#0e0d0a" : "#faf7f0",
           display: "flex",
           flexDirection: "column",
@@ -369,7 +369,7 @@ export const LoginScreen = ({
   return (
     <div
       style={{
-        minHeight: "100vh",
+        minHeight: "100dvh",
         background: dark ? "#0e0d0a" : "#faf7f0",
         padding: "60px 24px 32px",
         display: "flex",

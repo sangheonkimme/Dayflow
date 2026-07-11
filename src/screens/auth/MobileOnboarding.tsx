@@ -27,7 +27,7 @@ export const OnboardingScreen = ({
     return (
       <div
         style={{
-          minHeight: "100vh",
+          minHeight: "100dvh",
           background: dark ? "#0e0d0a" : "#faf7f0",
           display: "flex",
           flexDirection: "column",
@@ -524,7 +524,7 @@ export const OnboardingScreen = ({
     return (
       <div
         style={{
-          minHeight: "100vh",
+          minHeight: "100dvh",
           background: dark ? "#0e0d0a" : "#faf7f0",
           display: "flex",
           flexDirection: "column",
@@ -788,7 +788,7 @@ export const OnboardingScreen = ({
   return (
     <div
       style={{
-        minHeight: "100vh",
+        minHeight: "100dvh",
         background: dark ? "#0e0d0a" : "#faf7f0",
         padding: "44px 24px 24px",
         display: "flex",
