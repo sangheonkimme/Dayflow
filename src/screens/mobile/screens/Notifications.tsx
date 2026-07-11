@@ -1,27 +1,23 @@
-import { useState } from "react";
 import styles from "@/screens/mobile/mobile.module.css";
 import { SectionHeader } from "@/screens/mobile/shared/SectionHeader";
 import { Ico } from "@/screens/mobile/shared/Ico";
 import { SubHeader } from "@/screens/mobile/shared/SubHeader";
 import { NotifToggleRow } from "@/screens/mobile/shared/NotifToggleRow";
 import { pressable } from "@/lib/a11y";
+import { usePreferences } from "@/data/preferences";
+import { NOTIFICATION_DEFAULTS } from "@/data/lookups";
+import type { NotificationPrefs } from "@/types";
 
-export const NotificationsScreen = ({ onBack }: any) => {
-  const [s, setS] = useState({
-    push: true,
-    daily: true,
-    weekly: true,
-    budget: true,
-    bigSpend: true,
-    subRenew: true,
-    cal30: true,
-    cal1d: false,
-    quietStart: "22:00",
-    quietEnd: "08:00",
-    quietOn: true,
-    sound: "기본",
-  });
-  const set = (k, v) => setS((p) => ({ ...p, [k]: v }));
+export const NotificationsScreen = ({ onBack }: { onBack: () => void }) => {
+  // 알림 설정은 usePreferences(persist + Supabase 동기화)에 저장 —
+  // 이전엔 로컬 useState 라 새로고침 시 초기화됐다. 사용자가 건드리기
+  // 전엔 blob 에 없고 NOTIFICATION_DEFAULTS 로 표시.
+  const [tweaks, setTweak] = usePreferences();
+  const s = tweaks.notifications ?? NOTIFICATION_DEFAULTS;
+  const set = <K extends keyof NotificationPrefs>(
+    k: K,
+    v: NotificationPrefs[K],
+  ) => setTweak("notifications", { ...s, [k]: v });
 
   return (
     <div>

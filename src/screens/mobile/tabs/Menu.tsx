@@ -3,16 +3,23 @@ import { SectionHeader } from "@/screens/mobile/shared/SectionHeader";
 import { IMAGE_TOOLS_PUBLIC } from "@/lib/feature-flags";
 import { pressable } from "@/lib/a11y";
 import { useAuth } from "@/data/auth";
+import { useSubscriptions, monthlyTotal } from "@/data/subscriptions";
+import { formatWon } from "@/lib/format";
 import styles from "@/screens/mobile/mobile.module.css";
 
 export const MobileMenu = ({ onNavigate, onProfile }: any) => {
   const { user } = useAuth();
+  const { all: subs } = useSubscriptions();
   const name = user?.displayName ?? user?.email?.split("@")[0] ?? "나비";
   const email = user?.email ?? "게스트";
   const avatarChar = (name[0] ?? "나").toUpperCase();
+  const activeSubs = subs.filter((s) => s.status === "active").length;
+  const subsSub = activeSubs
+    ? `${activeSubs}개 활성 · 이번 달 ${formatWon(monthlyTotal(subs))}`
+    : "구독을 추가해보세요";
   const links = [
     ["wallet", "가계부 상세", "거래 내역 · 카테고리 분석", "ledger"],
-    ["tag", "구독 관리", "12개 활성 · 이번 달 ₩47,000", "subs"],
+    ["tag", "구독 관리", subsSub, "subs"],
     ["coin", "연봉 계산기", "실수령액 · 4대 보험", null],
     ...(IMAGE_TOOLS_PUBLIC
       ? [

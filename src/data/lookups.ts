@@ -3,7 +3,7 @@
 // ============================================================
 
 import type { Mood } from "@/data/daily-log";
-import type { AccentColor, Tweaks } from "@/types";
+import type { AccentColor, NotificationPrefs, Tweaks } from "@/types";
 
 export interface MoodOption {
   emoji: string;
@@ -55,4 +55,26 @@ export const TWEAK_DEFAULTS: Tweaks = {
   authed: true,
   forceMobile: false,
   authPreview: "login",
+  // 모바일 테마 화면 기본값
+  font: "hand",
+  fontSize: 2,
+  listDensity: "comfy",
+  paperTexture: true,
+  haptics: true,
+};
+
+/** 알림 설정 기본값 — 사용자가 건드리기 전엔 blob 에 넣지 않고 이 값으로 표시. */
+export const NOTIFICATION_DEFAULTS: NotificationPrefs = {
+  push: true,
+  daily: true,
+  weekly: true,
+  budget: true,
+  bigSpend: true,
+  subRenew: true,
+  cal30: true,
+  cal1d: false,
+  quietOn: true,
+  quietStart: "22:00",
+  quietEnd: "08:00",
+  sound: "기본",
 };
