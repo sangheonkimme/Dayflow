@@ -111,7 +111,7 @@ export const ForgotScreen = ({
   return (
     <div
       style={{
-        minHeight: "100vh",
+        minHeight: "100dvh",
         background: bg,
         padding: "44px 24px 28px",
         display: "flex",

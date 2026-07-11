@@ -31,7 +31,20 @@ import { UpgradeSheet } from "@/screens/mobile/sheets/UpgradeSheet";
 // 메인 홈은 완성도 높게, 그 외 탭은 placeholder
 // ============================================================
 
-const MobileApp = ({ initialTab = "home" }: any) => {
+type MobileTab = "home" | "ledger" | "calendar" | "menu";
+/** 메뉴 스택으로 진입하는 하위 화면 라우트. */
+type MenuRoute = "subs" | "notif" | "profile" | "theme" | "calendar";
+type MobileRoute = MobileTab | MenuRoute;
+
+/** 시간대별 홈 인사말 — 하드코딩 "안녕하세요" 대체. */
+function greetingByHour(hour: number): string {
+  if (hour < 6) return "늦은 밤이에요 🌙";
+  if (hour < 12) return "좋은 아침이에요 ☀️";
+  if (hour < 18) return "좋은 오후예요 🌤️";
+  return "편안한 저녁이에요 🌆";
+}
+
+const MobileApp = ({ initialTab = "home" }: { initialTab?: MobileTab }) => {
   const { user } = useAuth();
   const userName =
     user?.displayName ?? user?.email?.split("@")[0] ?? "나비";
@@ -52,7 +65,7 @@ const MobileApp = ({ initialTab = "home" }: any) => {
     autoStart: false,
     vibrate: true,
   });
-  const [menuStack, setMenuStack] = useState<string[]>([]); // ["subs"], ["notif"]
+  const [menuStack, setMenuStack] = useState<MenuRoute[]>([]); // ["subs"], ["notif"]
   setOpenTxnRef(setOpenTxn);
 
   const onFab = () => {
@@ -67,23 +80,23 @@ const MobileApp = ({ initialTab = "home" }: any) => {
   };
 
   // when leaving menu tab, reset stack
-  const goTab = (t) => {
+  const goTab = (t: MobileTab) => {
     setTab(t);
     if (t !== "menu") setMenuStack([]);
   };
-  const pushMenu = (route) => setMenuStack((s) => [...s, route]);
+  const pushMenu = (route: MenuRoute) => setMenuStack((s) => [...s, route]);
   const popMenu = () => setMenuStack((s) => s.slice(0, -1));
 
-  // unified navigate — main tabs go to tabs, sub-routes (subs/notif/salary/loan/crop/pdf/calendar) push menu stack
-  const navigate = (route) => {
-    const tabs = ["home", "ledger", "calendar", "menu"];
-    if (tabs.includes(route)) {
-      goTab(route);
+  // unified navigate — main tabs go to tabs, sub-routes (subs/notif/calendar 등) push menu stack
+  const navigate = (route: MobileRoute) => {
+    const tabs: MobileTab[] = ["home", "ledger", "calendar", "menu"];
+    if ((tabs as string[]).includes(route)) {
+      goTab(route as MobileTab);
       return;
     }
     // calendar opens as a sub-route inside menu (since it's no longer a bottom tab)
     setTab("menu");
-    setMenuStack([route]);
+    setMenuStack([route as MenuRoute]);
   };
 
   const menuTop = menuStack[menuStack.length - 1];
@@ -132,14 +145,15 @@ const MobileApp = ({ initialTab = "home" }: any) => {
       MenuPage
     ) : null;
 
-  // top greeting differs per tab
-  const titleByTab = {
-    home: { greet: "안녕하세요 ☀️", name: `${userName}님` },
-    ledger: { greet: "11월의 흐름", name: "가계부" },
+  // top greeting differs per tab (월/시간대는 실시간 반영)
+  const now = new Date();
+  const titleByTab: Record<MobileTab, { greet: string; name: string }> = {
+    home: { greet: greetingByHour(now.getHours()), name: `${userName}님` },
+    ledger: { greet: `${now.getMonth() + 1}월의 흐름`, name: "가계부" },
     calendar: { greet: "이번 달 일정", name: "캘린더" },
     menu: { greet: "내 정보", name: "메뉴" },
   };
-  const subTitleByRoute = {
+  const subTitleByRoute: Record<MenuRoute, { greet: string; name: string }> = {
     subs: { greet: "매월 빠져나가는", name: "구독" },
     notif: { greet: "언제 알릴까요?", name: "알림" },
     profile: { greet: "내 정보 ·", name: "프로필" },
@@ -231,7 +245,7 @@ const MobileApp = ({ initialTab = "home" }: any) => {
       <SearchSheet
         open={searchOpen}
         onClose={() => setSearchOpen(false)}
-        onJump={(target) => {
+        onJump={(target: MobileRoute) => {
           setSearchOpen(false);
           navigate(target);
         }}

@@ -252,7 +252,7 @@ export const SearchSheet = ({ open, onClose, onJump }: any) => {
       />
       <div
         className={`${styles.dfmSheet} ${open ? styles.on : ""}`}
-        style={{ height: "92vh", maxHeight: "92vh" }}
+        style={{ height: "92dvh", maxHeight: "92dvh" }}
       >
         <div className={styles.dfmSheetGrip} />
         {/* search bar */}

@@ -1,18 +1,33 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import styles from "@/screens/mobile/mobile.module.css";
 import { EditProfileSheet } from "@/screens/mobile/sheets/EditProfileSheet";
 import { ChangePasswordSheet } from "@/screens/mobile/sheets/ChangePasswordSheet";
 import { SectionHeader } from "@/screens/mobile/shared/SectionHeader";
 import { Ico } from "@/screens/mobile/shared/Ico";
 import { SubHeader } from "@/screens/mobile/shared/SubHeader";
-import { DfmSwitch } from "@/screens/mobile/shared/DfmSwitch";
 import { useAuth } from "@/data/auth";
 import { useUserPlan } from "@/data/plan/useUserPlan";
+import { useTransactions } from "@/data/transactions";
+import {
+  buildTransactionsCsv,
+  triggerDownload,
+  exportFilename,
+} from "@/screens/settings/exportData";
 import { pressable } from "@/lib/a11y";
 
-export const ProfileScreen = ({ onBack, onUpgrade }: any) => {
+const APP_VERSION = process.env.NEXT_PUBLIC_APP_VERSION ?? "0.0.0";
+const DAY_MS = 86_400_000;
+
+export const ProfileScreen = ({
+  onBack,
+  onUpgrade,
+}: {
+  onBack: () => void;
+  onUpgrade: () => void;
+}) => {
   const { user, signOut } = useAuth();
   const { isPro } = useUserPlan();
+  const { all: txns } = useTransactions();
   const fallbackName = user?.displayName ?? user?.email?.split("@")[0] ?? "나비";
   const [name, setName] = useState(fallbackName);
   const [email] = useState(user?.email ?? "");
@@ -23,11 +38,33 @@ export const ProfileScreen = ({ onBack, onUpgrade }: any) => {
   const avatarChar = (fallbackName[0] ?? "나").toUpperCase();
   const [editOpen, setEditOpen] = useState(false);
   const [pwOpen, setPwOpen] = useState(false);
-  const stats = [
-    { label: "이번 달 입력", val: "84", unit: "건" },
-    { label: "기록 시작", val: "183", unit: "일째" },
-    { label: "연속 사용", val: "27", unit: "일" },
-  ];
+
+  // 실 거래 데이터 기반 통계 (하드코딩 84/183/27 대체)
+  const stats = useMemo(() => {
+    const now = new Date();
+    const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+    let monthCount = 0;
+    let first = "";
+    for (const t of txns) {
+      if (t.date.startsWith(monthKey)) monthCount++;
+      if (!first || t.date < first) first = t.date;
+    }
+    const daysSince = first
+      ? Math.floor((now.getTime() - new Date(`${first}T00:00:00`).getTime()) / DAY_MS) + 1
+      : 0;
+    return [
+      { label: "이번 달 입력", val: String(monthCount), unit: "건" },
+      { label: "전체 기록", val: String(txns.length), unit: "건" },
+      { label: "기록 시작", val: String(daysSince), unit: "일째" },
+    ];
+  }, [txns]);
+
+  const exportCsv = () =>
+    triggerDownload(
+      exportFilename("dayflow-transactions", "csv"),
+      buildTransactionsCsv(txns),
+      "text/csv",
+    );
   const Row = ({ ico, title, sub, right, last, onClick, danger }: any) => (
     <div
       {...(onClick ? pressable(onClick) : {})}
@@ -243,15 +280,13 @@ export const ProfileScreen = ({ onBack, onUpgrade }: any) => {
         <Row
           ico="bell"
           title="이메일"
-          sub={email}
+          sub={email || "로그인 필요"}
           onClick={() => setEditOpen(true)}
         />
-        <Row ico="tag" title="비밀번호 변경" onClick={() => setPwOpen(true)} />
         <Row
-          ico="cloud"
-          title="연결된 계정"
-          sub="Apple · Google"
-          onClick={() => {}}
+          ico="tag"
+          title="비밀번호 변경"
+          onClick={() => setPwOpen(true)}
           last
         />
       </div>
@@ -261,20 +296,25 @@ export const ProfileScreen = ({ onBack, onUpgrade }: any) => {
       <div className={styles.dfmCard} style={{ padding: 0, marginBottom: 14 }}>
         <Row
           ico="cloud"
-          title="iCloud 동기화"
-          right={<DfmSwitch on={true} />}
+          title="클라우드 동기화"
+          sub={user ? "Supabase 계정에 저장돼요" : "로그인하면 자동 저장돼요"}
+          right={
+            <span
+              style={{
+                fontSize: 12,
+                fontWeight: 600,
+                color: user ? "var(--ink)" : "var(--ink-mute)",
+              }}
+            >
+              {user ? "동기화됨" : "꺼짐"}
+            </span>
+          }
         />
         <Row
           ico="doc"
           title="데이터 내보내기"
-          sub="CSV · JSON"
-          onClick={() => {}}
-        />
-        <Row
-          ico="refresh"
-          title="백업 및 복원"
-          sub="마지막 백업 · 어제 23:00"
-          onClick={() => {}}
+          sub="거래내역 CSV"
+          onClick={exportCsv}
           last
         />
       </div>
@@ -292,13 +332,18 @@ export const ProfileScreen = ({ onBack, onUpgrade }: any) => {
                 fontFamily: "var(--mono)",
               }}
             >
-              2.4.1
+              v{APP_VERSION}
             </span>
           }
         />
-        <Row title="이용약관" onClick={() => {}} />
-        <Row title="개인정보 처리방침" onClick={() => {}} />
-        <Row title="문의하기" sub="help@dayflow.app" onClick={() => {}} last />
+        <Row
+          title="문의하기"
+          sub="help@dayflow.app"
+          onClick={() => {
+            window.location.href = "mailto:help@dayflow.app";
+          }}
+          last
+        />
       </div>
 
       <div className={styles.dfmCard} style={{ padding: 0, marginBottom: 14 }}>
@@ -322,7 +367,7 @@ export const ProfileScreen = ({ onBack, onUpgrade }: any) => {
         onClose={() => setEditOpen(false)}
         initialName={name}
         email={email}
-        onSave={(v) => {
+        onSave={(v: string) => {
           setName(v);
           setEditOpen(false);
         }}
@@ -335,5 +380,3 @@ export const ProfileScreen = ({ onBack, onUpgrade }: any) => {
     </div>
   );
 };
-
-// reusable switch (matches NotifToggleRow style)

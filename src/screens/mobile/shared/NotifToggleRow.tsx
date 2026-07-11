@@ -1,7 +1,23 @@
 import { Ico } from "@/screens/mobile/shared/Ico";
 import styles from "@/screens/mobile/mobile.module.css";
 
-export const NotifToggleRow = ({ ico, title, sub, value, onChange, last }: any) => {
+type NotifToggleRowProps = {
+  ico?: string;
+  title: string;
+  sub?: string;
+  value: boolean;
+  onChange: (value: boolean) => void;
+  last?: boolean;
+};
+
+export const NotifToggleRow = ({
+  ico,
+  title,
+  sub,
+  value,
+  onChange,
+  last,
+}: NotifToggleRowProps) => {
   return (
     <div
       style={{

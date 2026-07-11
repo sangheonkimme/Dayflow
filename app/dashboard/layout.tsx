@@ -156,12 +156,23 @@ export default function AppLayout({
   }
 
   // 모바일 — MobileApp 단일 진입. 라우트 분기는 내부 탭으로.
+  // 동적 뷰포트 높이(100dvh) flex 컬럼: DemoBanner(있으면) 가 자기 높이를
+  // 차지하고 MobileApp 셸(.dfm flex:1)이 나머지를 채운다 → 탭바가 항상 화면
+  // 하단에 고정. iOS Safari 주소창 토글에도 튀지 않음.
   if (isMobile) {
     return (
       <Suspense fallback={<PageFallback />}>
         <UpgradeReturnWatcher />
-        <DemoBanner />
-        <MobileApp initialTab="home" />
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            height: "100dvh",
+          }}
+        >
+          <DemoBanner />
+          <MobileApp initialTab="home" />
+        </div>
         {showDevTweaks && <Tweaks tweaks={tweaks} setTweak={setTweak} />}
       </Suspense>
     );
