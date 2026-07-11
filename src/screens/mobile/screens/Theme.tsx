@@ -1,4 +1,3 @@
-import { useState } from "react";
 import styles from "@/screens/mobile/mobile.module.css";
 import { NotifToggleRow } from "@/screens/mobile/shared/NotifToggleRow";
 import { SectionHeader } from "@/screens/mobile/shared/SectionHeader";
@@ -6,24 +5,21 @@ import { Ico } from "@/screens/mobile/shared/Ico";
 import { SubHeader } from "@/screens/mobile/shared/SubHeader";
 import { pressable } from "@/lib/a11y";
 import { usePreferences } from "@/data/preferences";
-import type { AccentColor } from "@/types";
+import type { AccentColor, MobileFont, FontScale, ListDensity } from "@/types";
 
-export const ThemeScreen = ({ onBack }: any) => {
-  // 다크 모드·포인트 컬러는 데스크톱 Settings(Appearance)와 동일한 소스를
-  // 공유한다 — usePreferences(Zustand+persist, 로그인 시 Supabase 동기화).
-  // AppLayout 의 effect 가 body.dark / --yellow 를 토글하므로 모바일에서도
-  // 즉시 앱 전역에 반영된다. (이전엔 로컬 useState 라 아무 효과 없는 가짜
-  // 컨트롤이었다.)
+export const ThemeScreen = ({ onBack }: { onBack: () => void }) => {
+  // 모든 설정은 usePreferences(Zustand+persist, 로그인 시 Supabase 동기화)로
+  // 저장된다 — 다크/포인트 컬러는 AppLayout effect 가 body.dark / --yellow 에
+  // 즉시 반영하고, 폰트·글자크기·간격 등은 이 화면의 미리보기에 반영된다.
+  // (이전엔 폰트·크기·간격·질감·햅틱이 로컬 useState 라 새로고침 시 리셋됐다.)
   const [tweaks, setTweak] = usePreferences();
   const mode = tweaks.dark ? "dark" : "light";
   const accent = tweaks.accent;
-  // 폰트·글자크기·간격·종이질감·햅틱은 데스크톱에서도 미저장(미리보기 전용)
-  // 이라 로컬 상태로 유지한다 — 실제 저장 로직이 생기면 그때 공유 소스로 승격.
-  const [font, setFont] = useState("hand"); // hand | sans | serif
-  const [size, setSize] = useState(2); // 1..4
-  const [density, setDensity] = useState("comfy"); // cozy | comfy | compact
-  const [paper, setPaper] = useState(true);
-  const [haptics, setHaptics] = useState(true);
+  const font = tweaks.font ?? "hand";
+  const size = tweaks.fontSize ?? 2;
+  const density = tweaks.listDensity ?? "comfy";
+  const paper = tweaks.paperTexture ?? true;
+  const haptics = tweaks.haptics ?? true;
 
   // 포인트 컬러는 데스크톱과 동일한 정규 팔레트(AccentColor)만 사용 —
   // 선택값이 그대로 persist 되고 앱 전역에 적용되도록.
@@ -34,6 +30,36 @@ export const ThemeScreen = ({ onBack }: any) => {
     { id: "lilac", name: "라일락", color: "#d4c1f0" },
   ];
   const sizes = ["작게", "보통", "크게", "더 크게"];
+  const fontOptions: {
+    id: MobileFont;
+    label: string;
+    sub: string;
+    style: { fontFamily: string };
+  }[] = [
+    {
+      id: "hand",
+      label: "핸드라이팅",
+      sub: "기본 · 나만의 노트 느낌",
+      style: { fontFamily: "var(--hand)" },
+    },
+    {
+      id: "sans",
+      label: "산세리프",
+      sub: "깔끔하고 또렷한 본문",
+      style: { fontFamily: "system-ui, -apple-system, sans-serif" },
+    },
+    {
+      id: "serif",
+      label: "세리프",
+      sub: "차분하고 클래식",
+      style: { fontFamily: "Georgia, 'Times New Roman', serif" },
+    },
+  ];
+  const densities: { id: ListDensity; label: string; bars: number[] }[] = [
+    { id: "cozy", label: "넉넉", bars: [16, 16, 16] },
+    { id: "comfy", label: "보통", bars: [12, 12, 12] },
+    { id: "compact", label: "압축", bars: [8, 8, 8] },
+  ];
 
   // ── PREVIEW ──
   const previewBg = mode === "dark" ? "#1f1d18" : "var(--bg-paper)";
@@ -239,29 +265,10 @@ export const ThemeScreen = ({ onBack }: any) => {
       {/* font family */}
       <SectionHeader title="폰트" />
       <div className={styles.dfmCard} style={{ padding: 0, marginBottom: 14 }}>
-        {[
-          {
-            id: "hand",
-            label: "핸드라이팅",
-            sub: "기본 · 나만의 노트 느낌",
-            style: { fontFamily: "var(--hand)" },
-          },
-          {
-            id: "sans",
-            label: "산세리프",
-            sub: "깔끔하고 또렷한 본문",
-            style: { fontFamily: "system-ui, -apple-system, sans-serif" },
-          },
-          {
-            id: "serif",
-            label: "세리프",
-            sub: "차분하고 클래식",
-            style: { fontFamily: "Georgia, 'Times New Roman', serif" },
-          },
-        ].map((f, i, arr) => (
+        {fontOptions.map((f, i, arr) => (
           <div
             key={f.id}
-            {...pressable(() => setFont(f.id))}
+            {...pressable(() => setTweak("font", f.id))}
             style={{
               display: "flex",
               alignItems: "center",
@@ -347,10 +354,10 @@ export const ThemeScreen = ({ onBack }: any) => {
                 borderRadius: 999,
               }}
             />
-            {[1, 2, 3, 4].map((n) => (
+            {([1, 2, 3, 4] as FontScale[]).map((n) => (
               <button
                 key={n}
-                onClick={() => setSize(n)}
+                onClick={() => setTweak("fontSize", n)}
                 style={{
                   position: "absolute",
                   left: `${((n - 1) / 3) * 100}%`,
@@ -401,14 +408,10 @@ export const ThemeScreen = ({ onBack }: any) => {
             gap: 4,
           }}
         >
-          {[
-            { id: "cozy", label: "넉넉", bars: [16, 16, 16] },
-            { id: "comfy", label: "보통", bars: [12, 12, 12] },
-            { id: "compact", label: "압축", bars: [8, 8, 8] },
-          ].map((d) => (
+          {densities.map((d) => (
             <button
               key={d.id}
-              onClick={() => setDensity(d.id)}
+              onClick={() => setTweak("listDensity", d.id)}
               style={{
                 padding: "12px 8px",
                 borderRadius: 10,
@@ -460,14 +463,14 @@ export const ThemeScreen = ({ onBack }: any) => {
           title="종이 질감 배경"
           sub="살짝 도트 무늬 표시"
           value={paper}
-          onChange={setPaper}
+          onChange={(v: boolean) => setTweak("paperTexture", v)}
         />
         <NotifToggleRow
           ico="bell"
           title="햅틱 피드백"
           sub="탭에 진동"
           value={haptics}
-          onChange={setHaptics}
+          onChange={(v: boolean) => setTweak("haptics", v)}
           last
         />
       </div>

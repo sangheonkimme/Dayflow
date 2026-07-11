@@ -146,6 +146,27 @@ export type NoteStyle = "tilted" | "flat";
 export type Density = "comfy" | "compact";
 export type AuthPreviewView = "login" | "signup" | "onboarding" | "forgot";
 
+// 모바일 테마 화면 환경설정 (usePreferences 로 persist + Supabase 동기화)
+export type MobileFont = "hand" | "sans" | "serif";
+export type FontScale = 1 | 2 | 3 | 4;
+export type ListDensity = "cozy" | "comfy" | "compact";
+
+/** 알림 설정 — 모바일/PC 공유 스키마. preferences blob 에 저장. */
+export interface NotificationPrefs {
+  push: boolean;
+  daily: boolean;
+  weekly: boolean;
+  budget: boolean;
+  bigSpend: boolean;
+  subRenew: boolean;
+  cal30: boolean;
+  cal1d: boolean;
+  quietOn: boolean;
+  quietStart: string;
+  quietEnd: string;
+  sound: string;
+}
+
 export interface Tweaks {
   dark: boolean;
   accent: AccentColor;
@@ -160,6 +181,14 @@ export interface Tweaks {
   payday?: number;
   paydayType?: "fixed" | "lastDay" | "firstDay";
   cycleStart?: "payday" | "1st" | "custom";
+  // 모바일 테마 화면 (폰트·글자크기·목록 간격·종이질감·햅틱)
+  font?: MobileFont;
+  fontSize?: FontScale;
+  listDensity?: ListDensity;
+  paperTexture?: boolean;
+  haptics?: boolean;
+  // 알림 설정 (모바일/PC 공유)
+  notifications?: NotificationPrefs;
   [extra: string]: unknown;
 }
 
