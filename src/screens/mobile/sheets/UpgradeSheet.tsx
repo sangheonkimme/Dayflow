@@ -1,19 +1,21 @@
 import { useState, useEffect } from "react";
 import { Ico } from "@/screens/mobile/shared/Ico";
 import styles from "@/screens/mobile/mobile.module.css";
+import { useCheckout } from "@/lib/payments/useCheckout";
+import type { CheckoutBilling } from "@/lib/payments/types";
 
 export const UpgradeSheet = ({ open, onClose }: any) => {
-  const [plan, setPlan] = useState("year"); // month | year
-  const [confirmed, setConfirmed] = useState(false);
+  const [plan, setPlan] = useState<CheckoutBilling>("year"); // month | year
+  const { busy, notice, start, reset } = useCheckout();
   useEffect(() => {
     if (!open) {
       const t = setTimeout(() => {
-        setConfirmed(false);
         setPlan("year");
+        reset();
       }, 250);
       return () => clearTimeout(t);
     }
-  }, [open]);
+  }, [open, reset]);
 
   const features = [
     {
@@ -85,8 +87,7 @@ export const UpgradeSheet = ({ open, onClose }: any) => {
           className={styles.dfmSheetBody}
           style={{ padding: "0 18px 22px", overflowY: "auto" }}
         >
-          {!confirmed && (
-            <>
+          <>
               {/* hero */}
               <div style={{ textAlign: "center", padding: "8px 0 22px" }}>
                 <div
@@ -191,7 +192,7 @@ export const UpgradeSheet = ({ open, onClose }: any) => {
                 {plans.map((p) => (
                   <button
                     key={p.id}
-                    onClick={() => setPlan(p.id)}
+                    onClick={() => setPlan(p.id as CheckoutBilling)}
                     style={{
                       position: "relative",
                       padding: "16px 14px",
@@ -285,7 +286,8 @@ export const UpgradeSheet = ({ open, onClose }: any) => {
 
               {/* CTA */}
               <button
-                onClick={() => setConfirmed(true)}
+                onClick={() => start(plan)}
+                disabled={busy}
                 style={{
                   width: "100%",
                   padding: "16px 0",
@@ -295,7 +297,8 @@ export const UpgradeSheet = ({ open, onClose }: any) => {
                   color: "#ffd84d",
                   fontWeight: 800,
                   fontSize: 14,
-                  cursor: "pointer",
+                  cursor: busy ? "default" : "pointer",
+                  opacity: busy ? 0.7 : 1,
                   boxShadow: "0 4px 14px rgba(40,30,10,0.18)",
                   display: "flex",
                   alignItems: "center",
@@ -304,8 +307,25 @@ export const UpgradeSheet = ({ open, onClose }: any) => {
                 }}
               >
                 <Ico name="coin" size={16} />
-                3일 무료 체험 시작
+                {busy ? "이동 중…" : "3일 무료 체험 시작"}
               </button>
+              {notice && (
+                <div
+                  role="status"
+                  style={{
+                    marginTop: 10,
+                    textAlign: "center",
+                    fontSize: 12,
+                    color: "var(--ink)",
+                    background: "var(--yellow)",
+                    border: "1px solid var(--yellow-edge)",
+                    borderRadius: 10,
+                    padding: "8px 10px",
+                  }}
+                >
+                  {notice}
+                </div>
+              )}
               <small
                 style={{
                   display: "block",
@@ -322,101 +342,6 @@ export const UpgradeSheet = ({ open, onClose }: any) => {
                 약관 · 개인정보처리방침 · 환불정책
               </small>
             </>
-          )}
-
-          {confirmed && (
-            <div style={{ padding: "22px 0", textAlign: "center" }}>
-              <div
-                style={{
-                  width: 72,
-                  height: 72,
-                  borderRadius: 24,
-                  margin: "0 auto 18px",
-                  background: "var(--mint, #b9e7c9)",
-                  display: "grid",
-                  placeItems: "center",
-                  boxShadow: "0 8px 24px rgba(40,30,10,0.12)",
-                }}
-              >
-                <Ico name="check" size={32} />
-              </div>
-              <h2
-                style={{
-                  fontSize: 22,
-                  fontWeight: 800,
-                  margin: "0 0 8px",
-                  fontFamily: "var(--hand)",
-                }}
-              >
-                Pro에 오신 것을 환영해요!
-              </h2>
-              <small
-                style={{
-                  fontSize: 12,
-                  color: "var(--ink-mute)",
-                  display: "block",
-                  marginBottom: 22,
-                }}
-              >
-                3일 무료 체험이 시작됐어요 · {plan === "year" ? "연간" : "월간"}{" "}
-                플랜
-              </small>
-
-              <div
-                className={styles.dfmCard}
-                style={{
-                  padding: "14px 16px",
-                  marginBottom: 18,
-                  textAlign: "left",
-                  background: "var(--yellow)",
-                  borderColor: "var(--yellow-edge)",
-                }}
-              >
-                <small
-                  style={{
-                    fontSize: 10,
-                    color: "var(--ink-mute)",
-                    letterSpacing: 0.5,
-                    fontWeight: 700,
-                    textTransform: "uppercase",
-                  }}
-                >
-                  다음 결제일
-                </small>
-                <div
-                  style={{
-                    fontSize: 16,
-                    fontWeight: 700,
-                    fontFamily: "var(--mono)",
-                    margin: "4px 0 2px",
-                  }}
-                >
-                  2026년 11월 9일
-                </div>
-                <small style={{ fontSize: 11, color: "var(--ink-mute)" }}>
-                  {plan === "year" ? "₩39,000 / 년 (연간)" : "₩3,900 / 월"} ·
-                  Apple ID로 결제
-                </small>
-              </div>
-
-              <button
-                onClick={onClose}
-                style={{
-                  width: "100%",
-                  padding: "14px 0",
-                  borderRadius: 12,
-                  border: "none",
-                  background: "var(--ink)",
-                  color: "var(--bg-paper)",
-                  fontWeight: 700,
-                  fontSize: 13,
-                  cursor: "pointer",
-                }}
-              >
-                Pro 기능 둘러보기
-              </button>
-            </div>
-          )}
         </div>
       </div>
     </>

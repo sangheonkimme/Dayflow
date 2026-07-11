@@ -62,6 +62,14 @@ SENTRY_AUTH_TOKEN=          # 소스맵 업로드용 (빌드 시에만)
 # 결제 webhook 서명 시크릿 (HMAC-SHA256). 비우면 해당 라우트 503.
 TOSS_WEBHOOK_SECRET=
 LEMONSQUEEZY_WEBHOOK_SECRET=
+
+# 결제 처리·시작. service-role 은 webhook 이 plan 갱신에 사용(⚠️ 클라 노출 금지).
+# LEMONSQUEEZY_* 비우면 /api/checkout 은 501(준비 중).
+SUPABASE_SERVICE_ROLE_KEY=
+LEMONSQUEEZY_API_KEY=
+LEMONSQUEEZY_STORE_ID=
+LEMONSQUEEZY_VARIANT_ID=
+LEMONSQUEEZY_VARIANT_ID_YEARLY=
 ```
 
 - **샘플링**: dev 트레이스 100% / prod 10%. Session Replay 미포함.
@@ -80,19 +88,33 @@ supabase db push
 # 또는 대시보드 SQL Editor 에 0011_profiles_plan.sql 내용 붙여넣기
 ```
 
-적용 후 `useUserPlan()`(클라) / `fetchUserPlan()`(RSC) 이 실제 값을 읽는다. 현 스프린트는 UI 미적용(훅·컬럼만 준비).
+적용 후 `useUserPlan()`(클라) / `fetchUserPlan()`(RSC) 이 실제 값을 읽는다.
 
-### 결제 webhook 테스트 (C3)
+### 결제 플로우 (LemonSqueezy)
+
+```
+업그레이드 버튼 → POST /api/checkout (인증 유저, user_id 를 custom_data 에)
+  → LemonSqueezy hosted checkout 로 redirect → 결제
+  → LS webhook(POST /api/webhooks/lemonsqueezy, 서명검증) → profiles.plan = 'pro'
+  → /dashboard?upgraded=1 복귀 → plan 캐시 무효화 → UI 반영(배지/배너)
+```
+
+LemonSqueezy 설정: **Store ID · Variant ID**(Products → Variant), **API Key**(Settings → API),
+**Webhook**(Settings → Webhooks → URL `https://<도메인>/api/webhooks/lemonsqueezy`, signing secret → `LEMONSQUEEZY_WEBHOOK_SECRET`).
+Toss 는 수신부(webhook) stub 만 — 발신(체크아웃)은 LS 우선.
+
+### 결제 webhook 테스트
 
 서명 시크릿을 `.env` 에 넣고 dev 서버(`pnpm dev`) 기동 후:
 
 ```bash
 # 서명 생성 → 요청 (Toss 예시, LemonSqueezy 는 X-Signature + /lemonsqueezy)
-BODY='{"eventType":"PAYMENT.DONE","data":{}}'
+BODY='{"eventType":"PAYMENT.DONE","data":{"metadata":{"user_id":"<UUID>"}}}'
 SIG=$(printf '%s' "$BODY" | openssl dgst -sha256 -hmac "$TOSS_WEBHOOK_SECRET" | awk '{print $2}')
 curl -i -X POST http://localhost:3000/api/webhooks/toss \
   -H "Content-Type: application/json" -H "Toss-Signature: $SIG" -d "$BODY"
 # → 200 {"received":true}.  서명 불일치 401 · JSON 파싱 실패 400 · 시크릿 미설정 503.
+# user_id 없거나 service-role 미설정이면 200 ack + 서버 로그 경고(plan 미변경).
 ```
 
 ## 폴더 구조

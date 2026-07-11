@@ -21,6 +21,7 @@ import {
   TweakRadio,
 } from "@/components/TweaksPanel";
 import { DemoBanner } from "@/components/DemoBanner";
+import { UpgradeReturnWatcher } from "@/components/UpgradeReturnWatcher";
 import { TxnModal } from "@/screens/ledger/TxnModal";
 import { EventModal } from "@/screens/calendar/EventModal";
 import { useMediaQuery } from "@/lib/useMediaQuery";
@@ -161,6 +162,7 @@ export default function AppLayout({
   if (isMobile) {
     return (
       <Suspense fallback={<PageFallback />}>
+        <UpgradeReturnWatcher />
         <div
           style={{
             display: "flex",
@@ -178,6 +180,7 @@ export default function AppLayout({
 
   return (
     <>
+      <UpgradeReturnWatcher />
       <DemoBanner />
       <div className="app">
         <Sidebar

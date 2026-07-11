@@ -6,6 +6,7 @@ import { SectionHeader } from "@/screens/mobile/shared/SectionHeader";
 import { Ico } from "@/screens/mobile/shared/Ico";
 import { SubHeader } from "@/screens/mobile/shared/SubHeader";
 import { useAuth } from "@/data/auth";
+import { useUserPlan } from "@/data/plan/useUserPlan";
 import { useTransactions } from "@/data/transactions";
 import {
   buildTransactionsCsv,
@@ -25,6 +26,7 @@ export const ProfileScreen = ({
   onUpgrade: () => void;
 }) => {
   const { user, signOut } = useAuth();
+  const { isPro } = useUserPlan();
   const { all: txns } = useTransactions();
   const fallbackName = user?.displayName ?? user?.email?.split("@")[0] ?? "나비";
   const [name, setName] = useState(fallbackName);
@@ -180,7 +182,8 @@ export const ProfileScreen = ({
             fontWeight: 600,
           }}
         >
-          <Ico name="tag" size={11} /> 무료 플랜
+          <Ico name={isPro ? "coin" : "tag"} size={11} />{" "}
+          {isPro ? "Pro 플랜" : "무료 플랜"}
         </div>
       </div>
 
@@ -228,7 +231,8 @@ export const ProfileScreen = ({
         ))}
       </div>
 
-      {/* upgrade banner */}
+      {/* upgrade banner — Pro 사용자에겐 숨김 */}
+      {!isPro && (
       <button
         onClick={onUpgrade}
         className={styles.dfmCard}
@@ -268,6 +272,7 @@ export const ProfileScreen = ({
         </div>
         <Ico name="chevR" size={14} />
       </button>
+      )}
 
       {/* account */}
       <SectionHeader title="계정" />

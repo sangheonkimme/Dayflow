@@ -4,6 +4,8 @@
 // 검증 테스트(curl 예시)는 README.md 참고.
 import { NextResponse } from "next/server";
 import { verifyHmacSha256 } from "@/lib/webhooks/verify";
+import { setUserPlan } from "@/lib/payments/plan-sync";
+import type { PlanTier } from "@/data/plan/types";
 
 // node:crypto(timingSafeEqual) 사용 — Edge 런타임 미지원 가능성 차단.
 export const runtime = "nodejs";
@@ -13,7 +15,22 @@ const SIGNATURE_HEADER = "toss-signature";
 
 interface TossWebhookEvent {
   eventType?: string;
-  data?: Record<string, unknown>;
+  data?: { metadata?: { user_id?: string } };
+}
+
+// Toss 이벤트 → 목표 플랜. null = 플랜 영향 없는 이벤트.
+// ⚠️ 발신부(체크아웃 생성)는 아직 LemonSqueezy 만 구현 — Toss 는 stub.
+//    실 연동 시 Toss 결제 요청의 metadata 에 Supabase user_id 를 실어야 아래가 동작.
+function planForEvent(eventType: string | undefined): PlanTier | null {
+  switch (eventType) {
+    case "PAYMENT.DONE":
+      return "pro";
+    case "PAYMENT.CANCELED":
+    case "SUBSCRIPTION.CANCELED":
+      return "free";
+    default:
+      return null;
+  }
 }
 
 export async function POST(req: Request) {
@@ -39,20 +56,28 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "invalid json" }, { status: 400 });
   }
 
-  // 이벤트 타입 분기 — 실제 처리(profiles.plan 갱신)는 다음 스프린트 TODO.
-  switch (event.eventType) {
-    case "PAYMENT.DONE":
-      // TODO(payments): 결제 완료 → 해당 사용자 profiles.plan = 'pro', plan_updated_at = now().
-      break;
-    case "PAYMENT.CANCELED":
-    case "SUBSCRIPTION.CANCELED":
-      // TODO(payments): 취소/환불 → profiles.plan = 'free'.
-      break;
-    default:
-      // 미처리 이벤트도 200 으로 ack — 재전송 폭주 방지.
-      break;
+  const eventType = event.eventType ?? "unknown";
+  const targetPlan = planForEvent(event.eventType);
+
+  if (targetPlan) {
+    const userId = event.data?.metadata?.user_id;
+    const result = await setUserPlan(
+      typeof userId === "string" ? userId : null,
+      targetPlan,
+    );
+    if (!result.ok) {
+      console.warn(
+        `[webhook:toss] ${eventType} → plan ${targetPlan} skipped: ${result.reason}`,
+      );
+      if (result.reason === "db_error") {
+        return NextResponse.json({ error: "db_error" }, { status: 500 });
+      }
+    } else {
+      console.info(`[webhook:toss] ${eventType} → plan set ${targetPlan}`);
+    }
+  } else {
+    console.info(`[webhook:toss] received ${eventType} (no-op)`);
   }
 
-  console.info(`[webhook:toss] received ${event.eventType ?? "unknown"}`);
   return NextResponse.json({ received: true });
 }
