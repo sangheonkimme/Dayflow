@@ -44,6 +44,16 @@ export const metadata: Metadata = {
   description:
     "디지털로 옮긴 종이 책상. 가계부·달력·메모·체크리스트를 한 화면에서.",
   applicationName: "Dayflow",
+  // app/manifest.ts 존재 시 Next 가 <link rel="manifest"> 를 자동 주입.
+  // iOS 홈화면 추가 시 standalone 웹앱으로 동작. apple-touch-icon 은
+  // app/apple-icon.tsx 가 자동 주입. statusBarStyle "default" — 밝은 종이
+  // 테마라 불투명 상태바(검은 글자)가 안전 (black-translucent 는 흰 글자라
+  // 밝은 헤더 위에서 안 보임).
+  appleWebApp: {
+    capable: true,
+    title: "Dayflow",
+    statusBarStyle: "default",
+  },
   openGraph: {
     title: "Dayflow",
     description: "하루를, 종이에 적던 그대로.",
