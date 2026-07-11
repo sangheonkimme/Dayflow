@@ -48,6 +48,53 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=
 
 키 발급: [Supabase 대시보드](https://app.supabase.com) → 프로젝트 → Settings → API
 
+### 관측 · 결제 (선택)
+
+전부 비워두면 완전 no-op — 로컬/미설정 환경에서 아무 영향 없음.
+
+```env
+# Sentry (에러 관측). DSN 비우면 SDK 전송·빌드 래핑 모두 스킵.
+NEXT_PUBLIC_SENTRY_DSN=
+SENTRY_ORG=
+SENTRY_PROJECT=
+SENTRY_AUTH_TOKEN=          # 소스맵 업로드용 (빌드 시에만)
+
+# 결제 webhook 서명 시크릿 (HMAC-SHA256). 비우면 해당 라우트 503.
+TOSS_WEBHOOK_SECRET=
+LEMONSQUEEZY_WEBHOOK_SECRET=
+```
+
+- **샘플링**: dev 트레이스 100% / prod 10%. Session Replay 미포함.
+- **PII**: `sendDefaultPii: false`. 로그인 사용자 `id`/`email` 만 명시적으로 컨텍스트에 부착.
+- **environment 태그**: Vercel `VERCEL_ENV`(preview/production) 우선, 로컬은 `NODE_ENV`.
+
+### 플랜 컬럼 마이그레이션 적용 (P6)
+
+`supabase/migrations/0011_profiles_plan.sql` 은 `profiles` 에 `plan`(free|pro) + `plan_updated_at` 을 추가한다.
+**자동 적용 안 됨** — 검토 후 아래 중 하나로 적용:
+
+```bash
+# Supabase CLI (로컬 → 원격 push)
+supabase db push
+
+# 또는 대시보드 SQL Editor 에 0011_profiles_plan.sql 내용 붙여넣기
+```
+
+적용 후 `useUserPlan()`(클라) / `fetchUserPlan()`(RSC) 이 실제 값을 읽는다. 현 스프린트는 UI 미적용(훅·컬럼만 준비).
+
+### 결제 webhook 테스트 (C3)
+
+서명 시크릿을 `.env` 에 넣고 dev 서버(`pnpm dev`) 기동 후:
+
+```bash
+# 서명 생성 → 요청 (Toss 예시, LemonSqueezy 는 X-Signature + /lemonsqueezy)
+BODY='{"eventType":"PAYMENT.DONE","data":{}}'
+SIG=$(printf '%s' "$BODY" | openssl dgst -sha256 -hmac "$TOSS_WEBHOOK_SECRET" | awk '{print $2}')
+curl -i -X POST http://localhost:3000/api/webhooks/toss \
+  -H "Content-Type: application/json" -H "Toss-Signature: $SIG" -d "$BODY"
+# → 200 {"received":true}.  서명 불일치 401 · JSON 파싱 실패 400 · 시크릿 미설정 503.
+```
+
 ## 폴더 구조
 
 ```
