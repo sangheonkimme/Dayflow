@@ -2,12 +2,15 @@ import { useState } from "react";
 import { Ico } from "@/screens/mobile/shared/Ico";
 import { useEvents } from "@/data/events";
 import { toLocalYmd } from "@/lib/date";
+import { useEscapeKey } from "@/lib/useEscapeKey";
 import { parseEvent, fmtDate, fmtTime, CAT_COLOR } from "@/lib/event-parse";
 import styles from "@/screens/mobile/mobile.module.css";
 
 export const AddEventSheet = ({ open, onClose }: any) => {
+  useEscapeKey(() => onClose?.(), !!open);
   const { upsert } = useEvents();
-  const todayStr = new Date().toISOString().slice(0, 10);
+  // toISOString 은 UTC — KST 오전 9시 전엔 어제가 나오므로 로컬 기준 사용
+  const todayStr = toLocalYmd(new Date());
   const [quick, setQuick] = useState("");
   const [title, setTitle] = useState("");
   const [cat, setCat] = useState("업무");
@@ -74,14 +77,19 @@ export const AddEventSheet = ({ open, onClose }: any) => {
         className={`${styles.dfmSheetScrim} ${open ? styles.on : ""}`}
         onClick={onClose}
       />
-      <div className={`${styles.dfmSheet} ${open ? styles.on : ""}`}>
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="새 일정 추가"
+        className={`${styles.dfmSheet} ${open ? styles.on : ""}`}
+      >
         <div className={styles.dfmSheetGrip} />
         <div className={styles.dfmSheetHead}>
           <div className={styles.ttl}>
             새 일정 추가<small>{dispDate}</small>
           </div>
-          <button className={styles.close} onClick={onClose}>
-            <Ico name="plus" size={18} />
+          <button className={styles.close} onClick={onClose} aria-label="닫기">
+            <Ico name="close" size={18} />
           </button>
         </div>
 

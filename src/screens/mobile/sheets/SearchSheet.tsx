@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import { Ico } from "@/screens/mobile/shared/Ico";
 import { IMAGE_TOOLS_PUBLIC } from "@/lib/feature-flags";
+import { useEscapeKey } from "@/lib/useEscapeKey";
 import styles from "@/screens/mobile/mobile.module.css";
 
 export const SearchSheet = ({ open, onClose, onJump }: any) => {
+  useEscapeKey(() => onClose?.(), !!open);
   const [q, setQ] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
@@ -251,8 +253,10 @@ export const SearchSheet = ({ open, onClose, onJump }: any) => {
         onClick={onClose}
       />
       <div
-        className={`${styles.dfmSheet} ${open ? styles.on : ""}`}
-        style={{ height: "92dvh", maxHeight: "92dvh" }}
+        role="dialog"
+        aria-modal="true"
+        aria-label="검색"
+        className={`${styles.dfmSheet} ${styles.dfmSheetXL} ${open ? styles.on : ""}`}
       >
         <div className={styles.dfmSheetGrip} />
         {/* search bar */}

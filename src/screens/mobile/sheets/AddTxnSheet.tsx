@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { Ico } from "@/screens/mobile/shared/Ico";
+import { useEscapeKey } from "@/lib/useEscapeKey";
 import styles from "@/screens/mobile/mobile.module.css";
 
 export const AddTxnSheet = ({ open, onClose }: any) => {
+  useEscapeKey(() => onClose?.(), !!open);
   const [type, setType] = useState("out"); // out | in
   const [amount, setAmount] = useState("");
   const [cat, setCat] = useState("식비");
@@ -24,14 +26,19 @@ export const AddTxnSheet = ({ open, onClose }: any) => {
         className={`${styles.dfmSheetScrim} ${open ? styles.on : ""}`}
         onClick={onClose}
       />
-      <div className={`${styles.dfmSheet} ${open ? styles.on : ""}`}>
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="새 거래 추가"
+        className={`${styles.dfmSheet} ${open ? styles.on : ""}`}
+      >
         <div className={styles.dfmSheetGrip} />
         <div className={styles.dfmSheetHead}>
           <div className={styles.ttl}>
             새 거래 추가<small>{dateStr}</small>
           </div>
-          <button className={styles.close} onClick={onClose}>
-            <Ico name="plus" size={18} />
+          <button className={styles.close} onClick={onClose} aria-label="닫기">
+            <Ico name="close" size={18} />
           </button>
         </div>
 

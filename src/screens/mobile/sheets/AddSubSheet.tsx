@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Ico } from "@/screens/mobile/shared/Ico";
+import { useEscapeKey } from "@/lib/useEscapeKey";
 import { useSubscriptions } from "@/data/subscriptions";
 import styles from "@/screens/mobile/mobile.module.css";
 
 export const AddSubSheet = ({ open, onClose }: any) => {
+  useEscapeKey(() => onClose?.(), !!open);
   const { upsert } = useSubscriptions();
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
@@ -55,14 +57,19 @@ export const AddSubSheet = ({ open, onClose }: any) => {
         className={`${styles.dfmSheetScrim} ${open ? styles.on : ""}`}
         onClick={onClose}
       />
-      <div className={`${styles.dfmSheet} ${open ? styles.on : ""}`}>
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="새 구독 추가"
+        className={`${styles.dfmSheet} ${open ? styles.on : ""}`}
+      >
         <div className={styles.dfmSheetGrip} />
         <div className={styles.dfmSheetHead}>
           <div className={styles.ttl}>
             새 구독 추가<small>매월 빠져나가는 항목</small>
           </div>
-          <button className={styles.close} onClick={onClose}>
-            <Ico name="plus" size={18} />
+          <button className={styles.close} onClick={onClose} aria-label="닫기">
+            <Ico name="close" size={18} />
           </button>
         </div>
 
@@ -317,14 +324,37 @@ export const AddSubSheet = ({ open, onClose }: any) => {
                 매월 {day}일
               </b>
             </div>
-            <input
-              type="range"
-              min="1"
-              max="31"
-              value={day}
-              onChange={(e) => setDay(Number(e.target.value))}
-              style={{ width: "100%", accentColor: "var(--ink)" }}
-            />
+            {/* 슬라이더는 31스텝이 11px 간격이라 정확한 날짜 선택이 불가 —
+                분류/결제수단과 같은 탭-선택 chip 그리드로 통일 */}
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(7, 1fr)",
+                gap: 5,
+              }}
+            >
+              {Array.from({ length: 31 }, (_, i) => i + 1).map((d) => (
+                <button
+                  key={d}
+                  onClick={() => setDay(d)}
+                  aria-pressed={day === d}
+                  style={{
+                    padding: "7px 0",
+                    borderRadius: 9,
+                    fontSize: 12,
+                    fontWeight: 600,
+                    fontFamily: "var(--mono)",
+                    border:
+                      "1px solid " + (day === d ? "var(--ink)" : "var(--line)"),
+                    background: day === d ? "var(--ink)" : "transparent",
+                    color: day === d ? "var(--bg-paper)" : "var(--ink)",
+                    cursor: "pointer",
+                  }}
+                >
+                  {d}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* method */}

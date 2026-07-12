@@ -1,7 +1,9 @@
 import { Ico } from "@/screens/mobile/shared/Ico";
+import { useEscapeKey } from "@/lib/useEscapeKey";
 import styles from "@/screens/mobile/mobile.module.css";
 
 export const TimerSettingsSheet = ({ open, onClose, settings, onChange }: any) => {
+  useEscapeKey(() => onClose?.(), !!open);
   if (!settings)
     settings = {
       focus: 25,
@@ -70,13 +72,18 @@ export const TimerSettingsSheet = ({ open, onClose, settings, onChange }: any) =
         className={`${styles.dfmSheetScrim} ${open ? styles.on : ""}`}
         onClick={onClose}
       />
-      <div className={`${styles.dfmSheet} ${open ? styles.on : ""}`}>
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="타이머 설정"
+        className={`${styles.dfmSheet} ${open ? styles.on : ""}`}
+      >
         <div className={styles.dfmSheetGrip} />
         <div className={styles.dfmSheetHead}>
           <div className={styles.ttl}>
             타이머 설정<small>뽀모도로 · 알림</small>
           </div>
-          <button className={styles.close} onClick={onClose}>
+          <button className={styles.close} onClick={onClose} aria-label="닫기">
             <svg width="14" height="14" viewBox="0 0 14 14">
               <path
                 d="M2 2l10 10M12 2L2 12"

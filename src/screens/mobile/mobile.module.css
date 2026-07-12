@@ -1365,6 +1365,16 @@
 .dfmSheet.on {
   transform: translateY(0%);
 }
+/* 짧은 폼/안내 전용 — 콘텐츠만큼만 차지하고 최대 60%(프레임 기준)까지.
+   base 의 88% 와 같은 기준(.dfm 프레임)이라 실기기/데스크톱 프리뷰 동작 동일. */
+.dfmSheetCompact {
+  max-height: 60%;
+}
+/* 의도적 풀시트 (검색/업그레이드) — 인라인 92vh/92dvh 오버라이드 대체 */
+.dfmSheetXL {
+  height: 92%;
+  max-height: 92%;
+}
 .dfmSheetGrip {
   width: 38px;
   height: 4px;

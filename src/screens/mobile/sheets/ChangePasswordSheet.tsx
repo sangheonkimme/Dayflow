@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { Ico } from "@/screens/mobile/shared/Ico";
+import { useEscapeKey } from "@/lib/useEscapeKey";
+import { useAuth } from "@/data/auth";
 import styles from "@/screens/mobile/mobile.module.css";
 
 export const ChangePasswordSheet = ({
@@ -7,32 +9,44 @@ export const ChangePasswordSheet = ({
   onClose,
   email = "nabi@dayflow.app",
 }: any) => {
+  const { sendPasswordReset } = useAuth();
   // 0 · confirm send  ·  1 · sent (waiting)
   const [step, setStep] = useState(0);
   const [sending, setSending] = useState(false);
+  const [error, setError] = useState("");
   const [resentAt, setResentAt] = useState(0);
+  useEscapeKey(() => onClose?.(), !!open);
 
   useEffect(() => {
     if (!open) {
       const t = setTimeout(() => {
         setStep(0);
         setSending(false);
+        setError("");
         setResentAt(0);
       }, 250);
       return () => clearTimeout(t);
     }
   }, [open]);
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (sending) return;
     setSending(true);
-    setTimeout(() => {
-      setSending(false);
-      setStep(1);
-    }, 600);
+    setError("");
+    const res = await sendPasswordReset(email);
+    setSending(false);
+    if (res.ok) setStep(1);
+    else
+      setError(res.message || "전송에 실패했어요. 잠시 후 다시 시도해주세요.");
   };
 
-  const handleResend = () => {
+  const handleResend = async () => {
+    if (resentAt) return;
+    const res = await sendPasswordReset(email);
+    if (!res.ok) {
+      setError(res.message || "전송에 실패했어요. 잠시 후 다시 시도해주세요.");
+      return;
+    }
     setResentAt(Date.now());
     setTimeout(() => setResentAt(0), 2400);
   };
@@ -44,14 +58,19 @@ export const ChangePasswordSheet = ({
         className={`${styles.dfmSheetScrim} ${open ? styles.on : ""}`}
         onClick={onClose}
       />
-      <div className={`${styles.dfmSheet} ${open ? styles.on : ""}`}>
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="비밀번호 변경"
+        className={`${styles.dfmSheet} ${styles.dfmSheetCompact} ${open ? styles.on : ""}`}
+      >
         <div className={styles.dfmSheetGrip} />
         <div className={styles.dfmSheetHead}>
           <div className={styles.ttl}>
             비밀번호 변경<small>이메일로 안전하게 재설정해요</small>
           </div>
-          <button className={styles.close} onClick={onClose}>
-            <Ico name="plus" size={18} />
+          <button className={styles.close} onClick={onClose} aria-label="닫기">
+            <Ico name="close" size={18} />
           </button>
         </div>
 
@@ -219,6 +238,19 @@ export const ChangePasswordSheet = ({
                   {sending ? "보내는 중…" : "재설정 링크 보내기"}
                 </button>
               </div>
+              {error && (
+                <div
+                  role="alert"
+                  style={{
+                    marginTop: 10,
+                    fontSize: 12,
+                    color: "var(--red, #c0392b)",
+                    textAlign: "center",
+                  }}
+                >
+                  {error}
+                </div>
+              )}
             </div>
           )}
 
@@ -373,6 +405,17 @@ export const ChangePasswordSheet = ({
                 >
                   {resentAt ? "✓ 다시 보냈어요" : "다시 보내기"}
                 </button>
+                {error && (
+                  <div
+                    role="alert"
+                    style={{
+                      fontSize: 12,
+                      color: "var(--red, #c0392b)",
+                    }}
+                  >
+                    {error}
+                  </div>
+                )}
               </div>
             </div>
           )}

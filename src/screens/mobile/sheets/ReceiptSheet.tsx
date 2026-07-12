@@ -1,8 +1,10 @@
 import { Ico } from "@/screens/mobile/shared/Ico";
+import { useEscapeKey } from "@/lib/useEscapeKey";
 import styles from "@/screens/mobile/mobile.module.css";
 
 export const ReceiptSheet = ({ txn, onClose }: any) => {
   const open = !!txn;
+  useEscapeKey(() => onClose?.(), open);
   // synthesize receipt-like data based on txn
   const data = txn || {};
 
@@ -67,11 +69,16 @@ export const ReceiptSheet = ({ txn, onClose }: any) => {
         className={`${styles.dfmSheetScrim} ${open ? styles.on : ""}`}
         onClick={onClose}
       />
-      <div className={`${styles.dfmSheet} ${open ? styles.on : ""}`}>
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="거래 상세"
+        className={`${styles.dfmSheet} ${open ? styles.on : ""}`}
+      >
         <div className={styles.dfmSheetGrip} />
         <div className={styles.dfmSheetHead}>
           <div className={styles.ttl}>{data.income ? "수입 상세" : "결제 상세"}</div>
-          <button className={styles.close} onClick={onClose}>
+          <button className={styles.close} onClick={onClose} aria-label="닫기">
             <svg width="14" height="14" viewBox="0 0 14 14">
               <path
                 d="M2 2l10 10M12 2L2 12"

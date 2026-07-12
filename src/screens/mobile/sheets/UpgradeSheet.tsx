@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
 import { Ico } from "@/screens/mobile/shared/Ico";
+import { useEscapeKey } from "@/lib/useEscapeKey";
 import styles from "@/screens/mobile/mobile.module.css";
 import { useCheckout } from "@/lib/payments/useCheckout";
 import type { CheckoutBilling } from "@/lib/payments/types";
 
 export const UpgradeSheet = ({ open, onClose }: any) => {
+  useEscapeKey(() => onClose?.(), !!open);
   const [plan, setPlan] = useState<CheckoutBilling>("year"); // month | year
   const { busy, notice, start, reset } = useCheckout();
   useEffect(() => {
@@ -67,8 +69,10 @@ export const UpgradeSheet = ({ open, onClose }: any) => {
         onClick={onClose}
       />
       <div
-        className={`${styles.dfmSheet} ${open ? styles.on : ""}`}
-        style={{ height: "92vh", maxHeight: "92vh" }}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Pro 업그레이드"
+        className={`${styles.dfmSheet} ${styles.dfmSheetXL} ${open ? styles.on : ""}`}
       >
         <div className={styles.dfmSheetGrip} />
         <div
@@ -78,8 +82,8 @@ export const UpgradeSheet = ({ open, onClose }: any) => {
           <div className={styles.ttl} style={{ visibility: "hidden" }}>
             x
           </div>
-          <button className={styles.close} onClick={onClose}>
-            <Ico name="plus" size={18} />
+          <button className={styles.close} onClick={onClose} aria-label="닫기">
+            <Ico name="close" size={18} />
           </button>
         </div>
 

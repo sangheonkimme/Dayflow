@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
 import { Ico } from "@/screens/mobile/shared/Ico";
+import { useEscapeKey } from "@/lib/useEscapeKey";
 import styles from "@/screens/mobile/mobile.module.css";
 
+// 실제 저장되는 값은 name 하나 — 아바타/사용자명/소개는 저장 로직이 생기기
+// 전까지 노출하지 않는다 (풀스크린처럼 커 보이던 원인, docs/mobile-sheet-audit 참고).
 export const EditProfileSheet = ({
   open,
   onClose,
@@ -10,14 +13,12 @@ export const EditProfileSheet = ({
   onSave,
 }: any) => {
   const [name, setName] = useState(initialName || "");
-  const [handle, setHandle] = useState("nabi.flow");
-  const [bio, setBio] = useState("매일의 흐름을 기록 중 ☁️");
-  const [emoji, setEmoji] = useState("나");
   useEffect(() => {
     if (open) setName(initialName || "");
   }, [open, initialName]);
+  useEscapeKey(() => onClose?.(), !!open);
 
-  const presets = ["나", "🦋", "✨", "☁️", "🌸", "🌙", "🍵", "🐱"];
+  const save = () => onSave?.(name.trim() || initialName);
 
   return (
     <>
@@ -26,80 +27,27 @@ export const EditProfileSheet = ({
         className={`${styles.dfmSheetScrim} ${open ? styles.on : ""}`}
         onClick={onClose}
       />
-      <div className={`${styles.dfmSheet} ${open ? styles.on : ""}`}>
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="프로필 수정"
+        className={`${styles.dfmSheet} ${styles.dfmSheetCompact} ${open ? styles.on : ""}`}
+      >
         <div className={styles.dfmSheetGrip} />
         <div className={styles.dfmSheetHead}>
           <div className={styles.ttl}>
-            프로필 수정<small>이름 · 아바타 · 소개</small>
+            프로필 수정<small>이름을 바꿀 수 있어요</small>
           </div>
-          <button className={styles.close} onClick={onClose}>
-            <Ico name="plus" size={18} />
+          <button className={styles.close} onClick={onClose} aria-label="닫기">
+            <Ico name="close" size={18} />
           </button>
         </div>
 
         <div className={styles.dfmSheetBody} style={{ padding: "0 18px 22px" }}>
-          {/* avatar preview */}
-          <div
-            style={{
-              textAlign: "center",
-              padding: "8px 0 18px",
-              borderBottom: "1px dashed var(--line)",
-            }}
-          >
-            <div
-              style={{
-                width: 88,
-                height: 88,
-                margin: "0 auto",
-                borderRadius: 26,
-                background: "var(--yellow)",
-                border: "2px solid var(--ink)",
-                display: "grid",
-                placeItems: "center",
-                fontFamily: "var(--hand)",
-                fontWeight: 700,
-                fontSize: emoji.length > 1 ? 38 : 42,
-              }}
-            >
-              {emoji}
-            </div>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                flexWrap: "wrap",
-                gap: 6,
-                marginTop: 12,
-              }}
-            >
-              {presets.map((p) => (
-                <button
-                  key={p}
-                  onClick={() => setEmoji(p)}
-                  style={{
-                    width: 36,
-                    height: 36,
-                    borderRadius: 12,
-                    border:
-                      "1.5px solid " +
-                      (emoji === p ? "var(--ink)" : "var(--line)"),
-                    background: emoji === p ? "var(--bg)" : "var(--bg-paper)",
-                    fontSize: p.length > 1 ? 16 : 18,
-                    fontFamily: "var(--hand)",
-                    fontWeight: 600,
-                    cursor: "pointer",
-                  }}
-                >
-                  {p}
-                </button>
-              ))}
-            </div>
-          </div>
-
           {/* name */}
           <div
             style={{
-              padding: "16px 0 14px",
+              padding: "4px 0 14px",
               borderBottom: "1px dashed var(--line)",
             }}
           >
@@ -116,6 +64,9 @@ export const EditProfileSheet = ({
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.nativeEvent.isComposing) save();
+              }}
               placeholder="이름"
               style={{
                 width: "100%",
@@ -131,70 +82,8 @@ export const EditProfileSheet = ({
             />
           </div>
 
-          {/* handle */}
-          <div
-            style={{
-              padding: "14px 0",
-              borderBottom: "1px dashed var(--line)",
-            }}
-          >
-            <div
-              style={{
-                fontSize: 11,
-                color: "var(--ink-mute)",
-                marginBottom: 6,
-                fontWeight: 600,
-              }}
-            >
-              사용자명
-            </div>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                padding: "0 12px",
-                border: "1px solid var(--line)",
-                borderRadius: 10,
-                background: "var(--bg-paper)",
-              }}
-            >
-              <span
-                style={{
-                  color: "var(--ink-mute)",
-                  fontSize: 14,
-                  fontFamily: "var(--mono)",
-                }}
-              >
-                @
-              </span>
-              <input
-                value={handle}
-                onChange={(e) =>
-                  setHandle(
-                    e.target.value.replace(/[^a-z0-9._]/gi, "").toLowerCase(),
-                  )
-                }
-                style={{
-                  flex: 1,
-                  padding: "11px 6px",
-                  border: "none",
-                  background: "transparent",
-                  fontSize: 14,
-                  fontFamily: "var(--mono)",
-                  color: "var(--ink)",
-                  outline: "none",
-                }}
-              />
-            </div>
-          </div>
-
           {/* email (read-only) */}
-          <div
-            style={{
-              padding: "14px 0",
-              borderBottom: "1px dashed var(--line)",
-            }}
-          >
+          <div style={{ padding: "14px 0 4px" }}>
             <div
               style={{
                 fontSize: 11,
@@ -223,56 +112,8 @@ export const EditProfileSheet = ({
             </div>
           </div>
 
-          {/* bio */}
-          <div style={{ padding: "14px 0 4px" }}>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                marginBottom: 6,
-              }}
-            >
-              <span
-                style={{
-                  fontSize: 11,
-                  color: "var(--ink-mute)",
-                  fontWeight: 600,
-                }}
-              >
-                한 줄 소개
-              </span>
-              <small
-                style={{
-                  fontSize: 10,
-                  color: "var(--ink-mute)",
-                  fontFamily: "var(--mono)",
-                }}
-              >
-                {bio.length}/40
-              </small>
-            </div>
-            <textarea
-              value={bio}
-              onChange={(e) => setBio(e.target.value.slice(0, 40))}
-              rows={2}
-              placeholder="자신을 소개해주세요"
-              style={{
-                width: "100%",
-                padding: "11px 12px",
-                border: "1px solid var(--line)",
-                borderRadius: 10,
-                background: "var(--bg-paper)",
-                fontSize: 13,
-                color: "var(--ink)",
-                outline: "none",
-                resize: "none",
-                fontFamily: "inherit",
-              }}
-            />
-          </div>
-
           {/* actions */}
-          <div style={{ display: "flex", gap: 8, marginTop: 22 }}>
+          <div style={{ display: "flex", gap: 8, marginTop: 18 }}>
             <button
               onClick={onClose}
               style={{
@@ -290,7 +131,7 @@ export const EditProfileSheet = ({
               취소
             </button>
             <button
-              onClick={() => onSave?.(name.trim() || initialName)}
+              onClick={save}
               style={{
                 flex: 2,
                 padding: "14px 0",
