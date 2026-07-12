@@ -1850,9 +1850,12 @@
   .footer-inner { grid-template-columns: 1fr 1fr; gap: 28px; }
   .section-title { font-size: 32px; }
   .section { padding: 56px 24px; }
-  .nav { padding: 12px 20px; gap: 16px; }
-  .nav-links { display: none; }
-  .nav-cta { display: none; }
+  /* .landing-root 로 스코프해야 기본 `.landing-root .nav-*`(특이도 0,2,0) 를
+     이겨서 display:none 이 실제로 먹는다. prefix 없으면 데스크톱 링크가
+     모바일에서 그대로 노출돼 nav 가 세로로 쪼개진다. */
+  .landing-root .nav { padding: 12px 20px; gap: 16px; }
+  .landing-root .nav-links { display: none; }
+  .landing-root .nav-cta { display: none; }
 }
 
 @media (max-width: 640px) {
