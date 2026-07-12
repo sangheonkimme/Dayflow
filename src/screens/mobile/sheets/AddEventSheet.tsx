@@ -1,11 +1,14 @@
 import { useState } from "react";
 import { Ico } from "@/screens/mobile/shared/Ico";
 import { useEvents } from "@/data/events";
+import { toLocalYmd } from "@/lib/date";
+import { parseEvent, fmtDate, fmtTime, CAT_COLOR } from "@/lib/event-parse";
 import styles from "@/screens/mobile/mobile.module.css";
 
 export const AddEventSheet = ({ open, onClose }: any) => {
   const { upsert } = useEvents();
   const todayStr = new Date().toISOString().slice(0, 10);
+  const [quick, setQuick] = useState("");
   const [title, setTitle] = useState("");
   const [cat, setCat] = useState("업무");
   const [allDay, setAllDay] = useState(false);
@@ -21,6 +24,27 @@ export const AddEventSheet = ({ open, onClose }: any) => {
     { name: "건강", color: "#b9e7c9" },
     { name: "기타", color: "#d4c1f0" },
   ];
+
+  // ⚡ 빠른 입력 — PC EventModal 과 동일한 자연어 파서를 재사용해 아래 폼을 채운다.
+  const parsed = quick.trim() ? parseEvent(quick) : null;
+  const applyQuick = () => {
+    if (!parsed) return;
+    const hh = String(parsed.hour).padStart(2, "0");
+    const mm = String(parsed.min).padStart(2, "0");
+    const endHh = String(Math.min(23, parsed.hour + 1)).padStart(2, "0");
+    setTitle(parsed.title);
+    setDate(toLocalYmd(parsed.date));
+    setAllDay(parsed.allDay);
+    if (!parsed.allDay) {
+      setStart(`${hh}:${mm}`);
+      setEnd(`${endHh}:${mm}`);
+    }
+    setCat(parsed.cat);
+    // 모바일 시트 자체 카테고리 색이 있으면 그걸, 없으면 범례 색으로 매핑
+    const local = cats.find((c) => c.name === parsed.cat);
+    setColor(local ? local.color : CAT_COLOR[parsed.cat] || color);
+    setQuick("");
+  };
   const dispDate = (() => {
     const d = new Date(date);
     return `${d.getMonth() + 1}월 ${d.getDate()}일 (${"일월화수목금토"[d.getDay()]})`;
@@ -62,6 +86,96 @@ export const AddEventSheet = ({ open, onClose }: any) => {
         </div>
 
         <div className={styles.dfmSheetBody} style={{ padding: "0 18px 22px" }}>
+          {/* ⚡ 빠른 입력 — 자연어로 적으면 아래 폼을 자동으로 채워요 */}
+          <div
+            style={{
+              padding: "12px 0 16px",
+              borderBottom: "1px dashed var(--line)",
+            }}
+          >
+            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+              <input
+                value={quick}
+                onChange={(e) => setQuick(e.target.value)}
+                onKeyDown={(e) => {
+                  // 한글 조합 중 Enter(isComposing)는 무시 — 조합 확정 키 오작동 방지
+                  if (
+                    e.key === "Enter" &&
+                    !e.nativeEvent.isComposing &&
+                    quick.trim()
+                  ) {
+                    e.preventDefault();
+                    applyQuick();
+                  }
+                }}
+                placeholder="⚡ 내일 오후 3시 팀 미팅"
+                style={{
+                  flex: 1,
+                  minWidth: 0,
+                  padding: "11px 12px",
+                  border: "1px solid var(--line)",
+                  borderRadius: 10,
+                  background: "var(--bg-paper)",
+                  fontSize: 14,
+                  color: "var(--ink)",
+                  outline: "none",
+                }}
+              />
+              <button
+                type="button"
+                onClick={applyQuick}
+                disabled={!quick.trim()}
+                style={{
+                  flexShrink: 0,
+                  padding: "11px 14px",
+                  borderRadius: 10,
+                  border: "1px solid var(--ink)",
+                  background: quick.trim() ? "var(--ink)" : "transparent",
+                  color: quick.trim() ? "var(--bg-paper)" : "var(--ink-mute)",
+                  fontWeight: 700,
+                  fontSize: 13,
+                  cursor: quick.trim() ? "pointer" : "not-allowed",
+                }}
+              >
+                적용
+              </button>
+            </div>
+            {parsed && (
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  marginTop: 8,
+                  fontSize: 12,
+                  color: "var(--ink-mute)",
+                }}
+              >
+                <span style={{ fontWeight: 700, color: "var(--ink)" }}>
+                  {parsed.title}
+                </span>
+                <span style={{ minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  {fmtDate(parsed.date)} ·{" "}
+                  {parsed.allDay ? "종일" : fmtTime(parsed.hour, parsed.min)}
+                </span>
+                <span
+                  style={{
+                    marginLeft: "auto",
+                    flexShrink: 0,
+                    padding: "2px 8px",
+                    borderRadius: 999,
+                    border: "1px solid var(--line)",
+                    fontSize: 11,
+                    fontWeight: 600,
+                    color: "var(--ink)",
+                  }}
+                >
+                  {parsed.cat}
+                </span>
+              </div>
+            )}
+          </div>
+
           {/* title with color dot */}
           <div
             style={{
