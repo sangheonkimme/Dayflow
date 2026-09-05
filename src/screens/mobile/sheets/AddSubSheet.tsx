@@ -137,6 +137,9 @@ export const AddSubSheet = ({ open, onClose }: any) => {
                   }}
                   style={{
                     flex: "0 0 auto",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    minHeight: 44,
                     padding: "7px 12px",
                     borderRadius: 999,
                     fontSize: 12,
@@ -300,6 +303,7 @@ export const AddSubSheet = ({ open, onClose }: any) => {
                     display: "inline-flex",
                     alignItems: "center",
                     gap: 6,
+                    minHeight: 44,
                     padding: "7px 12px",
                     borderRadius: 999,
                     fontSize: 12,
@@ -421,6 +425,9 @@ export const AddSubSheet = ({ open, onClose }: any) => {
                   onClick={() => setPay(p)}
                   style={{
                     flex: 1,
+                    display: "grid",
+                    placeItems: "center",
+                    minHeight: 44,
                     padding: "9px 0",
                     borderRadius: 9,
                     fontSize: 11,
