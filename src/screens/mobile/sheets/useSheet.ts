@@ -67,6 +67,43 @@ export function useSheet({ open, onClose, snaps }: UseSheetOptions) {
     return () => window.removeEventListener("keydown", onKey);
   }, [open, onClose]);
 
+  // focus trap: 열릴 때 시트 컨테이너로 포커스(인풋 대신 → 키보드 즉시 팝업
+  // 방지, 스크린리더는 dialog 라벨 낭독), Tab 이 시트 밖으로 못 나가게 순환,
+  // 닫힐 때 트리거 요소로 포커스 반환.
+  useEffect(() => {
+    if (!open) return undefined;
+    const el = sheetRef.current;
+    const prevFocus = document.activeElement as HTMLElement | null;
+    el?.focus({ preventScroll: true });
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Tab" || !el) return;
+      const nodes = el.querySelectorAll<HTMLElement>(
+        'a[href],button:not([disabled]),input:not([disabled]),textarea:not([disabled]),select:not([disabled]),[tabindex]:not([tabindex="-1"])',
+      );
+      if (nodes.length === 0) {
+        e.preventDefault();
+        return;
+      }
+      const first = nodes[0];
+      const last = nodes[nodes.length - 1];
+      const active = document.activeElement;
+      if (e.shiftKey) {
+        if (active === first || active === el) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else if (active === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+    el?.addEventListener("keydown", onKey);
+    return () => {
+      el?.removeEventListener("keydown", onKey);
+      prevFocus?.focus?.({ preventScroll: true });
+    };
+  }, [open]);
+
   const onPointerDown = useCallback((e: ReactPointerEvent) => {
     // 헤더 내부의 컨트롤(닫기 버튼 등) 조작은 드래그로 가로채지 않는다.
     if ((e.target as HTMLElement).closest("button,a,input,textarea,select")) {
