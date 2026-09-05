@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type KeyboardEvent } from "react";
 import { Ico } from "@/screens/mobile/shared/Ico";
 import { useEscapeKey } from "@/lib/useEscapeKey";
 import { useSubscriptions } from "@/data/subscriptions";
@@ -49,6 +49,29 @@ export const AddSubSheet = ({ open, onClose }: any) => {
   const cycles: ("월" | "년")[] = ["월", "년"];
   const pays = ["신용카드", "체크카드", "계좌이체", "기타"];
   const fmt = (v) => (v ? Number(v).toLocaleString() : "0");
+
+  // 결제일 그리드를 정식 radiogroup 으로 — 화살표/Home/End 로 로빙 포커스 이동.
+  // 선택된 칩만 tabbable, 이동 시 즉시 선택(radio select-on-focus).
+  const onDayKey = (e: KeyboardEvent<HTMLDivElement>) => {
+    const delta: Record<string, number> = {
+      ArrowRight: 1,
+      ArrowLeft: -1,
+      ArrowDown: 7,
+      ArrowUp: -7,
+    };
+    let next = day;
+    if (e.key in delta) next = day + delta[e.key];
+    else if (e.key === "Home") next = 1;
+    else if (e.key === "End") next = 31;
+    else return;
+    e.preventDefault();
+    next = Math.min(31, Math.max(1, next));
+    if (next === day) return;
+    setDay(next);
+    e.currentTarget
+      .querySelector<HTMLElement>(`[data-day="${next}"]`)
+      ?.focus();
+  };
 
   return (
     <>
@@ -312,6 +335,7 @@ export const AddSubSheet = ({ open, onClose }: any) => {
               }}
             >
               <span
+                id="addsub-payday-label"
                 style={{
                   fontSize: 11,
                   color: "var(--ink-mute)",
@@ -325,9 +349,15 @@ export const AddSubSheet = ({ open, onClose }: any) => {
               </b>
             </div>
             {/* 슬라이더는 31스텝이 11px 간격이라 정확한 날짜 선택이 불가 —
-                분류/결제수단과 같은 탭-선택 chip 그리드로 통일 */}
+                분류/결제수단과 같은 탭-선택 chip 그리드로 통일.
+                단일 선택이라 radiogroup 시맨틱 + 44px 터치 타깃. */}
             <div
+              role="radiogroup"
+              aria-labelledby="addsub-payday-label"
+              tabIndex={-1}
+              onKeyDown={onDayKey}
               style={{
+                outline: "none",
                 display: "grid",
                 gridTemplateColumns: "repeat(7, 1fr)",
                 gap: 5,
@@ -336,10 +366,18 @@ export const AddSubSheet = ({ open, onClose }: any) => {
               {Array.from({ length: 31 }, (_, i) => i + 1).map((d) => (
                 <button
                   key={d}
+                  type="button"
+                  role="radio"
+                  aria-checked={day === d}
+                  aria-label={`${d}일`}
+                  data-day={d}
+                  tabIndex={day === d ? 0 : -1}
                   onClick={() => setDay(d)}
-                  aria-pressed={day === d}
                   style={{
-                    padding: "7px 0",
+                    display: "grid",
+                    placeItems: "center",
+                    minHeight: 44,
+                    padding: 0,
                     borderRadius: 9,
                     fontSize: 12,
                     fontWeight: 600,
