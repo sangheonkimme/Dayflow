@@ -1,12 +1,15 @@
 import { useState, useEffect } from "react";
 import { Ico } from "@/screens/mobile/shared/Ico";
-import { useEscapeKey } from "@/lib/useEscapeKey";
+import { useSheet } from "@/screens/mobile/sheets/useSheet";
 import styles from "@/screens/mobile/mobile.module.css";
 import { useCheckout } from "@/lib/payments/useCheckout";
 import type { CheckoutBilling } from "@/lib/payments/types";
 
 export const UpgradeSheet = ({ open, onClose }: any) => {
-  useEscapeKey(() => onClose?.(), !!open);
+  const { sheetRef, gripHandlers, sheetStyle } = useSheet({
+    open,
+    onClose: () => onClose?.(),
+  });
   const [plan, setPlan] = useState<CheckoutBilling>("year"); // month | year
   const { busy, notice, start, reset } = useCheckout();
   useEffect(() => {
@@ -69,15 +72,19 @@ export const UpgradeSheet = ({ open, onClose }: any) => {
         onClick={onClose}
       />
       <div
+        ref={sheetRef}
+        tabIndex={-1}
         role="dialog"
         aria-modal="true"
         aria-label="Pro 업그레이드"
         className={`${styles.dfmSheet} ${styles.dfmSheetXL} ${open ? styles.on : ""}`}
+        style={sheetStyle}
       >
-        <div className={styles.dfmSheetGrip} />
+        <div className={styles.dfmSheetGrip} {...gripHandlers} />
         <div
           className={styles.dfmSheetHead}
           style={{ borderBottom: "none", paddingBottom: 4 }}
+          {...gripHandlers}
         >
           <div className={styles.ttl} style={{ visibility: "hidden" }}>
             x

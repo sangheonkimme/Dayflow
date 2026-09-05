@@ -1,11 +1,14 @@
 import { useState, useEffect, useRef } from "react";
 import { Ico } from "@/screens/mobile/shared/Ico";
 import { IMAGE_TOOLS_PUBLIC } from "@/lib/feature-flags";
-import { useEscapeKey } from "@/lib/useEscapeKey";
+import { useSheet } from "@/screens/mobile/sheets/useSheet";
 import styles from "@/screens/mobile/mobile.module.css";
 
 export const SearchSheet = ({ open, onClose, onJump }: any) => {
-  useEscapeKey(() => onClose?.(), !!open);
+  const { sheetRef, gripHandlers, sheetStyle } = useSheet({
+    open,
+    onClose: () => onClose?.(),
+  });
   const [q, setQ] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
@@ -253,12 +256,15 @@ export const SearchSheet = ({ open, onClose, onJump }: any) => {
         onClick={onClose}
       />
       <div
+        ref={sheetRef}
+        tabIndex={-1}
         role="dialog"
         aria-modal="true"
         aria-label="검색"
         className={`${styles.dfmSheet} ${styles.dfmSheetXL} ${open ? styles.on : ""}`}
+        style={sheetStyle}
       >
-        <div className={styles.dfmSheetGrip} />
+        <div className={styles.dfmSheetGrip} {...gripHandlers} />
         {/* search bar */}
         <div
           style={{

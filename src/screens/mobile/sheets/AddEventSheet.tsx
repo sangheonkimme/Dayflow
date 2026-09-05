@@ -2,12 +2,16 @@ import { useState } from "react";
 import { Ico } from "@/screens/mobile/shared/Ico";
 import { useEvents } from "@/data/events";
 import { toLocalYmd } from "@/lib/date";
-import { useEscapeKey } from "@/lib/useEscapeKey";
+import { useSheet } from "@/screens/mobile/sheets/useSheet";
 import { parseEvent, fmtDate, fmtTime, CAT_COLOR } from "@/lib/event-parse";
 import styles from "@/screens/mobile/mobile.module.css";
 
 export const AddEventSheet = ({ open, onClose }: any) => {
-  useEscapeKey(() => onClose?.(), !!open);
+  const { sheetRef, gripHandlers, sheetStyle } = useSheet({
+    open,
+    onClose: () => onClose?.(),
+    snaps: ["medium", "large"],
+  });
   const { upsert } = useEvents();
   // toISOString 은 UTC — KST 오전 9시 전엔 어제가 나오므로 로컬 기준 사용
   const todayStr = toLocalYmd(new Date());
@@ -78,13 +82,16 @@ export const AddEventSheet = ({ open, onClose }: any) => {
         onClick={onClose}
       />
       <div
+        ref={sheetRef}
+        tabIndex={-1}
         role="dialog"
         aria-modal="true"
         aria-label="새 일정 추가"
         className={`${styles.dfmSheet} ${open ? styles.on : ""}`}
+        style={sheetStyle}
       >
-        <div className={styles.dfmSheetGrip} />
-        <div className={styles.dfmSheetHead}>
+        <div className={styles.dfmSheetGrip} {...gripHandlers} />
+        <div className={styles.dfmSheetHead} {...gripHandlers}>
           <div className={styles.ttl}>
             새 일정 추가<small>{dispDate}</small>
           </div>

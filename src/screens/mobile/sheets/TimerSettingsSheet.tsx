@@ -1,9 +1,12 @@
 import { Ico } from "@/screens/mobile/shared/Ico";
-import { useEscapeKey } from "@/lib/useEscapeKey";
+import { useSheet } from "@/screens/mobile/sheets/useSheet";
 import styles from "@/screens/mobile/mobile.module.css";
 
 export const TimerSettingsSheet = ({ open, onClose, settings, onChange }: any) => {
-  useEscapeKey(() => onClose?.(), !!open);
+  const { sheetRef, gripHandlers, sheetStyle } = useSheet({
+    open,
+    onClose: () => onClose?.(),
+  });
   if (!settings)
     settings = {
       focus: 25,
@@ -73,13 +76,16 @@ export const TimerSettingsSheet = ({ open, onClose, settings, onChange }: any) =
         onClick={onClose}
       />
       <div
+        ref={sheetRef}
+        tabIndex={-1}
         role="dialog"
         aria-modal="true"
         aria-label="타이머 설정"
         className={`${styles.dfmSheet} ${open ? styles.on : ""}`}
+        style={sheetStyle}
       >
-        <div className={styles.dfmSheetGrip} />
-        <div className={styles.dfmSheetHead}>
+        <div className={styles.dfmSheetGrip} {...gripHandlers} />
+        <div className={styles.dfmSheetHead} {...gripHandlers}>
           <div className={styles.ttl}>
             타이머 설정<small>뽀모도로 · 알림</small>
           </div>

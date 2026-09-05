@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Ico } from "@/screens/mobile/shared/Ico";
-import { useEscapeKey } from "@/lib/useEscapeKey";
+import { useSheet } from "@/screens/mobile/sheets/useSheet";
 import styles from "@/screens/mobile/mobile.module.css";
 
 // 실제 저장되는 값은 name 하나 — 아바타/사용자명/소개는 저장 로직이 생기기
@@ -16,7 +16,10 @@ export const EditProfileSheet = ({
   useEffect(() => {
     if (open) setName(initialName || "");
   }, [open, initialName]);
-  useEscapeKey(() => onClose?.(), !!open);
+  const { sheetRef, gripHandlers, sheetStyle } = useSheet({
+    open,
+    onClose: () => onClose?.(),
+  });
 
   const save = () => onSave?.(name.trim() || initialName);
 
@@ -28,13 +31,16 @@ export const EditProfileSheet = ({
         onClick={onClose}
       />
       <div
+        ref={sheetRef}
+        tabIndex={-1}
         role="dialog"
         aria-modal="true"
         aria-label="프로필 수정"
         className={`${styles.dfmSheet} ${styles.dfmSheetCompact} ${open ? styles.on : ""}`}
+        style={sheetStyle}
       >
-        <div className={styles.dfmSheetGrip} />
-        <div className={styles.dfmSheetHead}>
+        <div className={styles.dfmSheetGrip} {...gripHandlers} />
+        <div className={styles.dfmSheetHead} {...gripHandlers}>
           <div className={styles.ttl}>
             프로필 수정<small>이름을 바꿀 수 있어요</small>
           </div>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Ico } from "@/screens/mobile/shared/Ico";
-import { useEscapeKey } from "@/lib/useEscapeKey";
+import { useSheet } from "@/screens/mobile/sheets/useSheet";
 import { useAuth } from "@/data/auth";
 import styles from "@/screens/mobile/mobile.module.css";
 
@@ -15,7 +15,10 @@ export const ChangePasswordSheet = ({
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
   const [resentAt, setResentAt] = useState(0);
-  useEscapeKey(() => onClose?.(), !!open);
+  const { sheetRef, gripHandlers, sheetStyle } = useSheet({
+    open,
+    onClose: () => onClose?.(),
+  });
 
   useEffect(() => {
     if (!open) {
@@ -59,13 +62,16 @@ export const ChangePasswordSheet = ({
         onClick={onClose}
       />
       <div
+        ref={sheetRef}
+        tabIndex={-1}
         role="dialog"
         aria-modal="true"
         aria-label="비밀번호 변경"
         className={`${styles.dfmSheet} ${styles.dfmSheetCompact} ${open ? styles.on : ""}`}
+        style={sheetStyle}
       >
-        <div className={styles.dfmSheetGrip} />
-        <div className={styles.dfmSheetHead}>
+        <div className={styles.dfmSheetGrip} {...gripHandlers} />
+        <div className={styles.dfmSheetHead} {...gripHandlers}>
           <div className={styles.ttl}>
             비밀번호 변경<small>이메일로 안전하게 재설정해요</small>
           </div>
