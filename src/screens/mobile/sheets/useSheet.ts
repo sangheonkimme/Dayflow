@@ -34,6 +34,10 @@ const MEDIUM_HEIGHT = "60%";
 const SNAP_DOWN_PX = 70;
 // medium → large 로 되돌리는 위로-드래그 임계.
 const SNAP_UP_PX = 40;
+// 최소 스냅에서 이만큼 끌어내리면 닫기.
+const CLOSE_DRAG_PX = 110;
+// 짧게 끌어도 이 속도(px/ms)를 넘기면 플릭으로 간주해 닫기.
+const CLOSE_VELOCITY = 0.6;
 
 export function useSheet({ open, onClose, snaps }: UseSheetOptions) {
   const sheetRef = useRef<HTMLDivElement>(null);
@@ -129,12 +133,21 @@ export function useSheet({ open, onClose, snaps }: UseSheetOptions) {
     draggingRef.current = false;
     setDragging(false);
     const dy = rawDy.current;
+    const dt = performance.now() - startT.current;
+    const velocity = dy / Math.max(1, dt);
     setDragY(0);
+    // 최소 스냅(스냅 없는 시트 or medium)에서 임계 이상 끌어내리거나
+    // 빠르게 플릭하면 닫는다.
+    const atSmallest = !hasSnaps || snap === "medium";
+    if (atSmallest && dy > 0 && (dy > CLOSE_DRAG_PX || velocity > CLOSE_VELOCITY)) {
+      onClose();
+      return;
+    }
     if (!hasSnaps) return;
     // large 에서 충분히 내리면 medium, medium 에서 충분히 올리면 large.
     if (snap === "large" && dy > SNAP_DOWN_PX) setSnap("medium");
     else if (snap === "medium" && dy < -SNAP_UP_PX) setSnap("large");
-  }, [hasSnaps, snap]);
+  }, [hasSnaps, snap, onClose]);
 
   const sheetStyle: CSSProperties = {
     ...(hasSnaps && snap === "medium" ? { height: MEDIUM_HEIGHT } : {}),
