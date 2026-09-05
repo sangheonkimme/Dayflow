@@ -85,14 +85,7 @@ export const ReceiptSheet = ({ txn, onClose }: any) => {
         <div className={styles.dfmSheetHead} {...gripHandlers}>
           <div className={styles.ttl}>{data.income ? "수입 상세" : "결제 상세"}</div>
           <button className={styles.close} onClick={onClose} aria-label="닫기">
-            <svg width="14" height="14" viewBox="0 0 14 14">
-              <path
-                d="M2 2l10 10M12 2L2 12"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-              />
-            </svg>
+            <Ico name="close" size={18} />
           </button>
         </div>
 
