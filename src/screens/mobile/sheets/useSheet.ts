@@ -1,5 +1,4 @@
 import {
-  useCallback,
   useEffect,
   useRef,
   useState,
@@ -43,6 +42,12 @@ export function useSheet({ open, onClose, snaps }: UseSheetOptions) {
   const sheetRef = useRef<HTMLDivElement>(null);
   const hasSnaps = !!snaps && snaps.length > 1;
 
+  // onClose 는 호출부에서 인라인 화살표(() => onClose?.())로 넘어와 매 렌더
+  // identity 가 바뀐다. effect/핸들러가 이를 직접 참조하면 드래그 중 pointermove
+  // 마다 리스너를 재구독하게 되므로, latest-ref 로 안정화한다.
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
+
   const [snap, setSnap] = useState<Snap>("large");
   const [dragY, setDragY] = useState(0);
   const [dragging, setDragging] = useState(false);
@@ -61,15 +66,15 @@ export function useSheet({ open, onClose, snaps }: UseSheetOptions) {
     }
   }, [open]);
 
-  // ESC 닫기.
+  // ESC 닫기. onClose 는 ref 로 참조 → open 변화에만 재구독(드래그 중 churn 없음).
   useEffect(() => {
     if (!open) return undefined;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") onCloseRef.current();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [open, onClose]);
+  }, [open]);
 
   // focus trap: 열릴 때 시트 컨테이너로 포커스(인풋 대신 → 키보드 즉시 팝업
   // 방지, 스크린리더는 dialog 라벨 낭독), Tab 이 시트 밖으로 못 나가게 순환,
@@ -108,7 +113,33 @@ export function useSheet({ open, onClose, snaps }: UseSheetOptions) {
     };
   }, [open]);
 
-  const onPointerDown = useCallback((e: ReactPointerEvent) => {
+  // 배경 격리: 열릴 때 시트의 형제 요소(자신/스크림 제외)에 inert 부여 →
+  // 스크린리더/키보드 포커스가 배경 콘텐츠로 새지 않는다. 스크림은 백드롭
+  // 탭 닫기를 살려야 하므로 제외. 각 시트 컴포넌트가 <scrim><sheet> 순으로
+  // 렌더하므로 스크림 = 시트의 직전 형제. 닫힐 때 내가 건 것만 해제.
+  useEffect(() => {
+    if (!open) return undefined;
+    const el = sheetRef.current;
+    const parent = el?.parentElement;
+    if (!el || !parent) return undefined;
+    const scrim = el.previousElementSibling;
+    const inerted: HTMLElement[] = [];
+    Array.from(parent.children).forEach((child) => {
+      if (child === el || child === scrim) return;
+      const node = child as HTMLElement;
+      if (!node.hasAttribute("inert")) {
+        node.setAttribute("inert", "");
+        inerted.push(node);
+      }
+    });
+    return () => {
+      inerted.forEach((node) => node.removeAttribute("inert"));
+    };
+  }, [open]);
+
+  // 핸들러는 gripHandlers 객체로 DOM 에 직접 spread 되어 매 렌더 재부착되므로
+  // useCallback 이점이 없다 → 평범한 함수로 유지(불필요한 memo 제거).
+  const onPointerDown = (e: ReactPointerEvent) => {
     // 헤더 내부의 컨트롤(닫기 버튼 등) 조작은 드래그로 가로채지 않는다.
     if ((e.target as HTMLElement).closest("button,a,input,textarea,select")) {
       return;
@@ -119,16 +150,16 @@ export function useSheet({ open, onClose, snaps }: UseSheetOptions) {
     rawDy.current = 0;
     setDragging(true);
     (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
-  }, []);
+  };
 
-  const onPointerMove = useCallback((e: ReactPointerEvent) => {
+  const onPointerMove = (e: ReactPointerEvent) => {
     if (!draggingRef.current) return;
     rawDy.current = e.clientY - startY.current;
     // 아래로 끄는 것만 시각 반영 (위로는 스냅 판정에만 사용).
     setDragY(Math.max(0, rawDy.current));
-  }, []);
+  };
 
-  const endDrag = useCallback(() => {
+  const endDrag = () => {
     if (!draggingRef.current) return;
     draggingRef.current = false;
     setDragging(false);
@@ -139,15 +170,19 @@ export function useSheet({ open, onClose, snaps }: UseSheetOptions) {
     // 최소 스냅(스냅 없는 시트 or medium)에서 임계 이상 끌어내리거나
     // 빠르게 플릭하면 닫는다.
     const atSmallest = !hasSnaps || snap === "medium";
-    if (atSmallest && dy > 0 && (dy > CLOSE_DRAG_PX || velocity > CLOSE_VELOCITY)) {
-      onClose();
+    if (
+      atSmallest &&
+      dy > 0 &&
+      (dy > CLOSE_DRAG_PX || velocity > CLOSE_VELOCITY)
+    ) {
+      onCloseRef.current();
       return;
     }
     if (!hasSnaps) return;
     // large 에서 충분히 내리면 medium, medium 에서 충분히 올리면 large.
     if (snap === "large" && dy > SNAP_DOWN_PX) setSnap("medium");
     else if (snap === "medium" && dy < -SNAP_UP_PX) setSnap("large");
-  }, [hasSnaps, snap, onClose]);
+  };
 
   const sheetStyle: CSSProperties = {
     ...(hasSnaps && snap === "medium" ? { height: MEDIUM_HEIGHT } : {}),

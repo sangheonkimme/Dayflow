@@ -1306,6 +1306,9 @@
 }
 .dfmChip {
   flex-shrink: 0;
+  /* 최소 44px 터치 타깃 (시트 폼 칩과 접근성 통일). 세로 여백은 이미
+     align-items:center 로 흡수되어 텍스트 정렬 회귀 없음. */
+  min-height: 44px;
   padding: 7px 12px;
   border-radius: 99px;
   background: var(--card);
