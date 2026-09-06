@@ -247,3 +247,29 @@ EditProfile · ChangePassword · AddEvent · AddSub · AddTxn · Upgrade 6개 �
 - 시트 마운트 지점 (Profile 제외): `src/screens/mobile/MobileApp.tsx:238–259`
 - 시트 마운트 지점 (Profile 내): `src/screens/mobile/screens/Profile.tsx:365–379`
 - Viewport meta: `app/layout.tsx:72` viewport export (interactive-widget 미설정)
+
+---
+
+## 진행 기록 (Phase 2 → Phase 3)
+
+> Viewport meta 는 이후 `interactiveWidget: "resizes-content"` 로 이미 설정됨 (스프린트 2). 위 "미설정" 표기는 감사 시점 기준.
+
+### Phase 1 (완료 · c5519d3)
+
+fake 필드 제거·`.dfmSheetCompact`·`Ico close`·`role="dialog"`/`aria-modal`. 결제일 슬라이더 → 7×5 그리드(#29 에서 radiogroup 접근성 + 44px 보강).
+
+### Phase 2 (완료 · #30)
+
+공용 `useSheet` 훅으로 통합: 스냅 포인트(medium/large, Add\* 폼 3종)·focus trap·swipe-down close. legacy close 아이콘 스윕(Receipt/Timer SVG → `Ico close`). AddSubSheet 칩 44px. 키보드는 `resizes-content` 체인으로 이미 대응(패딩 불요).
+
+### Phase 3 (완료)
+
+- **배경 `inert`**: 시트 열림 시 형제 배경 요소(자신/스크림 제외)에 `inert` → SR/포커스 완전 격리. `useSheet` 내 자기완결(MobileApp/Profile 무수정).
+- **`.dfmChip` 44px**: Ledger 필터 레일도 시트 폼 칩과 접근성 통일.
+- **`useSheet` 최적화**: `onClose` latest-ref 안정화(드래그 중 리스너 churn 제거) + 불필요한 `useCallback` 제거.
+- **스냅 확대 검토 → 확대 안 함(결정)**: compact 시트(EditProfile/ChangePassword)는 이미 60% 고정이라 스냅 무의미, XL 시트(Search/Upgrade)는 의도적 풀시트라 스냅이 목적과 상충, TimerSettings 는 콘텐츠가 실제로 커서 medium 이 설정을 가림, Receipt 는 읽기용 상세라 medium peek 가치 낮음 + 가변 높이라 어색. → 스냅은 Add(Txn/Event/Sub) 3종 유지가 적정.
+
+### 남은 항목 (Phase 4 후보)
+
+- **실단말 키보드 QA 필요**: `resizes-content` 체인은 코드상 완결(dvh 축소 → `.dfm` flex → 시트 상승)이나, 시뮬레이터/데스크톱 프리뷰로는 iOS 가상 키보드 리사이즈를 재현 못 함. **실기기(iPhone Safari, Android Chrome)에서 각 폼 시트 인풋 포커스 시 시트가 키보드 위로 밀리는지 육안 확인 필요.** pre-iOS-16.4(interactive-widget 미지원)는 키보드가 오버레이될 수 있음 — 필요 시 fallback 별도 검토.
+- **`inert` Profile 상단바 엣지**: Profile 화면의 시트는 Profile `<div>` 형제만 inert → 그 바깥 `dfmTop`/`dfmTabbar` 는 비-inert(스크림이 pointer 는 차단). Profile 은 메뉴 서브스크린이라 실害 낮으나, 완전 격리하려면 호스트 레벨 inert 로 확장 검토.
