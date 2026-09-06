@@ -1,11 +1,15 @@
 import { useState, type KeyboardEvent } from "react";
 import { Ico } from "@/screens/mobile/shared/Ico";
-import { useEscapeKey } from "@/lib/useEscapeKey";
+import { useSheet } from "@/screens/mobile/sheets/useSheet";
 import { useSubscriptions } from "@/data/subscriptions";
 import styles from "@/screens/mobile/mobile.module.css";
 
 export const AddSubSheet = ({ open, onClose }: any) => {
-  useEscapeKey(() => onClose?.(), !!open);
+  const { sheetRef, gripHandlers, sheetStyle } = useSheet({
+    open,
+    onClose: () => onClose?.(),
+    snaps: ["medium", "large"],
+  });
   const { upsert } = useSubscriptions();
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
@@ -81,13 +85,16 @@ export const AddSubSheet = ({ open, onClose }: any) => {
         onClick={onClose}
       />
       <div
+        ref={sheetRef}
+        tabIndex={-1}
         role="dialog"
         aria-modal="true"
         aria-label="새 구독 추가"
         className={`${styles.dfmSheet} ${open ? styles.on : ""}`}
+        style={sheetStyle}
       >
-        <div className={styles.dfmSheetGrip} />
-        <div className={styles.dfmSheetHead}>
+        <div className={styles.dfmSheetGrip} {...gripHandlers} />
+        <div className={styles.dfmSheetHead} {...gripHandlers}>
           <div className={styles.ttl}>
             새 구독 추가<small>매월 빠져나가는 항목</small>
           </div>
@@ -130,6 +137,9 @@ export const AddSubSheet = ({ open, onClose }: any) => {
                   }}
                   style={{
                     flex: "0 0 auto",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    minHeight: 44,
                     padding: "7px 12px",
                     borderRadius: 999,
                     fontSize: 12,
@@ -293,6 +303,7 @@ export const AddSubSheet = ({ open, onClose }: any) => {
                     display: "inline-flex",
                     alignItems: "center",
                     gap: 6,
+                    minHeight: 44,
                     padding: "7px 12px",
                     borderRadius: 999,
                     fontSize: 12,
@@ -414,6 +425,9 @@ export const AddSubSheet = ({ open, onClose }: any) => {
                   onClick={() => setPay(p)}
                   style={{
                     flex: 1,
+                    display: "grid",
+                    placeItems: "center",
+                    minHeight: 44,
                     padding: "9px 0",
                     borderRadius: 9,
                     fontSize: 11,
