@@ -108,6 +108,30 @@ export function useSheet({ open, onClose, snaps }: UseSheetOptions) {
     };
   }, [open]);
 
+  // 배경 격리: 열릴 때 시트의 형제 요소(자신/스크림 제외)에 inert 부여 →
+  // 스크린리더/키보드 포커스가 배경 콘텐츠로 새지 않는다. 스크림은 백드롭
+  // 탭 닫기를 살려야 하므로 제외. 각 시트 컴포넌트가 <scrim><sheet> 순으로
+  // 렌더하므로 스크림 = 시트의 직전 형제. 닫힐 때 내가 건 것만 해제.
+  useEffect(() => {
+    if (!open) return undefined;
+    const el = sheetRef.current;
+    const parent = el?.parentElement;
+    if (!el || !parent) return undefined;
+    const scrim = el.previousElementSibling;
+    const inerted: HTMLElement[] = [];
+    Array.from(parent.children).forEach((child) => {
+      if (child === el || child === scrim) return;
+      const node = child as HTMLElement;
+      if (!node.hasAttribute("inert")) {
+        node.setAttribute("inert", "");
+        inerted.push(node);
+      }
+    });
+    return () => {
+      inerted.forEach((node) => node.removeAttribute("inert"));
+    };
+  }, [open]);
+
   const onPointerDown = useCallback((e: ReactPointerEvent) => {
     // 헤더 내부의 컨트롤(닫기 버튼 등) 조작은 드래그로 가로채지 않는다.
     if ((e.target as HTMLElement).closest("button,a,input,textarea,select")) {
