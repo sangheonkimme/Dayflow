@@ -2,6 +2,7 @@
 import styles from "@/screens/settings/SettingsPage.module.css";
 import { useUserPlan } from "@/data/plan/useUserPlan";
 import { useCheckout } from "@/lib/payments/useCheckout";
+import { priceCompactLabel } from "@/lib/payments/pricing";
 
 export const AccountSection = () => {
   const { isPro } = useUserPlan();
@@ -34,7 +35,7 @@ export const AccountSection = () => {
             onClick={() => start("year")}
             disabled={busy}
           >
-            {busy ? "이동 중…" : "Pro로 업그레이드 — ₩39,000/년"}
+            {busy ? "이동 중…" : `Pro로 업그레이드 — ${priceCompactLabel("year")}`}
           </button>
         </div>
       )}

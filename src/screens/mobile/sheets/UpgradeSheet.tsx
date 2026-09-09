@@ -3,6 +3,14 @@ import { Ico } from "@/screens/mobile/shared/Ico";
 import { useSheet } from "@/screens/mobile/sheets/useSheet";
 import styles from "@/screens/mobile/mobile.module.css";
 import { useCheckout } from "@/lib/payments/useCheckout";
+import {
+  BILLING_LABEL,
+  TRIAL_DAYS,
+  billingCadenceLabel,
+  priceLabel,
+  pricePerPeriodLabel,
+  yearlySavingsLabel,
+} from "@/lib/payments/pricing";
 import type { CheckoutBilling } from "@/lib/payments/types";
 
 export const UpgradeSheet = ({ open, onClose }: any) => {
@@ -47,19 +55,26 @@ export const UpgradeSheet = ({ open, onClose }: any) => {
     { ico: "bell", title: "우선 고객 지원", sub: "24시간 내 답변 · 1:1 채팅" },
   ];
 
-  const plans = [
+  // 가격/할인 문구는 lib/payments/pricing 단일 소스에서 파생 — 여기서 하드코딩 금지.
+  const plans: {
+    id: CheckoutBilling;
+    label: string;
+    price: string;
+    sub: string;
+    badge: string | null;
+  }[] = [
     {
       id: "month",
-      label: "월간",
-      price: "₩3,900",
-      sub: "매월 결제",
+      label: BILLING_LABEL.month,
+      price: priceLabel("month"),
+      sub: billingCadenceLabel("month"),
       badge: null,
     },
     {
       id: "year",
-      label: "연간",
-      price: "₩39,000",
-      sub: "월 ₩3,250 · 17% 할인",
+      label: BILLING_LABEL.year,
+      price: priceLabel("year"),
+      sub: yearlySavingsLabel(),
       badge: "BEST",
     },
   ];
@@ -203,7 +218,7 @@ export const UpgradeSheet = ({ open, onClose }: any) => {
                 {plans.map((p) => (
                   <button
                     key={p.id}
-                    onClick={() => setPlan(p.id as CheckoutBilling)}
+                    onClick={() => setPlan(p.id)}
                     style={{
                       position: "relative",
                       padding: "16px 14px",
@@ -318,7 +333,7 @@ export const UpgradeSheet = ({ open, onClose }: any) => {
                 }}
               >
                 <Ico name="coin" size={16} />
-                {busy ? "이동 중…" : "3일 무료 체험 시작"}
+                {busy ? "이동 중…" : `${TRIAL_DAYS}일 무료 체험 시작`}
               </button>
               {notice && (
                 <div
@@ -347,8 +362,8 @@ export const UpgradeSheet = ({ open, onClose }: any) => {
                   lineHeight: 1.5,
                 }}
               >
-                3일 후 {plan === "year" ? "₩39,000 / 년" : "₩3,900 / 월"} 자동
-                결제 · 언제든 해지
+                {TRIAL_DAYS}일 후 {pricePerPeriodLabel(plan)} 자동 결제 ·
+                언제든 해지
                 <br />
                 약관 · 개인정보처리방침 · 환불정책
               </small>
