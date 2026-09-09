@@ -4,6 +4,11 @@
 // 검증 테스트(curl 예시)는 README.md 참고.
 import { NextResponse } from "next/server";
 import { verifyHmacSha256 } from "@/lib/webhooks/verify";
+import {
+  claimWebhookEvent,
+  eventIdFrom,
+  releaseWebhookEvent,
+} from "@/lib/webhooks/dedup";
 import { setUserPlan } from "@/lib/payments/plan-sync";
 import type { PlanTier } from "@/data/plan/types";
 
@@ -15,6 +20,8 @@ const SIGNATURE_HEADER = "toss-signature";
 
 interface TossWebhookEvent {
   eventType?: string;
+  /** 전달 단위 id. 미제공 payload 도 있어 없으면 raw body 해시로 대체. */
+  eventId?: string;
   data?: { metadata?: { user_id?: string } };
 }
 
@@ -60,6 +67,21 @@ export async function POST(req: Request) {
   const targetPlan = planForEvent(event.eventType);
 
   if (targetPlan) {
+    // 멱등 선점 — 재전송/중복 전달이면 여기서 끝낸다. no-op 이벤트는 어차피
+    // 상태를 안 바꾸므로 선점하지 않는다(저장소를 얇게 유지).
+    const eventId = eventIdFrom(event.eventId, rawBody);
+    const claim = await claimWebhookEvent({
+      provider: "toss",
+      eventId,
+      eventType,
+    });
+    if (claim === "duplicate") {
+      console.info(
+        `[webhook:toss] ${eventType} duplicate (event_id=${eventId}) — skipped`,
+      );
+      return NextResponse.json({ received: true, duplicate: true });
+    }
+
     const userId = event.data?.metadata?.user_id;
     const result = await setUserPlan(
       typeof userId === "string" ? userId : null,
@@ -70,6 +92,10 @@ export async function POST(req: Request) {
         `[webhook:toss] ${eventType} → plan ${targetPlan} skipped: ${result.reason}`,
       );
       if (result.reason === "db_error") {
+        // 재시도를 유도하는 실패 — 선점을 풀어야 재전송이 스킵되지 않는다.
+        if (claim === "claimed") {
+          await releaseWebhookEvent({ provider: "toss", eventId });
+        }
         return NextResponse.json({ error: "db_error" }, { status: 500 });
       }
     } else {
