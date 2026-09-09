@@ -5,6 +5,11 @@
 // 검증 테스트(curl 예시)는 README.md 참고.
 import { NextResponse } from "next/server";
 import { verifyHmacSha256 } from "@/lib/webhooks/verify";
+import {
+  claimWebhookEvent,
+  eventIdFrom,
+  releaseWebhookEvent,
+} from "@/lib/webhooks/dedup";
 import { setUserPlan } from "@/lib/payments/plan-sync";
 import type { PlanTier } from "@/data/plan/types";
 
@@ -13,7 +18,12 @@ export const runtime = "nodejs";
 const SIGNATURE_HEADER = "x-signature";
 
 interface LemonSqueezyWebhookEvent {
-  meta?: { event_name?: string; custom_data?: Record<string, unknown> };
+  meta?: {
+    event_name?: string;
+    custom_data?: Record<string, unknown>;
+    /** 일부 payload 에만 실린다. 없으면 raw body 해시로 대체. */
+    webhook_id?: string;
+  };
   data?: { attributes?: { status?: string } };
 }
 
@@ -61,6 +71,21 @@ export async function POST(req: Request) {
   const targetPlan = planForEvent(event);
 
   if (targetPlan) {
+    // 멱등 선점 — 재전송/중복 전달이면 여기서 끝낸다. no-op 이벤트는 어차피
+    // 상태를 안 바꾸므로 선점하지 않는다(저장소를 얇게 유지).
+    const eventId = eventIdFrom(event.meta?.webhook_id, rawBody);
+    const claim = await claimWebhookEvent({
+      provider: "lemonsqueezy",
+      eventId,
+      eventType: eventName,
+    });
+    if (claim === "duplicate") {
+      console.info(
+        `[webhook:lemonsqueezy] ${eventName} duplicate (event_id=${eventId}) — skipped`,
+      );
+      return NextResponse.json({ received: true, duplicate: true });
+    }
+
     // 체크아웃 생성 시 custom_data.user_id 로 실어보낸 Supabase user id (문자열).
     const userId = event.meta?.custom_data?.user_id;
     const result = await setUserPlan(
@@ -74,6 +99,10 @@ export async function POST(req: Request) {
         `[webhook:lemonsqueezy] ${eventName} → plan ${targetPlan} skipped: ${result.reason}`,
       );
       if (result.reason === "db_error") {
+        // 재시도를 유도하는 실패 — 선점을 풀어야 재전송이 스킵되지 않는다.
+        if (claim === "claimed") {
+          await releaseWebhookEvent({ provider: "lemonsqueezy", eventId });
+        }
         return NextResponse.json({ error: "db_error" }, { status: 500 });
       }
     } else {
