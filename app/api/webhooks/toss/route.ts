@@ -9,6 +9,7 @@ import {
   eventIdFrom,
   releaseWebhookEvent,
 } from "@/lib/webhooks/dedup";
+import { parseEventTime } from "@/lib/webhooks/event-time";
 import { setUserPlan } from "@/lib/payments/plan-sync";
 import type { PlanTier } from "@/data/plan/types";
 
@@ -22,6 +23,12 @@ interface TossWebhookEvent {
   eventType?: string;
   /** 전달 단위 id. 미제공 payload 도 있어 없으면 raw body 해시로 대체. */
   eventId?: string;
+  /**
+   * 이벤트 발생 시각. Toss webhook 봉투의 공통 필드.
+   * ⚠️ 스텁 — 실 연동 시 오프셋 포함 포맷인지 확인할 것. 오프셋 없는
+   *    "2022-01-01T00:00:00.000000" 이면 로컬 시각으로 오해석된다(event-time.ts 주석).
+   */
+  createdAt?: string;
   data?: { metadata?: { user_id?: string } };
 }
 
@@ -82,6 +89,9 @@ export async function POST(req: Request) {
       return NextResponse.json({ received: true, duplicate: true });
     }
 
+    // 이벤트 발생 시각 — 순서 뒤바뀐 전달을 걸러내는 워터마크로 쓴다.
+    const eventAt = parseEventTime(event.createdAt);
+
     const userId = event.data?.metadata?.user_id;
     const result = await setUserPlan(
       typeof userId === "string" ? userId : null,
@@ -99,7 +109,9 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: "db_error" }, { status: 500 });
       }
     } else {
-      console.info(`[webhook:toss] ${eventType} → plan set ${targetPlan}`);
+      console.info(
+        `[webhook:toss] ${eventType} → plan set ${targetPlan} (event_at=${eventAt?.toISOString() ?? "none"})`,
+      );
     }
   } else {
     console.info(`[webhook:toss] received ${eventType} (no-op)`);

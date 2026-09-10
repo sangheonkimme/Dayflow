@@ -10,6 +10,7 @@ import {
   eventIdFrom,
   releaseWebhookEvent,
 } from "@/lib/webhooks/dedup";
+import { parseEventTime } from "@/lib/webhooks/event-time";
 import { setUserPlan } from "@/lib/payments/plan-sync";
 import type { PlanTier } from "@/data/plan/types";
 
@@ -24,7 +25,17 @@ interface LemonSqueezyWebhookEvent {
     /** 일부 payload 에만 실린다. 없으면 raw body 해시로 대체. */
     webhook_id?: string;
   };
-  data?: { attributes?: { status?: string } };
+  data?: {
+    attributes?: {
+      status?: string;
+      /**
+       * 리소스(subscription/order)의 마지막 변경 시각. ISO 8601 UTC.
+       * LS 의 모든 API 리소스가 공통으로 싣는 필드라 이벤트 발생 시각의 대용으로 쓴다.
+       * @see https://docs.lemonsqueezy.com/api/subscriptions
+       */
+      updated_at?: string;
+    };
+  };
 }
 
 // 구독 상태 → 플랜. active/on_trial/past_due 는 접근 유지(pro), 그 외(cancelled/
@@ -86,6 +97,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ received: true, duplicate: true });
     }
 
+    // 이벤트 발생 시각 — 순서 뒤바뀐 전달을 걸러내는 워터마크로 쓴다.
+    // 없으면 null → plan-sync 가 기존 latest-wins 로 진행.
+    const eventAt = parseEventTime(event.data?.attributes?.updated_at);
+
     // 체크아웃 생성 시 custom_data.user_id 로 실어보낸 Supabase user id (문자열).
     const userId = event.meta?.custom_data?.user_id;
     const result = await setUserPlan(
@@ -107,7 +122,7 @@ export async function POST(req: Request) {
       }
     } else {
       console.info(
-        `[webhook:lemonsqueezy] ${eventName} → plan set ${targetPlan}`,
+        `[webhook:lemonsqueezy] ${eventName} → plan set ${targetPlan} (event_at=${eventAt?.toISOString() ?? "none"})`,
       );
     }
   } else {
