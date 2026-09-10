@@ -36,6 +36,7 @@ pnpm dev               # http://localhost:3000
 | `pnpm typecheck` | `tsc --noEmit` |
 | `pnpm lint` | ESLint (`--max-warnings 0`) |
 | `pnpm verify` | typecheck + lint + build 일괄 — **커밋 전 게이트** |
+| `pnpm verify:pricing` | 표시가 ↔ LemonSqueezy 실청구액 대조 (읽기 전용, **수동 실행**) |
 
 ## 환경 변수
 
@@ -102,6 +103,26 @@ supabase db push
 LemonSqueezy 설정: **Store ID · Variant ID**(Products → Variant), **API Key**(Settings → API),
 **Webhook**(Settings → Webhooks → URL `https://<도메인>/api/webhooks/lemonsqueezy`, signing secret → `LEMONSQUEEZY_WEBHOOK_SECRET`).
 Toss 는 수신부(webhook) stub 만 — 발신(체크아웃)은 LS 우선.
+
+### 표시가 ↔ 실청구액 대조
+
+`src/lib/payments/pricing.ts` 는 **표시용** 단일 소스일 뿐이고, 실제 청구 금액은
+LemonSqueezy variant 설정이 결정한다. 둘이 어긋나면 "₩3,900 이라 적어놓고
+₩39,000 을 긁는" 결제 사고가 된다 — 코드로는 잡히지 않는 드리프트다.
+
+```bash
+pnpm verify:pricing
+```
+
+`.env` 의 `LEMONSQUEEZY_*` 로 LS API 를 **읽기만** 한다(생성·변경 없음, 결제 시나리오
+트리거 없음). 대조 항목: 스토어 통화 · variant published 여부 · 금액 · 갱신 주기 ·
+무료 체험 일수.
+
+종료 코드 — `0` 전부 일치 / `1` 불일치(고치기 전엔 배포 금지) / `2` 대조 불가(env·API 오류).
+
+> `pnpm verify` 에는 넣지 않았다. 매 빌드마다 외부 API 를 때리면 LS 장애가 곧 빌드
+> 장애가 되고 결제 API 키를 빌드 환경에 흘려야 한다. **가격을 바꿨을 때 · 배포 전에**
+> 사람이 한 번 돌리는 용도.
 
 ### 결제 webhook 테스트
 

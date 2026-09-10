@@ -8,14 +8,23 @@
 //
 // ⚠️ 여기 값은 **표시용**이다. 실제 청구 금액은 결제사(LemonSqueezy variant)
 //    설정이 결정한다. variant 가격을 바꿨다면 여기도 같이 갱신할 것.
+//
+//    두 값이 어긋났는지는 `pnpm verify:pricing` 으로 확인한다 —
+//    LS API 를 읽기 전용으로 조회해 통화·금액·주기·체험일수를 대조하고,
+//    어긋나면 exit 1. 가격을 바꿨을 때 · 배포 전에 돌릴 것.
+//    (scripts/verify-pricing.ts)
 
 import type { CheckoutBilling } from "./types";
 
 export const CURRENCY = "KRW" as const;
 export const CURRENCY_SYMBOL = "₩";
 
-/** 무료 체험 기간(일). 0 이면 체험 없음. */
-export const TRIAL_DAYS = 3;
+/**
+ * 무료 체험 기간(일). 0 이면 체험 없음.
+ * 리터럴 타입(3)이 아니라 number — 0 분기를 쓰는 쪽에서 "겹치지 않는 비교" 로
+ * 잡히지 않도록. 값이 바뀌는 설정이지 상수 종류가 아니다.
+ */
+export const TRIAL_DAYS: number = 3;
 
 /** 주기별 청구 금액(원). */
 export const PRO_PRICE: Record<CheckoutBilling, number> = {
