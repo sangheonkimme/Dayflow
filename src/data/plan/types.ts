@@ -8,7 +8,14 @@ export type PlanTier = (typeof PLAN_TIERS)[number];
 
 export interface UserPlan {
   tier: PlanTier;
-  /** 마지막 plan 변경 시각(ISO). 미변경/비로그인이면 null. */
+  /**
+   * 현재 플랜을 만든 **이벤트의 발생 시각**(ISO). 미변경/비로그인이면 null.
+   *
+   * 결제 webhook 의 순서 뒤바뀐 전달을 막는 워터마크로도 쓰인다(plan-sync).
+   * 결제사가 시각을 안 주는 이벤트에 한해 처리 시각(now)이 들어간다.
+   * ⚠️ DB 컬럼 코멘트(마이그레이션 0011)는 "처리 시각" 이라 적혀 있어 낡았다 —
+   *    다음 마이그레이션에서 갱신할 것.
+   */
   updatedAt: string | null;
 }
 
