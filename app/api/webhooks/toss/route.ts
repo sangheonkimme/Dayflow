@@ -96,8 +96,18 @@ export async function POST(req: Request) {
     const result = await setUserPlan(
       typeof userId === "string" ? userId : null,
       targetPlan,
+      eventAt,
     );
-    if (!result.ok) {
+    if (result.ok) {
+      console.info(
+        `[webhook:toss] ${eventType} → plan set ${targetPlan} (event_at=${eventAt?.toISOString() ?? "none"})`,
+      );
+    } else if (result.reason === "stale") {
+      // 정상 동작 — 더 최근 이벤트가 이미 반영돼 있다. 재전송해도 결과는 같으므로 200 ack.
+      console.info(
+        `[webhook:toss] ${eventType} → plan ${targetPlan} stale (event_at=${eventAt?.toISOString() ?? "none"}) — 워터마크가 더 최신, 무시`,
+      );
+    } else {
       console.warn(
         `[webhook:toss] ${eventType} → plan ${targetPlan} skipped: ${result.reason}`,
       );
@@ -108,10 +118,6 @@ export async function POST(req: Request) {
         }
         return NextResponse.json({ error: "db_error" }, { status: 500 });
       }
-    } else {
-      console.info(
-        `[webhook:toss] ${eventType} → plan set ${targetPlan} (event_at=${eventAt?.toISOString() ?? "none"})`,
-      );
     }
   } else {
     console.info(`[webhook:toss] received ${eventType} (no-op)`);

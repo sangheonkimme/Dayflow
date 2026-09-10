@@ -106,10 +106,20 @@ export async function POST(req: Request) {
     const result = await setUserPlan(
       typeof userId === "string" ? userId : null,
       targetPlan,
+      eventAt,
     );
-    if (!result.ok) {
-      // no_user/not_configured/db_error 모두 재전송으로 못 고치는 경우가 많으므로
-      // 200 으로 ack 하되(폭주 방지) 원인을 로깅. db_error 만 재시도 유도(500).
+    if (result.ok) {
+      console.info(
+        `[webhook:lemonsqueezy] ${eventName} → plan set ${targetPlan} (event_at=${eventAt?.toISOString() ?? "none"})`,
+      );
+    } else if (result.reason === "stale") {
+      // 정상 동작 — 더 최근 이벤트가 이미 반영돼 있다. 재전송해도 결과는 같으므로 200 ack.
+      console.info(
+        `[webhook:lemonsqueezy] ${eventName} → plan ${targetPlan} stale (event_at=${eventAt?.toISOString() ?? "none"}) — 워터마크가 더 최신, 무시`,
+      );
+    } else {
+      // no_user/not_configured 는 재전송으로 못 고치므로 200 으로 ack 하되(폭주 방지)
+      // 원인을 로깅. db_error 만 재시도 유도(500).
       console.warn(
         `[webhook:lemonsqueezy] ${eventName} → plan ${targetPlan} skipped: ${result.reason}`,
       );
@@ -120,10 +130,6 @@ export async function POST(req: Request) {
         }
         return NextResponse.json({ error: "db_error" }, { status: 500 });
       }
-    } else {
-      console.info(
-        `[webhook:lemonsqueezy] ${eventName} → plan set ${targetPlan} (event_at=${eventAt?.toISOString() ?? "none"})`,
-      );
     }
   } else {
     console.info(`[webhook:lemonsqueezy] received ${eventName} (no-op)`);
