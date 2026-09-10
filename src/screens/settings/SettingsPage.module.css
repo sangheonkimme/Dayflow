@@ -253,3 +253,21 @@ textarea.setInput {
     flex-wrap: wrap;
   }
 }
+
+/* OAuth 전용 유저 안내 — 앱에서 비번을 바꿀 수 없는 이유 + 대체 경로. */
+.oauthNote {
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--bg-paper);
+  color: var(--ink-mute);
+  font-size: 12px;
+  line-height: 1.7;
+}
+.oauthNote a {
+  color: var(--ink);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}

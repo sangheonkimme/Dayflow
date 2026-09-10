@@ -2,14 +2,33 @@ import { useState, useEffect } from "react";
 import { Ico } from "@/screens/mobile/shared/Ico";
 import { useSheet } from "@/screens/mobile/sheets/useSheet";
 import { useAuth } from "@/data/auth";
+import {
+  formatProviderLabel,
+  providerAccountUrl,
+  useAuthMethods,
+} from "@/lib/auth/hasPassword";
 import styles from "@/screens/mobile/mobile.module.css";
 
+/**
+ * 비밀번호 변경 시트 — 이메일로 재설정 링크를 보낸다.
+ *
+ * OAuth 전용 유저는 이메일/비번 identity 가 없어 재설정 링크가 아예 오지 않는다.
+ * (전송은 성공한 것처럼 끝나서 사용자가 메일함만 기다리게 된다.)
+ * 데스크톱 Security 섹션·DeleteAccountModal 과 같은 useAuthMethods() 로 분기해
+ * provider 계정 설정으로 안내한다.
+ */
 export const ChangePasswordSheet = ({
   open,
   onClose,
   email = "nabi@dayflow.app",
 }: any) => {
   const { sendPasswordReset } = useAuth();
+  const { hasPassword, providers, loading: methodsLoading } = useAuthMethods();
+  const oauthOnly = !methodsLoading && !hasPassword;
+  const providerLabel = providers.map(formatProviderLabel).join(" · ");
+  const linkProvider = providers.find((p) => providerAccountUrl(p));
+  const accountUrl = linkProvider ? providerAccountUrl(linkProvider) : null;
+  const linkLabel = linkProvider ? formatProviderLabel(linkProvider) : "";
   // 0 · confirm send  ·  1 · sent (waiting)
   const [step, setStep] = useState(0);
   const [sending, setSending] = useState(false);
@@ -73,7 +92,12 @@ export const ChangePasswordSheet = ({
         <div className={styles.dfmSheetGrip} {...gripHandlers} />
         <div className={styles.dfmSheetHead} {...gripHandlers}>
           <div className={styles.ttl}>
-            비밀번호 변경<small>이메일로 안전하게 재설정해요</small>
+            비밀번호 변경
+            <small>
+              {oauthOnly
+                ? `${providerLabel || "소셜"} 계정에서 관리해요`
+                : "이메일로 안전하게 재설정해요"}
+            </small>
           </div>
           <button className={styles.close} onClick={onClose} aria-label="닫기">
             <Ico name="close" size={18} />
@@ -81,7 +105,100 @@ export const ChangePasswordSheet = ({
         </div>
 
         <div className={styles.dfmSheetBody} style={{ padding: "0 18px 22px" }}>
-          {step === 0 && (
+          {step === 0 && oauthOnly && (
+            <div style={{ padding: "8px 0 4px" }}>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  textAlign: "center",
+                  padding: "12px 0 18px",
+                }}
+              >
+                <div
+                  style={{
+                    width: 64,
+                    height: 64,
+                    borderRadius: 20,
+                    marginBottom: 16,
+                    background: "var(--bg-paper)",
+                    border: "1px solid var(--line)",
+                    display: "grid",
+                    placeItems: "center",
+                    fontSize: 28,
+                  }}
+                >
+                  🔒
+                </div>
+                <h2
+                  style={{
+                    fontSize: 18,
+                    fontWeight: 800,
+                    margin: "0 0 6px",
+                    letterSpacing: "-0.01em",
+                  }}
+                >
+                  이 앱에는 비밀번호가 없어요
+                </h2>
+                <small
+                  style={{
+                    fontSize: 12,
+                    color: "var(--ink-mute)",
+                    lineHeight: 1.55,
+                    maxWidth: 260,
+                    display: "block",
+                  }}
+                >
+                  {providerLabel || "소셜"} 계정으로 로그인 중이라 재설정 링크를
+                  보낼 수 없어요. 비밀번호는 {providerLabel || "소셜"} 계정
+                  설정에서 바꿔주세요.
+                </small>
+              </div>
+
+              <div style={{ display: "flex", gap: 8 }}>
+                <button
+                  onClick={onClose}
+                  style={{
+                    flex: 1,
+                    padding: "14px 0",
+                    borderRadius: 12,
+                    border: "1px solid var(--line)",
+                    background: "transparent",
+                    color: "var(--ink)",
+                    fontWeight: 600,
+                    fontSize: 13,
+                    cursor: "pointer",
+                  }}
+                >
+                  닫기
+                </button>
+                {accountUrl && (
+                  <a
+                    href={accountUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={`${linkLabel} 계정 설정에서 비밀번호 관리 (새 창에서 열림)`}
+                    style={{
+                      flex: 2,
+                      padding: "14px 0",
+                      borderRadius: 12,
+                      background: "var(--ink)",
+                      color: "var(--bg-paper)",
+                      fontWeight: 700,
+                      fontSize: 13,
+                      textAlign: "center",
+                      textDecoration: "none",
+                    }}
+                  >
+                    {linkLabel} 계정 설정 열기
+                  </a>
+                )}
+              </div>
+            </div>
+          )}
+
+          {step === 0 && !oauthOnly && (
             <div style={{ padding: "8px 0 4px" }}>
               {/* hero */}
               <div

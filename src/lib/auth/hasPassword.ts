@@ -77,6 +77,26 @@ export function useAuthMethods(): AuthMethodsView {
   return { ...state, loading };
 }
 
+/**
+ * provider 의 계정 설정 페이지 URL. 앱에서 비밀번호를 바꿀 수 없는 OAuth 전용
+ * 유저를 "여기서 관리하세요" 로 보내는 용도.
+ * 알 수 없는 provider 면 null — 호출부는 링크 없이 안내 문구만 보여준다.
+ */
+export function providerAccountUrl(provider: string): string | null {
+  switch (provider) {
+    case "google":
+      return "https://myaccount.google.com/security";
+    case "github":
+      return "https://github.com/settings/security";
+    case "kakao":
+      return "https://accounts.kakao.com/weblogin/account/info";
+    case "apple":
+      return "https://appleid.apple.com/account/manage";
+    default:
+      return null;
+  }
+}
+
 /** "Google" 처럼 사용자에게 보여줄 provider 라벨. */
 export function formatProviderLabel(provider: string): string {
   switch (provider) {
