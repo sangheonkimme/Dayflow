@@ -9,7 +9,8 @@
     "start": "NODE_OPTIONS=--max-http-header-size=32768 next start",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx --max-warnings 0",
     "typecheck": "tsc --noEmit",
-    "verify": "pnpm typecheck && pnpm lint && pnpm build"
+    "verify": "pnpm typecheck && pnpm lint && pnpm build",
+    "verify:pricing": "tsx --env-file-if-exists=.env scripts/verify-pricing.ts"
   },
   "dependencies": {
     "@sentry/nextjs": "^10.65.0",
@@ -48,6 +49,7 @@
     "eslint-plugin-react-hooks": "^5.1.0",
     "postcss": "^8.5.14",
     "tailwindcss": "^3.4.19",
+    "tsx": "^4.23.13",
     "typescript": "^5.7.2"
   },
   "pnpm": {
